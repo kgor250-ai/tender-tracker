@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script>
+    // Prevent ALL browser alert/confirm popups immediately
+    window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
+    window.confirm = function(msg) { return true; };
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tender Management - Tender Corrigendum Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap"
+    rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .bg-sidebar {
+      background-color: #0b192c;
+    }
+
+    .modal {
+      display: none;
+    }
+
+    .modal.open {
+      display: flex;
+    }
+      /* Fixed sidebar - prevents sidebar from scrolling with page */
+    aside.fixed-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 50;
+    }
+    .main-with-sidebar {
+      margin-left: 256px;
+      height: 100vh;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 min-h-screen flex">
+
+  <!-- ========================================================================= -->
+  <!-- SIDEBAR -->
+  <!-- ========================================================================= -->
+  <aside class="w-64 bg-sidebar fixed-sidebar text-white flex flex-col justify-between shrink-0 min-h-screen border-r border-slate-800">
+    <div>
+      <div class="p-5 flex items-center gap-3 border-b border-slate-800/80">
+        <div
+          class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-600/30">
+          <i data-lucide="scale" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="text-sm font-bold tracking-tight text-white leading-tight">Tender Corrigendum &<br>Amendment
+            Tracker</h1>
+        </div>
+      </div>
+
+      <nav class="p-3 space-y-1 text-xs font-semibold">
+        <a href="dashboard.html" data-page="dashboard"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="tenders.html" data-page="tenders"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all">
+          <i data-lucide="file-text" class="w-4 h-4"></i>
+          <span>Tenders</span>
+        </a>
+
+        <!-- Module 4: Version Management Link -->
+        <a href="versions.html" data-page="versions"
+          class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="git-branch" class="w-4 h-4"></i>
+            <span>Version History</span>
+          </div>
+          <span
+            class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30">M4</span>
+        </a>
+
+        <a href="review.html" data-page="amendments"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+          <span>Amendments</span>
+        </a>
+
+        <a href="review.html" data-page="review"
+          class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="check-square" class="w-4 h-4"></i>
+            <span>Review Queue</span>
+          </div>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">18</span>
+        </a>
+
+        <a href="sources.html" data-page="sources"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="globe" class="w-4 h-4"></i>
+          <span>Sources</span>
+        </a>
+
+        <a href="collection-monitor.html" data-page="collection"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="activity" class="w-4 h-4"></i>
+          <span>Collection Monitor</span>
+        </a>
+
+        <a href="analytics.html" data-page="analytics"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+          <span>Analytics & Reports</span>
+        </a>
+
+        <div class="pt-5 pb-1 px-3.5 text-[10px] uppercase font-bold tracking-wider text-slate-500">
+          Administration
+        </div>
+
+        <a href="users.html" data-page="users"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="users" class="w-4 h-4"></i>
+          <span>Users & Roles</span>
+        </a>
+
+        <a href="audit-logs.html" data-page="audit"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="shield-alert" class="w-4 h-4"></i>
+          <span>Audit Logs</span>
+        </a>
+
+        <a href="settings.html" data-page="settings"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="p-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="font-medium">System Online</span>
+      </div>
+      <span class="font-mono text-slate-500">v1.0.0</span>
+    </div>
+  </aside>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN CONTENT AREA -->
+  <!-- ========================================================================= -->
+  <div class="flex-1 flex flex-col main-with-sidebar min-h-screen overflow-x-hidden">
+
+    <!-- TOP HEADER -->
+    <header
+      class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+  <script>
+    // Prevent ALL browser alert/confirm popups immediately
+    window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
+    window.confirm = function(msg) { return true; };
+  </script>
+      <div class="flex items-center gap-4 flex-1 max-w-xl">
+        <div class="relative w-full">
+          <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <i data-lucide="search" class="w-4 h-4"></i>
+          </span>
+          <input type="text" id="global-search" placeholder="Search tenders, amendments..."
+            class="w-full pl-10 pr-4 py-2 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-blue-500 text-xs font-semibold text-slate-800 outline-none transition-all">
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <!-- Notification Bell & Dropdown -->
+        <div class="relative">
+          <button id="notification-bell-btn" onclick="toggleDropdown('notification-dropdown-menu')"
+            class="relative p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors"
+            title="Notifications">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span id="notification-badge"
+              class="absolute top-1.5 right-1.5 w-4 h-4 bg-rose-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center animate-pulse">3</span>
+          </button>
+
+          <!-- Notification Dropdown Menu -->
+          <div id="notification-dropdown-menu"
+            class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 overflow-hidden text-xs">
+            <div class="px-4 py-3 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-slate-800 text-sm">Notifications</span>
+                <span id="unread-count-pill"
+                  class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">3 New</span>
+              </div>
+              <button onclick="markAllNotificationsAsRead()"
+                class="text-[11px] font-bold text-blue-600 hover:underline">Mark all read</button>
+            </div>
+            <div class="divide-y divide-slate-100 max-h-80 overflow-y-auto" id="notification-items-container"></div>
+            <div class="p-2.5 bg-slate-50 border-t border-slate-100 text-center">
+              <a href="audit-logs.html"
+                class="text-xs font-bold text-slate-600 hover:text-blue-600 flex items-center justify-center gap-1.5 transition-colors">
+                <i data-lucide="history" class="w-3.5 h-3.5"></i>
+                <span>View Full System Audit Trail</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative">
+          <button id="user-menu-btn" onclick="toggleDropdown('user-dropdown-menu')"
+            class="flex items-center gap-2.5 p-1.5 pr-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all">
+            <div
+              class="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center text-xs shadow-xs"
+              id="nav-user-avatar">A</div>
+            <div class="text-left hidden sm:block">
+              <span class="text-xs font-bold text-slate-800 block leading-tight" id="nav-user-name">Admin Officer</span>
+              <span class="text-[10px] font-semibold text-blue-600 block uppercase" id="nav-user-role">ADMIN</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+          </button>
+
+          <div id="user-dropdown-menu"
+            class="hidden absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 z-50 text-xs space-y-1">
+            <div class="px-3 py-2 border-b border-slate-100">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Role Simulation</span>
+              <p class="font-bold text-slate-800">Switch Permission Level</p>
+            </div>
+            <button onclick="switchRole('ADMIN')"
+              class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center justify-between">
+              <span>👑 Admin (Full)</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-800">Admin</span>
+            </button>
+            <button onclick="switchRole('OPERATOR')"
+              class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center justify-between">
+              <span>👷 Tender Operator</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Operator</span>
+            </button>
+            <button onclick="switchRole('VIEWER')"
+              class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center justify-between">
+              <span>👁️ Viewer (Read Only)</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">Viewer</span>
+            </button>
+            <div class="border-t border-slate-100 pt-1">
+              <a href="login.html"
+                class="w-full text-left px-3 py-2 text-rose-600 hover:bg-rose-50 rounded-lg font-bold flex items-center gap-2">
+                <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Sign Out
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN BODY -->
+    <main class="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto">
+
+      <!-- PAGE HEADER (Exact match to screenshot) -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Tender Management</h1>
+          <p class="text-xs text-slate-500 mt-0.5">Search, view and manage tenders</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="openAddTenderModal()"
+            class="btn-requires-operator px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-500/20 flex items-center gap-2">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>Add Tender</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- FILTER TOOLBAR (Exact match to screenshot) -->
+      <div
+        class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="relative flex-1 min-w-[240px]">
+          <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+            <i data-lucide="search" class="w-4 h-4"></i>
+          </span>
+          <input type="text" id="table-search" oninput="filterTenders()"
+            placeholder="Search by tender number or title..."
+            class="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 text-xs font-semibold text-slate-800 outline-none">
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2.5">
+          <select id="filter-dept" onchange="filterTenders()"
+            class="px-3 py-2 bg-white rounded-xl border border-slate-200 text-slate-700 font-semibold focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="ALL">Department ▾</option>
+            <option value="PWD">PWD</option>
+            <option value="Health Dept.">Health Dept.</option>
+            <option value="NIC">NIC</option>
+            <option value="UDHD">UDHD</option>
+          </select>
+
+          <select id="filter-cat" onchange="filterTenders()"
+            class="px-3 py-2 bg-white rounded-xl border border-slate-200 text-slate-700 font-semibold focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="ALL">Category ▾</option>
+            <option value="Infrastructure">Infrastructure</option>
+            <option value="Medical">Medical</option>
+            <option value="IT">IT</option>
+            <option value="Urban">Urban</option>
+          </select>
+
+          <select id="filter-status" onchange="filterTenders()"
+            class="px-3 py-2 bg-white rounded-xl border border-slate-200 text-slate-700 font-semibold focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="ALL">Status ▾</option>
+            <option value="Published">Published</option>
+            <option value="Amended">Amended</option>
+          </select>
+
+          <button onclick="filterTenders()"
+            class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold flex items-center gap-1.5 transition-colors">
+            <i data-lucide="filter" class="w-3.5 h-3.5 text-slate-500"></i>
+            <span>Filter</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- TENDERS DATA TABLE (Exact match to screenshot) -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr
+                class="bg-slate-50/80 border-b border-slate-200 text-slate-500 text-[11px] font-bold uppercase tracking-wider">
+                <th class="py-3.5 px-4 w-12 text-slate-400">#</th>
+                <th class="py-3.5 px-4">Tender No.</th>
+                <th class="py-3.5 px-4">Title</th>
+                <th class="py-3.5 px-4">Department</th>
+                <th class="py-3.5 px-4">Publication Date</th>
+                <th class="py-3.5 px-4">Submission Deadline</th>
+                <th class="py-3.5 px-4">Status</th>
+                <th class="py-3.5 px-4 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tender-table-body" class="divide-y divide-slate-100 font-medium text-slate-700">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- PAGINATION STRIP (Exact match to screenshot) -->
+        <div
+          class="p-4 bg-white border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+          <div>
+            Showing <span class="font-bold text-slate-800">1-5</span> of <span
+              class="font-bold text-slate-800">1,248</span> results
+          </div>
+          <div class="flex items-center gap-1">
+            <button
+              class="w-7 h-7 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-100 flex items-center justify-center font-bold">
+              <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
+            </button>
+            <button
+              class="w-7 h-7 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center shadow-xs">1</button>
+            <button
+              class="w-7 h-7 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 font-bold flex items-center justify-center">2</button>
+            <button
+              class="w-7 h-7 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 font-bold flex items-center justify-center">3</button>
+            <span class="px-1 text-slate-400">...</span>
+            <button
+              class="w-7 h-7 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-100 flex items-center justify-center font-bold">
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- ADD TENDER MODAL (Module 2: Existing Tender Registration) -->
+  <!-- ========================================================================= -->
+  <div id="modal-add-tender"
+    class="modal fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div>
+          <h2 class="text-base font-extrabold text-slate-900">Add Existing Tender (Module 2)</h2>
+          <p class="text-[11px] text-slate-500">Register tender master data into catalog</p>
+        </div>
+        <button onclick="closeModal('modal-add-tender')" class="text-slate-400 hover:text-slate-700">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form onsubmit="submitNewTender(event)" class="space-y-3.5 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Tender No. / ID</label>
+            <input type="text" id="new-t-id" required placeholder="e.g. GJ/2026/106"
+              class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono font-bold text-slate-900 outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Department / Authority</label>
+            <select id="new-t-dept"
+              class="w-full px-3 py-2 rounded-xl border border-slate-300 font-semibold text-slate-900 outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="PWD">Public Works Department (PWD)</option>
+              <option value="Health Dept.">Health Dept.</option>
+              <option value="NIC">National Informatics Centre (NIC)</option>
+              <option value="UDHD">Urban Development (UDHD)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Tender Title / Scope</label>
+          <input type="text" id="new-t-title" required placeholder="e.g. Construction of 4-Lane Bridge Over River"
+            class="w-full px-3 py-2 rounded-xl border border-slate-300 font-semibold text-slate-900 outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Estimated Cost (INR)</label>
+            <input type="number" id="new-t-cost" required value="50000000"
+              class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono font-bold text-slate-900 outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">EMD Amount (Earnest Money)</label>
+            <input type="number" id="new-t-emd" required value="1000000"
+              class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono font-bold text-emerald-700 outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Published Date</label>
+            <input type="date" id="new-t-pub" required value="2026-11-01"
+              class="w-full px-3 py-2 rounded-xl border border-slate-300 font-medium text-slate-900 outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Submission Deadline</label>
+            <input type="date" id="new-t-dead" required value="2026-11-20"
+              class="w-full px-3 py-2 rounded-xl border border-slate-300 font-medium text-slate-900 outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeModal('modal-add-tender')"
+            class="px-4 py-2 border border-slate-300 text-slate-700 rounded-xl font-bold hover:bg-slate-50">Cancel</button>
+          <button type="submit"
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-md shadow-blue-500/20">Register
+            Tender</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    // Initial Tender Data matching screenshot
+    let tenderData = [
+      { id: "GJ/2026/105", title: "Road Construction Works", dept: "PWD", pubDate: "01 Nov 2026", deadline: "20 Nov 2026", status: "Published", cat: "Infrastructure" },
+      { id: "GJ/2026/104", title: "Supply of Medical Equipment", dept: "Health Dept.", pubDate: "31 Oct 2026", deadline: "18 Nov 2026", status: "Published", cat: "Medical" },
+      { id: "GJ/2026/103", title: "IT Infrastructure Upgrade", dept: "NIC", pubDate: "30 Oct 2026", deadline: "15 Nov 2026", status: "Amended", cat: "IT" },
+      { id: "GJ/2026/102", title: "Urban Development Project", dept: "UDHD", pubDate: "28 Oct 2026", deadline: "14 Nov 2026", status: "Published", cat: "Urban" },
+      { id: "GJ/2026/101", title: "Medical Supplies", dept: "Health Dept.", pubDate: "26 Oct 2026", deadline: "12 Nov 2026", status: "Published", cat: "Medical" }
+    ];
+
+    function renderTenderRows(list) {
+      const tbody = document.getElementById('tender-table-body');
+      tbody.innerHTML = '';
+
+      list.forEach((t, index) => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition-colors";
+        const statusBadge = t.status === 'Amended'
+          ? `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-50 text-amber-700 border border-amber-200">Amended</span>`
+          : `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">Published</span>`;
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 text-slate-400 font-bold">${index + 1}</td>
+          <td class="py-3 px-4 font-mono font-bold text-blue-600">
+            <a href="tender-details.html?id=${t.id}" class="hover:underline">${t.id}</a>
+          </td>
+          <td class="py-3 px-4 font-semibold text-slate-900 max-w-xs truncate">${t.title}</td>
+          <td class="py-3 px-4">${t.dept}</td>
+          <td class="py-3 px-4 text-slate-500">${t.pubDate}</td>
+          <td class="py-3 px-4 font-semibold ${t.status === 'Amended' ? 'text-rose-600' : 'text-slate-700'}">${t.deadline}</td>
+          <td class="py-3 px-4">${statusBadge}</td>
+          <td class="py-3 px-4 text-center">
+            <div class="inline-flex items-center gap-1.5">
+              <a href="tender-details.html?id=${t.id}" class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="View Details">
+                <i data-lucide="eye" class="w-4 h-4"></i>
+              </a>
+              <a href="versions.html?tender=${t.id === 'GJ/2026/104' ? 'GJ-2026-104' : 'GJ-2026-105'}" class="p-1.5 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="Module 4: Version History & Revisions">
+                <i data-lucide="git-branch" class="w-4 h-4"></i>
+              </a>
+              <a href="latest-tender.html?tender=${t.id === 'GJ/2026/104' ? 'GJ-2026-104' : 'GJ-2026-105'}" class="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Latest Master Specification">
+                <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+              </a>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      lucide.createIcons();
+    }
+
+    function filterTenders() {
+      const q = (document.getElementById('table-search').value || '').toLowerCase().trim();
+      const dept = document.getElementById('filter-dept').value;
+      const cat = document.getElementById('filter-cat').value;
+      const status = document.getElementById('filter-status').value;
+
+      const filtered = tenderData.filter(t => {
+        const matchesQ = !q || t.id.toLowerCase().includes(q) || t.title.toLowerCase().includes(q);
+        const matchesDept = dept === 'ALL' || t.dept === dept;
+        const matchesCat = cat === 'ALL' || t.cat === cat;
+        const matchesStatus = status === 'ALL' || t.status === status;
+        return matchesQ && matchesDept && matchesCat && matchesStatus;
+      });
+
+      renderTenderRows(filtered);
+    }
+
+    function openAddTenderModal() {
+      const user = getActiveUser();
+      if (user.role === 'VIEWER') {
+        showToast("Access Restricted: Viewers have read-only access. Switch to Operator or Admin.", "error");
+        return;
+      }
+      document.getElementById('modal-add-tender').classList.add('open');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    function submitNewTender(e) {
+      e.preventDefault();
+      const newT = {
+        id: document.getElementById('new-t-id').value.trim(),
+        title: document.getElementById('new-t-title').value.trim(),
+        dept: document.getElementById('new-t-dept').value,
+        pubDate: document.getElementById('new-t-pub').value,
+        deadline: document.getElementById('new-t-dead').value,
+        status: "Published",
+        cat: "Infrastructure"
+      };
+
+      tenderData.unshift(newT);
+      renderTenderRows(tenderData);
+      closeModal('modal-add-tender');
+      showToast(`Tender ${newT.id} registered successfully into catalog!`, 'success');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      initSharedNav('tenders');
+      renderTenderRows(tenderData);
+    });
+  </script>
+</body>
+
+</html>

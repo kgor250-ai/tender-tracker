@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Tender Corrigendum & Amendment Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .bg-navy-hero {
+      background: linear-gradient(135deg, #091e42 0%, #0d2b63 50%, #0f3985 100%);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex items-center justify-center p-0 md:p-6">
+
+  <div class="w-full max-w-6xl min-h-[640px] bg-white rounded-none md:rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 border border-slate-200">
+    
+    <!-- LEFT HERO SECTION (Exact match to screenshot) -->
+    <div class="lg:col-span-7 bg-navy-hero p-8 md:p-12 text-white flex flex-col justify-between relative overflow-hidden">
+      <!-- Architectural / Glow Overlay -->
+      <div class="absolute inset-0 opacity-15 pointer-events-none" style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 24px 24px;"></div>
+      <div class="absolute -right-20 -bottom-20 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Top Branding -->
+      <div class="relative z-10 space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg">
+            <i data-lucide="scale" class="w-7 h-7 text-white"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold tracking-tight text-white leading-tight">Tender Corrigendum &<br>Amendment Tracker</h2>
+            <p class="text-xs font-semibold text-blue-200 tracking-wider uppercase mt-0.5">Track &bull; Compare &bull; Verify</p>
+          </div>
+        </div>
+
+        <div class="pt-12 max-w-lg space-y-3">
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
+            Transparent Tender Information. Always.
+          </h1>
+          <p class="text-blue-100/90 text-sm md:text-base leading-relaxed">
+            Monitor tender amendments, compare changes and stay informed with confidence.
+          </p>
+        </div>
+      </div>
+
+      <!-- Bottom Feature Badges -->
+      <div class="relative z-10 pt-12 grid grid-cols-3 gap-3">
+        <div class="p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 text-center flex flex-col items-center gap-1.5 hover:bg-white/15 transition-colors">
+          <i data-lucide="clock" class="w-5 h-5 text-blue-300"></i>
+          <span class="text-xs font-bold text-white">Real-Time Updates</span>
+        </div>
+        <div class="p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 text-center flex flex-col items-center gap-1.5 hover:bg-white/15 transition-colors">
+          <i data-lucide="cpu" class="w-5 h-5 text-blue-300"></i>
+          <span class="text-xs font-bold text-white">AI-Powered Comparison</span>
+        </div>
+        <div class="p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 text-center flex flex-col items-center gap-1.5 hover:bg-white/15 transition-colors">
+          <i data-lucide="shield-check" class="w-5 h-5 text-blue-300"></i>
+          <span class="text-xs font-bold text-white">Secure & Reliable</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT LOGIN FORM (Exact match to screenshot) -->
+    <div class="lg:col-span-5 p-8 md:p-12 flex flex-col justify-center bg-white">
+      <div class="max-w-md w-full mx-auto space-y-6">
+        
+        <div>
+          <h2 class="text-2xl font-extrabold text-slate-900">Welcome Back!</h2>
+          <p class="text-xs text-slate-500 mt-1">Sign in to access your account</p>
+        </div>
+
+        <!-- Role Selectors Tabs: Admin, Tender Operator, Viewer -->
+        <div class="grid grid-cols-3 p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-bold gap-1">
+          <button type="button" id="tab-role-admin" onclick="selectLoginRole('ADMIN')" class="py-2 rounded-lg flex items-center justify-center gap-1.5 transition-all bg-slate-900 text-white shadow-sm">
+            <i data-lucide="shield" class="w-3.5 h-3.5"></i> Admin
+          </button>
+          <button type="button" id="tab-role-operator" onclick="selectLoginRole('OPERATOR')" class="py-2 rounded-lg flex items-center justify-center gap-1.5 transition-all text-slate-600 hover:text-slate-900">
+            <i data-lucide="briefcase" class="w-3.5 h-3.5"></i> Operator
+          </button>
+          <button type="button" id="tab-role-viewer" onclick="selectLoginRole('VIEWER')" class="py-2 rounded-lg flex items-center justify-center gap-1.5 transition-all text-slate-600 hover:text-slate-900">
+            <i data-lucide="eye" class="w-3.5 h-3.5"></i> Viewer
+          </button>
+        </div>
+
+        <!-- Form -->
+        <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1.5">Email Address</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <i data-lucide="mail" class="w-4 h-4"></i>
+              </span>
+              <input type="email" id="login-email" required value="admin@tender-tracker.local" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-xs font-semibold text-slate-900 transition-all outline-none" placeholder="name@domain.com">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1.5">Password</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <i data-lucide="lock" class="w-4 h-4"></i>
+              </span>
+              <input type="password" id="login-password" required value="Password123!" class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-xs font-semibold text-slate-900 transition-all outline-none" placeholder="••••••••">
+              <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
+                <i data-lucide="eye" id="eye-icon" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between text-xs">
+            <label class="flex items-center gap-2 text-slate-600 font-medium cursor-pointer">
+              <input type="checkbox" checked class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+              <span>Remember Me</span>
+            </label>
+            <a href="#" onclick="showToast('Password reset instructions sent to admin@tender-tracker.local', 'info'); return false;" class="text-blue-600 font-bold hover:underline">Forgot Password?</a>
+          </div>
+
+          <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-bold rounded-xl text-xs transition-all shadow-md shadow-blue-500/25 flex items-center justify-center gap-2">
+            <span>Sign In</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </form>
+
+        <div class="relative flex items-center justify-center my-4">
+          <div class="border-t border-slate-200 w-full"></div>
+          <span class="bg-white px-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest absolute">OR</span>
+        </div>
+
+        <button onclick="handleLoginSubmit(event)" class="w-full py-2.5 border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold rounded-xl text-xs transition-all flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+          <span>Login with SSO</span>
+        </button>
+
+        <p class="text-center text-xs text-slate-500 pt-2">
+          Don't have an account? <a href="#" onclick="showToast('Contact administrator at admin@tender-tracker.local for account provisioning.', 'info'); return false;" class="text-blue-600 font-bold hover:underline">Contact Administrator</a>
+        </p>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    lucide.createIcons();
+    let currentSelectedRole = 'ADMIN';
+
+    function selectLoginRole(role) {
+      currentSelectedRole = role;
+      const adminBtn = document.getElementById('tab-role-admin');
+      const opBtn = document.getElementById('tab-role-operator');
+      const viewerBtn = document.getElementById('tab-role-viewer');
+      const emailInput = document.getElementById('login-email');
+
+      const activeClass = "py-2 rounded-lg flex items-center justify-center gap-1.5 transition-all bg-slate-900 text-white shadow-sm";
+      const inactiveClass = "py-2 rounded-lg flex items-center justify-center gap-1.5 transition-all text-slate-600 hover:text-slate-900";
+
+      adminBtn.className = (role === 'ADMIN') ? activeClass : inactiveClass;
+      opBtn.className = (role === 'OPERATOR') ? activeClass : inactiveClass;
+      viewerBtn.className = (role === 'VIEWER') ? activeClass : inactiveClass;
+
+      if (role === 'ADMIN') {
+        emailInput.value = "admin@tender-tracker.local";
+      } else if (role === 'OPERATOR') {
+        emailInput.value = "operator@tender-tracker.local";
+      } else {
+        emailInput.value = "viewer@contractor.com";
+      }
+    }
+
+    function togglePasswordVisibility() {
+      const input = document.getElementById('login-password');
+      if (input.type === 'password') {
+        input.type = 'text';
+      } else {
+        input.type = 'password';
+      }
+    }
+
+    function handleLoginSubmit(e) {
+      if (e) e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      let user;
+      if (currentSelectedRole === 'ADMIN') {
+        user = { name: "Admin Officer", email: email, role: "ADMIN", initial: "A" };
+      } else if (currentSelectedRole === 'OPERATOR') {
+        user = { name: "Rajesh Kumar (Operator)", email: email, role: "TENDER_OPERATOR", initial: "O" };
+      } else {
+        user = { name: "Pooja Sharma (Viewer)", email: email, role: "VIEWER", initial: "V" };
+      }
+      setActiveUser(user);
+      window.location.href = "dashboard.html";
+    }
+  </script>
+</body>
+</html>

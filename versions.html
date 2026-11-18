@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    // Prevent ALL browser alert/confirm popups immediately
+    window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
+    window.confirm = function(msg) { return true; };
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tender Version History - Module 4</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+      /* Fixed sidebar - prevents sidebar from scrolling with page */
+    aside.fixed-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 50;
+    }
+    .main-with-sidebar {
+      margin-left: 256px;
+      height: 100vh;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased flex min-h-screen">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-[#0b192c] text-white flex flex-col justify-between shrink-0 hidden md:flex border-r border-slate-800">
+    <div class="p-5 space-y-6">
+      <!-- App Brand -->
+      <a href="dashboard.html" class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+          <i data-lucide="scale" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="text-sm font-extrabold tracking-tight text-white block leading-tight">Tender Corrigendum &<br>Amendment Tracker</span>
+          <span class="text-[10px] text-blue-300 font-semibold tracking-wider uppercase mt-0.5 block">Module 4: Versioning</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="space-y-1 text-xs font-semibold">
+        <a href="dashboard.html" data-page="dashboard" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="tenders.html" data-page="tenders" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="file-text" class="w-4 h-4"></i>
+          <span>Tenders</span>
+        </a>
+
+        <!-- Highlighted Module 4: Version Management -->
+        <a href="versions.html" data-page="versions" class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-blue-600 text-white font-bold transition-all shadow-md shadow-blue-600/30">
+          <div class="flex items-center gap-3">
+            <i data-lucide="git-branch" class="w-4 h-4 text-white"></i>
+            <span>Version History</span>
+          </div>
+          <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-white text-blue-800">M4</span>
+        </a>
+
+        <a href="review.html" data-page="review" class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="check-square" class="w-4 h-4"></i>
+            <span>Review Queue</span>
+          </div>
+          <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">18</span>
+        </a>
+
+        <a href="sources.html" data-page="sources" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="globe" class="w-4 h-4"></i>
+          <span>Sources</span>
+        </a>
+
+        <a href="collection-monitor.html" data-page="collection" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="activity" class="w-4 h-4"></i>
+          <span>Collection Monitor</span>
+        </a>
+
+        <a href="analytics.html" data-page="analytics" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+          <span>Analytics & Reports</span>
+        </a>
+
+        <div class="pt-4 pb-1">
+          <span class="px-3.5 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Administration</span>
+        </div>
+
+        <a href="users.html" data-page="users" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="users" class="w-4 h-4"></i>
+          <span>Users & Roles</span>
+        </a>
+
+        <a href="audit-logs.html" data-page="audit" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="shield-alert" class="w-4 h-4"></i>
+          <span>Audit Logs</span>
+        </a>
+
+        <a href="settings.html" data-page="settings" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Sidebar Footer -->
+    <div class="p-5 border-t border-slate-800/80 space-y-3">
+      <div class="flex items-center gap-2 text-xs text-slate-400">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="font-medium">Version Engine v4.0 Active</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CONTENT WRAPPER -->
+  <div class="flex-1 flex flex-col main-with-sidebar min-w-0">
+
+    <!-- TOP HEADER -->
+    <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between gap-4 sticky top-0 z-40">
+  <script>
+    // Prevent ALL browser alert/confirm popups immediately
+    window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
+    window.confirm = function(msg) { return true; };
+  </script>
+      <div class="flex items-center gap-4 flex-1 max-w-xl">
+        <div class="relative w-full">
+          <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <i data-lucide="search" class="w-4 h-4"></i>
+          </span>
+          <input type="text" placeholder="Search versions, corrigendum revisions..." class="w-full pl-10 pr-4 py-2 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-blue-500 text-xs font-semibold text-slate-800 outline-none transition-all">
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <!-- Notification Bell & Dropdown -->
+        <div class="relative">
+          <button id="notification-bell-btn" onclick="toggleDropdown('notification-dropdown-menu')" class="relative p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors" title="Notifications">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span id="notification-badge" class="absolute top-1.5 right-1.5 w-4 h-4 bg-rose-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center animate-pulse">3</span>
+          </button>
+
+          <div id="notification-dropdown-menu" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 overflow-hidden text-xs">
+            <div class="px-4 py-3 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-slate-800 text-sm">Notifications</span>
+                <span id="unread-count-pill" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">3 New</span>
+              </div>
+              <button onclick="markAllNotificationsAsRead()" class="text-[11px] font-bold text-blue-600 hover:underline">Mark all read</button>
+            </div>
+            <div class="divide-y divide-slate-100 max-h-80 overflow-y-auto" id="notification-items-container"></div>
+            <div class="p-2.5 bg-slate-50 border-t border-slate-100 text-center">
+              <a href="audit-logs.html" class="text-xs font-bold text-slate-600 hover:text-blue-600 flex items-center justify-center gap-1.5 transition-colors">
+                <i data-lucide="history" class="w-3.5 h-3.5"></i>
+                <span>View Full System Audit Trail</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Menu & Role Switcher Dropdown -->
+        <div class="relative">
+          <button id="user-menu-btn" onclick="toggleDropdown('user-dropdown-menu')" class="flex items-center gap-2.5 p-1.5 pr-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all">
+            <div class="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center text-xs shadow-xs" id="nav-user-avatar">A</div>
+            <div class="text-left hidden sm:block">
+              <span class="text-xs font-bold text-slate-800 block leading-tight" id="nav-user-name">Admin Officer</span>
+              <span class="text-[10px] font-semibold text-blue-600 block uppercase" id="nav-user-role">ADMIN</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+          </button>
+
+          <div id="user-dropdown-menu" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 z-50 text-xs space-y-1">
+            <div class="px-3 py-2 border-b border-slate-100">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Role Simulation</span>
+              <p class="font-bold text-slate-800">Switch Permission Level</p>
+            </div>
+            <button onclick="switchRole('ADMIN')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center justify-between">
+              <span>👑 Admin (Full)</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-800">Admin</span>
+            </button>
+            <button onclick="switchRole('OPERATOR')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center justify-between">
+              <span>👷 Tender Operator</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Operator</span>
+            </button>
+            <button onclick="switchRole('VIEWER')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center justify-between">
+              <span>👁️ Viewer (Read Only)</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">Viewer</span>
+            </button>
+            <div class="border-t border-slate-100 pt-1">
+              <a href="login.html" class="w-full text-left px-3 py-2 text-rose-600 hover:bg-rose-50 rounded-lg font-bold flex items-center gap-2">
+                <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Sign Out
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN BODY -->
+    <main class="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto">
+
+      <!-- BREADCRUMB & HEADER -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-1">
+            <a href="tenders.html" class="hover:text-blue-600">Tenders</a>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+            <span class="text-blue-600 font-bold" id="header-tender-id">GJ/2026/105</span>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+            <span>Module 4: Version History</span>
+          </div>
+          <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight" id="header-tender-title">Road Construction Works - State Highway Package 4</h1>
+          <p class="text-xs text-slate-500 mt-0.5">Chronological revision history, corrigendum versions, and field delta tracking</p>
+        </div>
+
+        <!-- Tender Selector & Actions -->
+        <div class="flex items-center gap-3">
+          <select id="tender-select" onchange="switchActiveTender(this.value)" class="px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 shadow-xs outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+            <option value="GJ-2026-105" selected>GJ/2026/105 - Road Works</option>
+            <option value="GJ-2026-104">GJ/2026/104 - Medical Equipment</option>
+          </select>
+
+          <button onclick="openNewCorrigendumModal()" class="btn-requires-operator px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-500/25 flex items-center gap-2">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            <span>Register Corrigendum</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- MODULE 4 SUB-NAVIGATION TABS -->
+      <div class="flex items-center gap-2 border-b border-slate-200 text-xs font-bold text-slate-500 overflow-x-auto">
+        <a href="versions.html" class="px-4 py-2.5 border-b-2 border-blue-600 text-blue-600 flex items-center gap-1.5 whitespace-nowrap">
+          <i data-lucide="history" class="w-4 h-4"></i>
+          <span>1. Tender Version History</span>
+        </a>
+        <a href="version-details.html" class="px-4 py-2.5 hover:text-slate-900 flex items-center gap-1.5 transition-colors whitespace-nowrap">
+          <i data-lucide="layers" class="w-4 h-4"></i>
+          <span>2. Version Details</span>
+        </a>
+        <a href="compare-versions.html" class="px-4 py-2.5 hover:text-slate-900 flex items-center gap-1.5 transition-colors whitespace-nowrap">
+          <i data-lucide="git-compare" class="w-4 h-4"></i>
+          <span>3. Compare Two Versions</span>
+        </a>
+        <a href="latest-tender.html" class="px-4 py-2.5 hover:text-slate-900 flex items-center gap-1.5 transition-colors whitespace-nowrap">
+          <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+          <span>4. Latest Tender Information</span>
+        </a>
+      </div>
+
+      <!-- 4 REVISION METRIC CARDS -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="flag" class="w-4 h-4 text-emerald-600"></i>
+            Active Snapshot
+          </span>
+          <div class="flex items-baseline justify-between">
+            <span class="text-3xl font-extrabold text-emerald-600" id="card-active-version">v1.2</span>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">Latest Master</span>
+          </div>
+          <p class="text-[11px] text-slate-500">Effective from 07 Nov 2026</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="git-commit" class="w-4 h-4 text-blue-600"></i>
+            Total Versions
+          </span>
+          <div class="flex items-baseline justify-between">
+            <span class="text-3xl font-extrabold text-slate-900" id="card-total-versions">3</span>
+            <span class="text-[10px] font-bold text-blue-600">1 Base + 2 Corrigenda</span>
+          </div>
+          <p class="text-[11px] text-slate-500">Immutable audit chain</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="diff" class="w-4 h-4 text-purple-600"></i>
+            Fields Amended
+          </span>
+          <div class="flex items-baseline justify-between">
+            <span class="text-3xl font-extrabold text-purple-600" id="card-total-changes">4</span>
+            <span class="text-[10px] font-bold text-purple-700">Deadline & Specs</span>
+          </div>
+          <p class="text-[11px] text-slate-500">Across 2 revisions</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="shield-check" class="w-4 h-4 text-amber-600"></i>
+            Original Value Preserved
+          </span>
+          <div class="flex items-baseline justify-between">
+            <span class="text-3xl font-extrabold text-slate-900">₹ 5.00 Cr</span>
+            <span class="text-[10px] font-bold text-slate-500">v1.0 Baseline</span>
+          </div>
+          <p class="text-[11px] text-slate-500">Original terms locked</p>
+        </div>
+      </div>
+
+      <!-- MAIN VERSION TIMELINE & HISTORY CONTAINER -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-6 space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <h2 class="text-base font-extrabold text-slate-900">Chronological Version Hierarchy</h2>
+            <p class="text-xs text-slate-500">Every corrigendum creates a forward-incremented version preserving complete previous states</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <a href="latest-tender.html" class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors">
+              <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+              <span>View Latest Consolidated Tender</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- DYNAMIC VERSION CARDS LIST -->
+        <div class="space-y-4" id="version-timeline-list">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- REGISTER CORRIGENDUM MODAL (Module 4) -->
+  <div id="corrigendum-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-xl w-full p-6 space-y-5 animate-in fade-in zoom-in duration-200">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div>
+          <h3 class="text-base font-extrabold text-slate-900">Register New Corrigendum</h3>
+          <p class="text-xs text-slate-500">Creates an immutable new version and identifies changed fields automatically</p>
+        </div>
+        <button onclick="closeNewCorrigendumModal()" class="p-1 text-slate-400 hover:text-slate-600 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="corrigendum-form" onsubmit="handleCorrigendumSubmit(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Target Tender</label>
+          <input type="text" id="modal-tender-id" disabled class="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-xl font-bold text-slate-600">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Corrigendum No. *</label>
+            <input type="text" id="modal-corr-no" required placeholder="e.g. Corrigendum 03/2026" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold text-slate-800 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Publication Date *</label>
+            <input type="date" id="modal-pub-date" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold text-slate-800 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Corrigendum Subject / Description *</label>
+          <textarea id="modal-desc" required rows="2" placeholder="Brief description of reasons for amendment..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold text-slate-800 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+
+        <div class="p-4 bg-blue-50/70 border border-blue-200 rounded-2xl space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-extrabold text-blue-900 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="edit-3" class="w-3.5 h-3.5 text-blue-600"></i>
+              Revise Tender Fields
+            </span>
+            <span class="text-[10px] text-blue-600 font-semibold">Leave blank if unchanged</span>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">Revised Submission Deadline</label>
+            <input type="text" id="modal-revised-deadline" placeholder="e.g. 15 Dec 2026, 17:00 IST" class="w-full px-3 py-2 bg-white border border-blue-200 rounded-xl font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none">
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Revised Eligibility Turnover</label>
+              <input type="text" id="modal-revised-turnover" placeholder="e.g. ₹ 8,00,00,000" class="w-full px-3 py-2 bg-white border border-blue-200 rounded-xl font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Revised EMD Amount</label>
+              <input type="text" id="modal-revised-emd" placeholder="e.g. ₹ 8,00,000" class="w-full px-3 py-2 bg-white border border-blue-200 rounded-xl font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">Amendment Justification / Remarks</label>
+            <input type="text" id="modal-reason" placeholder="e.g. Competent authority approval dated..." class="w-full px-3 py-2 bg-white border border-blue-200 rounded-xl font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-2">
+          <button type="button" onclick="closeNewCorrigendumModal()" class="px-4 py-2 border border-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-50 transition-colors">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-md shadow-blue-500/25 flex items-center gap-2">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>Commit & Create Version</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    let activeTenderKey = "GJ-2026-105";
+
+    function switchActiveTender(key) {
+      activeTenderKey = key;
+      renderVersionHistory();
+    }
+
+    function renderVersionHistory() {
+      const data = getTenderVersionData(activeTenderKey);
+      document.getElementById('header-tender-id').innerText = data.tenderId;
+      document.getElementById('header-tender-title').innerText = data.title;
+      document.getElementById('card-active-version').innerText = data.currentVersion;
+      document.getElementById('card-total-versions').innerText = data.versions.length;
+
+      // Count total changes
+      let totalChanges = 0;
+      data.versions.forEach(v => {
+        totalChanges += (v.changedFields ? v.changedFields.length : 0);
+      });
+      document.getElementById('card-total-changes').innerText = totalChanges;
+
+      const container = document.getElementById('version-timeline-list');
+      // Render versions in reverse order (latest first)
+      const reversed = [...data.versions].reverse();
+
+      container.innerHTML = reversed.map((v, idx) => {
+        const isLatest = v.status.includes('Active') || v.version === data.currentVersion;
+        const statusBadge = isLatest 
+          ? '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Active (Latest Master)</span>'
+          : '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">Superseded</span>';
+
+        const changesList = v.changedFields && v.changedFields.length > 0
+          ? v.changedFields.map(c => `
+              <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 text-[11px] space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-slate-800">${c.field}</span>
+                  <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-100 text-amber-800">MODIFIED</span>
+                </div>
+                <div class="flex items-center gap-2 font-mono text-[10px]">
+                  <span class="text-rose-600 line-through">${c.oldVal}</span>
+                  <span class="text-slate-400">&rarr;</span>
+                  <span class="text-emerald-700 font-bold bg-emerald-50 px-1 rounded">${c.newVal}</span>
+                </div>
+                <p class="text-[10px] text-slate-400 italic">${c.reason}</p>
+              </div>
+            `).join('')
+          : '<p class="text-[11px] text-slate-400 italic py-1">Initial base notice release. No prior amendments.</p>';
+
+        return `
+          <div class="p-5 rounded-2xl border ${isLatest ? 'border-blue-300 bg-blue-50/20 shadow-xs' : 'border-slate-200 bg-white'} space-y-4 transition-all hover:border-blue-400">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+              <div class="flex items-center gap-3">
+                <span class="w-9 h-9 rounded-xl ${isLatest ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700'} font-extrabold text-xs flex items-center justify-center font-mono shadow-xs">
+                  ${v.version}
+                </span>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <h3 class="font-bold text-slate-900 text-sm">${v.type}</h3>
+                    <span class="text-xs font-mono font-bold text-slate-400">(${v.corrigendumNo})</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500">Published on ${v.publishDate} by <strong class="text-slate-700">${v.publishedBy}</strong></p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                ${statusBadge}
+                <a href="version-details.html?tender=${activeTenderKey}&v=${v.version}" class="px-3 py-1.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5">
+                  <i data-lucide="eye" class="w-3.5 h-3.5 text-blue-600"></i>
+                  <span>Inspect Details</span>
+                </a>
+                <a href="compare-versions.html?tender=${activeTenderKey}&from=v1.0&to=${v.version}" class="px-3 py-1.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5">
+                  <i data-lucide="git-compare" class="w-3.5 h-3.5 text-purple-600"></i>
+                  <span>Compare</span>
+                </a>
+              </div>
+            </div>
+
+            <p class="text-xs text-slate-600 leading-relaxed">${v.description}</p>
+
+            <div class="space-y-2">
+              <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Identified Value Changes (${v.changedFields ? v.changedFields.length : 0})</span>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                ${changesList}
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-xs text-slate-400 border-t border-slate-100 pt-3">
+              <span class="flex items-center gap-1.5 font-mono text-[11px]">
+                <i data-lucide="file" class="w-3.5 h-3.5 text-rose-500"></i>
+                ${v.documentRef}
+              </span>
+              <button onclick="showToast('Downloading verified corrigendum record: ${v.documentRef}', 'info')" class="text-blue-600 font-bold hover:underline flex items-center gap-1 text-[11px]">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i> Download Record
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function openNewCorrigendumModal() {
+      const data = getTenderVersionData(activeTenderKey);
+      document.getElementById('modal-tender-id').value = `${data.tenderId} - ${data.title}`;
+      document.getElementById('modal-corr-no').value = `Corrigendum No. 0${data.versions.length}/2026`;
+      document.getElementById('modal-pub-date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('corrigendum-modal').classList.remove('hidden');
+    }
+
+    function closeNewCorrigendumModal() {
+      document.getElementById('corrigendum-modal').classList.add('hidden');
+    }
+
+    function handleCorrigendumSubmit(e) {
+      e.preventDefault();
+      const corrNo = document.getElementById('modal-corr-no').value;
+      const pubDate = document.getElementById('modal-pub-date').value;
+      const desc = document.getElementById('modal-desc').value;
+      const revisedDeadline = document.getElementById('modal-revised-deadline').value;
+      const revisedTurnover = document.getElementById('modal-revised-turnover').value;
+      const revisedEmd = document.getElementById('modal-revised-emd').value;
+      const reason = document.getElementById('modal-reason').value;
+
+      const newVer = createNewTenderVersion(activeTenderKey, {
+        corrigendumNo: corrNo,
+        publishDate: pubDate,
+        description: desc,
+        submissionDeadline: revisedDeadline,
+        eligibilityTurnover: revisedTurnover,
+        emdAmount: revisedEmd,
+        reason: reason
+      });
+
+      closeNewCorrigendumModal();
+      showToast(`Success: Created ${newVer.version} (${newVer.type}) with ${newVer.changedFields.length} changed field(s)!`, 'success');
+      renderVersionHistory();
+    }
+
+    // Initialize
+    lucide.createIcons();
+    initSharedNav('versions');
+    renderVersionHistory();
+  </script>
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    // Prevent ALL browser alert/confirm popups immediately
+    window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
+    window.confirm = function(msg) { return true; };
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audit Logs - Tender Corrigendum Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .bg-sidebar { background-color: #0b192c; }
+      /* Fixed sidebar - prevents sidebar from scrolling with page */
+    aside.fixed-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 50;
+    }
+    .main-with-sidebar {
+      margin-left: 256px;
+      height: 100vh;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-sidebar fixed-sidebar text-white flex flex-col justify-between shrink-0 min-h-screen border-r border-slate-800">
+    <div>
+      <div class="p-5 flex items-center gap-3 border-b border-slate-800/80">
+        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-600/30">
+          <i data-lucide="scale" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="text-sm font-bold tracking-tight text-white leading-tight">Tender Corrigendum &<br>Amendment Tracker</h1>
+        </div>
+      </div>
+
+      <nav class="p-3 space-y-1 text-xs font-semibold">
+        <a href="dashboard.html" data-page="dashboard" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="tenders.html" data-page="tenders" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="file-text" class="w-4 h-4"></i>
+          <span>Tenders</span>
+        </a>
+        <a href="versions.html" data-page="versions" class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="git-branch" class="w-4 h-4"></i>
+            <span>Version History</span>
+          </div>
+          <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30">M4</span>
+        </a>
+        <a href="review.html" data-page="amendments" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+          <span>Amendments</span>
+        </a>
+        <a href="review.html" data-page="review" class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="check-square" class="w-4 h-4"></i>
+            <span>Review Queue</span>
+          </div>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">18</span>
+        </a>
+        <a href="sources.html" data-page="sources" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="globe" class="w-4 h-4"></i>
+          <span>Sources</span>
+        </a>
+        <a href="collection-monitor.html" data-page="collection" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="activity" class="w-4 h-4"></i>
+          <span>Collection Monitor</span>
+        </a>
+        <a href="analytics.html" data-page="analytics" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+          <span>Analytics & Reports</span>
+        </a>
+        <div class="pt-5 pb-1 px-3.5 text-[10px] uppercase font-bold tracking-wider text-slate-500">Administration</div>
+        <a href="users.html" data-page="users" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="users" class="w-4 h-4"></i>
+          <span>Users & Roles</span>
+        </a>
+        <a href="audit-logs.html" data-page="audit" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all">
+          <i data-lucide="shield-alert" class="w-4 h-4"></i>
+          <span>Audit Logs</span>
+        </a>
+        <a href="settings.html" data-page="settings" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="p-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="font-medium">System Online</span>
+      </div>
+      <span class="font-mono text-slate-500">v1.0.0</span>
+    </div>
+  </aside>
+
+  <!-- MAIN AREA -->
+  <div class="flex-1 flex flex-col main-with-sidebar min-h-screen overflow-x-hidden">
+
+    <!-- TOP HEADER -->
+    <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+  <script>
+    // Prevent ALL browser alert/confirm popups immediately
+    window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
+    window.confirm = function(msg) { return true; };
+  </script>
+      <div class="flex items-center gap-4 flex-1 max-w-xl">
+        <div class="relative w-full">
+          <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <i data-lucide="search" class="w-4 h-4"></i>
+          </span>
+          <input type="text" placeholder="Search audit trail, actor, tender ID..." class="w-full pl-10 pr-4 py-2 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-blue-500 text-xs font-semibold text-slate-800 outline-none transition-all">
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <!-- Notification Bell & Dropdown -->
+        <div class="relative">
+          <button id="notification-bell-btn" onclick="toggleDropdown('notification-dropdown-menu')" class="relative p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors" title="Notifications">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span id="notification-badge" class="absolute top-1.5 right-1.5 w-4 h-4 bg-rose-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center animate-pulse">3</span>
+          </button>
+
+          <!-- Notification Dropdown Menu -->
+          <div id="notification-dropdown-menu" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 overflow-hidden text-xs">
+            <div class="px-4 py-3 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-slate-800 text-sm">Notifications</span>
+                <span id="unread-count-pill" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">3 New</span>
+              </div>
+              <button onclick="markAllNotificationsAsRead()" class="text-[11px] font-bold text-blue-600 hover:underline">Mark all read</button>
+            </div>
+            <div class="divide-y divide-slate-100 max-h-80 overflow-y-auto" id="notification-items-container"></div>
+            <div class="p-2.5 bg-slate-50 border-t border-slate-100 text-center">
+              <a href="audit-logs.html" class="text-xs font-bold text-slate-600 hover:text-blue-600 flex items-center justify-center gap-1.5 transition-colors">
+                <i data-lucide="history" class="w-3.5 h-3.5"></i>
+                <span>View Full System Audit Trail</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative">
+          <button id="user-menu-btn" onclick="toggleDropdown('user-dropdown-menu')" class="flex items-center gap-2.5 p-1.5 pr-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all">
+            <div class="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center text-xs shadow-xs" id="nav-user-avatar">A</div>
+            <div class="text-left hidden sm:block">
+              <span class="text-xs font-bold text-slate-800 block leading-tight" id="nav-user-name">Admin Officer</span>
+              <span class="text-[10px] font-semibold text-blue-600 block uppercase" id="nav-user-role">ADMIN</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+          </button>
+
+          <div id="user-dropdown-menu" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 z-50 text-xs space-y-1">
+            <div class="px-3 py-2 border-b border-slate-100">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Role Simulation</span>
+              <p class="font-bold text-slate-800">Switch Permission Level</p>
+            </div>
+            <button onclick="switchRole('ADMIN')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center justify-between">
+              <span>👑 Admin (Full)</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-800">Admin</span>
+            </button>
+            <button onclick="switchRole('OPERATOR')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center justify-between">
+              <span>👷 Tender Operator</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Operator</span>
+            </button>
+            <button onclick="switchRole('VIEWER')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center justify-between">
+              <span>👁️ Viewer (Read Only)</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">Viewer</span>
+            </button>
+            <div class="border-t border-slate-100 pt-1">
+              <a href="login.html" class="w-full text-left px-3 py-2 text-rose-600 hover:bg-rose-50 rounded-lg font-bold flex items-center gap-2">
+                <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Sign Out
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN BODY -->
+    <main class="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto">
+      
+      <!-- PAGE HEADER -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Audit Logs & Compliance Trail</h1>
+          <p class="text-xs text-slate-500 mt-0.5">Immutable ledger of all user logins, role changes, tender registrations, and corrigendum reviews</p>
+        </div>
+
+        <button onclick="showToast('Exporting verified cryptographic audit logs (CSV)...', 'info');" class="px-4 py-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-2">
+          <i data-lucide="download" class="w-4 h-4 text-blue-600"></i>
+          <span>Export Audit Trail</span>
+        </button>
+      </div>
+
+      <!-- AUDIT LOGS TABLE -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-700">Chronological Event Trail</h2>
+          <span class="text-xs text-slate-500 font-bold">256 Events Logged</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b border-slate-200 text-slate-500 text-[11px] font-bold uppercase">
+                <th class="py-3 px-4">Timestamp</th>
+                <th class="py-3 px-4">Actor</th>
+                <th class="py-3 px-4">Action Event</th>
+                <th class="py-3 px-4">Target Entity</th>
+                <th class="py-3 px-4">IP Address</th>
+                <th class="py-3 px-4 text-right">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 font-medium text-slate-700 font-mono">
+              <tr class="hover:bg-slate-50">
+                <td class="py-3.5 px-4 text-slate-500">16-Nov-2026 20:25:12</td>
+                <td class="py-3.5 px-4 font-sans font-bold text-slate-900">Admin Officer (ADMIN)</td>
+                <td class="py-3.5 px-4 font-sans text-emerald-700 font-semibold">Corrigendum Approved</td>
+                <td class="py-3.5 px-4 text-blue-600 font-bold">GJ/2026/105 - Amend 02</td>
+                <td class="py-3.5 px-4 text-slate-400">192.168.1.104</td>
+                <td class="py-3.5 px-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">SUCCESS</span></td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-3.5 px-4 text-slate-500">16-Nov-2026 20:18:40</td>
+                <td class="py-3.5 px-4 font-sans font-bold text-slate-900">Rajesh Kumar (OPERATOR)</td>
+                <td class="py-3.5 px-4 font-sans text-blue-700 font-semibold">Tender Registered (Module 2)</td>
+                <td class="py-3.5 px-4 text-blue-600 font-bold">GJ/2026/106 - Bridge Package</td>
+                <td class="py-3.5 px-4 text-slate-400">10.0.4.15</td>
+                <td class="py-3.5 px-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">SUCCESS</span></td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-3.5 px-4 text-slate-500">16-Nov-2026 19:50:22</td>
+                <td class="py-3.5 px-4 font-sans font-bold text-slate-900">Pooja Sharma (VIEWER)</td>
+                <td class="py-3.5 px-4 font-sans text-amber-700 font-semibold">Access Blocked: Tender Create</td>
+                <td class="py-3.5 px-4 text-slate-500">Module 2 / Permission Denied</td>
+                <td class="py-3.5 px-4 text-slate-400">172.16.8.99</td>
+                <td class="py-3.5 px-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">FORBIDDEN</span></td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-3.5 px-4 text-slate-500">16-Nov-2026 19:42:01</td>
+                <td class="py-3.5 px-4 font-sans font-bold text-slate-900">Crawler Worker #2 (SYSTEM)</td>
+                <td class="py-3.5 px-4 font-sans text-purple-700 font-semibold">Scraper Auto-Ingest</td>
+                <td class="py-3.5 px-4 text-blue-600 font-bold">tender.nprocure.com / 12 items</td>
+                <td class="py-3.5 px-4 text-slate-400">127.0.0.1</td>
+                <td class="py-3.5 px-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">SUCCESS</span></td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-3.5 px-4 text-slate-500">16-Nov-2026 18:30:15</td>
+                <td class="py-3.5 px-4 font-sans font-bold text-slate-900">Admin Officer (ADMIN)</td>
+                <td class="py-3.5 px-4 font-sans text-indigo-700 font-semibold">User Role Matrix Updated</td>
+                <td class="py-3.5 px-4 text-slate-600">RBAC Policy V2 Committed</td>
+                <td class="py-3.5 px-4 text-slate-400">192.168.1.104</td>
+                <td class="py-3.5 px-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">SUCCESS</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    lucide.createIcons();
+    initSharedNav('audit');
+  </script>
+</body>
+</html>

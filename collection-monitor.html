@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    // Prevent ALL browser alert/confirm popups immediately
+    window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
+    window.confirm = function(msg) { return true; };
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Collection Monitor - Tender Corrigendum Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .bg-sidebar { background-color: #0b192c; }
+      /* Fixed sidebar - prevents sidebar from scrolling with page */
+    aside.fixed-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 50;
+    }
+    .main-with-sidebar {
+      margin-left: 256px;
+      height: 100vh;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-sidebar fixed-sidebar text-white flex flex-col justify-between shrink-0 min-h-screen border-r border-slate-800">
+    <div>
+      <div class="p-5 flex items-center gap-3 border-b border-slate-800/80">
+        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-600/30">
+          <i data-lucide="scale" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="text-sm font-bold tracking-tight text-white leading-tight">Tender Corrigendum &<br>Amendment Tracker</h1>
+        </div>
+      </div>
+
+      <nav class="p-3 space-y-1 text-xs font-semibold">
+        <a href="dashboard.html" data-page="dashboard" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="tenders.html" data-page="tenders" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="file-text" class="w-4 h-4"></i>
+          <span>Tenders</span>
+        </a>
+        <a href="versions.html" data-page="versions" class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="git-branch" class="w-4 h-4"></i>
+            <span>Version History</span>
+          </div>
+          <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30">M4</span>
+        </a>
+        <a href="review.html" data-page="amendments" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+          <span>Amendments</span>
+        </a>
+        <a href="review.html" data-page="review" class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="check-square" class="w-4 h-4"></i>
+            <span>Review Queue</span>
+          </div>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">18</span>
+        </a>
+        <a href="sources.html" data-page="sources" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="globe" class="w-4 h-4"></i>
+          <span>Sources</span>
+        </a>
+        <a href="collection-monitor.html" data-page="collection" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all">
+          <i data-lucide="activity" class="w-4 h-4"></i>
+          <span>Collection Monitor</span>
+        </a>
+        <a href="analytics.html" data-page="analytics" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+          <span>Analytics & Reports</span>
+        </a>
+        <div class="pt-5 pb-1 px-3.5 text-[10px] uppercase font-bold tracking-wider text-slate-500">Administration</div>
+        <a href="users.html" data-page="users" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="users" class="w-4 h-4"></i>
+          <span>Users & Roles</span>
+        </a>
+        <a href="audit-logs.html" data-page="audit" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="shield-alert" class="w-4 h-4"></i>
+          <span>Audit Logs</span>
+        </a>
+        <a href="settings.html" data-page="settings" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="p-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="font-medium">System Online</span>
+      </div>
+      <span class="font-mono text-slate-500">v1.0.0</span>
+    </div>
+  </aside>
+
+  <!-- MAIN AREA -->
+  <div class="flex-1 flex flex-col main-with-sidebar min-h-screen overflow-x-hidden">
+
+    <!-- TOP HEADER -->
+    <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+  <script>
+    // Prevent ALL browser alert/confirm popups immediately
+    window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
+    window.confirm = function(msg) { return true; };
+  </script>
+      <div class="flex items-center gap-4 flex-1 max-w-xl">
+        <div class="relative w-full">
+          <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <i data-lucide="search" class="w-4 h-4"></i>
+          </span>
+          <input type="text" placeholder="Search crawlers, error logs..." class="w-full pl-10 pr-4 py-2 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-blue-500 text-xs font-semibold text-slate-800 outline-none transition-all">
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <!-- Notification Bell & Dropdown -->
+        <div class="relative">
+          <button id="notification-bell-btn" onclick="toggleDropdown('notification-dropdown-menu')" class="relative p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors" title="Notifications">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span id="notification-badge" class="absolute top-1.5 right-1.5 w-4 h-4 bg-rose-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center animate-pulse">3</span>
+          </button>
+
+          <!-- Notification Dropdown Menu -->
+          <div id="notification-dropdown-menu" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 overflow-hidden text-xs">
+            <div class="px-4 py-3 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-slate-800 text-sm">Notifications</span>
+                <span id="unread-count-pill" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">3 New</span>
+              </div>
+              <button onclick="markAllNotificationsAsRead()" class="text-[11px] font-bold text-blue-600 hover:underline">Mark all read</button>
+            </div>
+            <div class="divide-y divide-slate-100 max-h-80 overflow-y-auto" id="notification-items-container"></div>
+            <div class="p-2.5 bg-slate-50 border-t border-slate-100 text-center">
+              <a href="audit-logs.html" class="text-xs font-bold text-slate-600 hover:text-blue-600 flex items-center justify-center gap-1.5 transition-colors">
+                <i data-lucide="history" class="w-3.5 h-3.5"></i>
+                <span>View Full System Audit Trail</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative">
+          <button id="user-menu-btn" onclick="toggleDropdown('user-dropdown-menu')" class="flex items-center gap-2.5 p-1.5 pr-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all">
+            <div class="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center text-xs shadow-xs" id="nav-user-avatar">A</div>
+            <div class="text-left hidden sm:block">
+              <span class="text-xs font-bold text-slate-800 block leading-tight" id="nav-user-name">Admin Officer</span>
+              <span class="text-[10px] font-semibold text-blue-600 block uppercase" id="nav-user-role">ADMIN</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+          </button>
+
+          <div id="user-dropdown-menu" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 z-50 text-xs space-y-1">
+            <div class="px-3 py-2 border-b border-slate-100">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Role Simulation</span>
+              <p class="font-bold text-slate-800">Switch Permission Level</p>
+            </div>
+            <button onclick="switchRole('ADMIN')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center justify-between">
+              <span>👑 Admin (Full)</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-800">Admin</span>
+            </button>
+            <button onclick="switchRole('OPERATOR')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center justify-between">
+              <span>👷 Tender Operator</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Operator</span>
+            </button>
+            <button onclick="switchRole('VIEWER')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center justify-between">
+              <span>👁️ Viewer (Read Only)</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">Viewer</span>
+            </button>
+            <div class="border-t border-slate-100 pt-1">
+              <a href="login.html" class="w-full text-left px-3 py-2 text-rose-600 hover:bg-rose-50 rounded-lg font-bold flex items-center gap-2">
+                <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Sign Out
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN BODY -->
+    <main class="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto">
+      
+      <!-- PAGE HEADER -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Collection Monitor & Scraping Health</h1>
+          <p class="text-xs text-slate-500 mt-0.5">Real-time scraper job queue, worker pool latency, and PDF extraction pipeline</p>
+        </div>
+
+        <div class="flex items-center gap-2.5">
+          <button onclick="restartWorkerPool(this)" class="btn-requires-admin px-3.5 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm hover:bg-slate-800 transition-all">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-blue-400"></i>
+            <span>Restart Worker Pool</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- WORKER STATS (4 metrics) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1.5">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Crawler Workers</span>
+          <p class="text-2xl font-black text-slate-900" id="stat-workers">8 / 8 Active</p>
+          <span class="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
+            <i data-lucide="check" class="w-3.5 h-3.5"></i> All threads nominal
+          </span>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1.5">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Scraping Throughput</span>
+          <p class="text-2xl font-black text-slate-900">24 docs / min</p>
+          <span class="text-[11px] text-blue-600 font-semibold">Peak handling capacity</span>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1.5">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Avg Extraction Latency</span>
+          <p class="text-2xl font-black text-slate-900">1.2 seconds</p>
+          <span class="text-[11px] text-emerald-600 font-semibold">PDF OCR diffing</span>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1.5">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Failed Jobs Queue</span>
+          <p class="text-2xl font-black text-rose-600" id="stat-failed-count">3 Errors</p>
+          <span class="text-[11px] text-rose-600 font-semibold" id="stat-failed-sub">Captchas / SSL timeouts</span>
+        </div>
+      </div>
+
+      <!-- LIVE SCRAPER LOG STREAM TERMINAL -->
+      <div class="bg-slate-950 rounded-2xl border border-slate-800 p-5 shadow-lg space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></span>
+            <span class="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">Live Ingestion & Diff Engine Terminal</span>
+          </div>
+          <span class="text-[10px] text-slate-400 font-mono">Stream: worker-pool-01 &bull; Auto-scrolling</span>
+        </div>
+
+        <div id="terminal-logs" class="font-mono text-xs text-slate-300 space-y-2 h-56 overflow-y-auto leading-relaxed bg-black/40 p-3 rounded-xl border border-slate-900">
+          <p><span class="text-slate-500">[20:25:01]</span> <span class="text-blue-400">[POLL]</span> Initiating sync cycle for adapter <span class="text-yellow-300">tender.nprocure.com</span>...</p>
+          <p><span class="text-slate-500">[20:25:04]</span> <span class="text-emerald-400">[INGEST]</span> Found 12 published notices. Comparing against stored SHA-256 hashes.</p>
+          <p><span class="text-slate-500">[20:25:08]</span> <span class="text-purple-400">[OCR-DIFF]</span> Detected Corrigendum Notice for <span class="text-cyan-300">GJ/2026/105</span>: PDF downloaded (420 KB).</p>
+          <p><span class="text-slate-500">[20:25:11]</span> <span class="text-emerald-400">[PARSED]</span> Successfully identified deadline extension: 20 Nov 2026 -> 30 Nov 2026 (Confidence: 96%).</p>
+          <p><span class="text-slate-500">[20:25:15]</span> <span class="text-blue-400">[POLL]</span> Adapter <span class="text-yellow-300">cpwd.gov.in</span> polled: 0 new amendments in last 10 minutes.</p>
+          <p><span class="text-slate-500">[20:25:22]</span> <span class="text-rose-400">[RETRY-QUEUE]</span> Worker #4 SSL handshake timeout on legacy portal endpoint. Scheduled for retry #1 in 60s.</p>
+          <p><span class="text-slate-500">[20:25:30]</span> <span class="text-emerald-400">[HEALTH]</span> Ingestion cycle complete. System health rating: 96% Healthy.</p>
+        </div>
+      </div>
+
+      <!-- FAILED JOBS & RETRY ACTIONS TABLE -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-700" id="failed-queue-header">Collection Exceptions Queue (3 Items)</h2>
+          <button onclick="retryAllJobs()" id="btn-retry-all" class="px-3 py-1 bg-rose-50 text-rose-700 border border-rose-200 rounded-lg text-xs font-bold hover:bg-rose-100 transition-colors">Retry All Failed</button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b border-slate-200 text-slate-500 text-[11px] font-bold uppercase">
+                <th class="py-3 px-4">Tender Ref</th>
+                <th class="py-3 px-4">Source Portal</th>
+                <th class="py-3 px-4">Error Reason</th>
+                <th class="py-3 px-4">Retry Attempt</th>
+                <th class="py-3 px-4 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody id="failed-jobs-tbody" class="divide-y divide-slate-100 font-medium text-slate-700">
+              <tr id="row-job-1" class="hover:bg-slate-50 transition-all">
+                <td class="py-3 px-4 font-mono font-bold text-slate-900">GJ/2026/044</td>
+                <td class="py-3 px-4">tender.nprocure.com</td>
+                <td class="py-3 px-4 text-rose-600 font-semibold">PDF Notice download timeout (HTTP 504)</td>
+                <td class="py-3 px-4">Attempt 2 of 5</td>
+                <td class="py-3 px-4 text-right">
+                  <button onclick="retrySingleJob('row-job-1', 'GJ/2026/044', 'tender.nprocure.com', this)" class="px-3 py-1.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-800 font-bold rounded-lg text-xs transition-colors">Retry Now</button>
+                </td>
+              </tr>
+              <tr id="row-job-2" class="hover:bg-slate-50 transition-all">
+                <td class="py-3 px-4 font-mono font-bold text-slate-900">IR/2026/012</td>
+                <td class="py-3 px-4">ireps.gov.in</td>
+                <td class="py-3 px-4 text-rose-600 font-semibold">CAPTCHA challenge bypassed with fallback worker</td>
+                <td class="py-3 px-4">Attempt 1 of 5</td>
+                <td class="py-3 px-4 text-right">
+                  <button onclick="retrySingleJob('row-job-2', 'IR/2026/012', 'ireps.gov.in', this)" class="px-3 py-1.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-800 font-bold rounded-lg text-xs transition-colors">Retry Now</button>
+                </td>
+              </tr>
+              <tr id="row-job-3" class="hover:bg-slate-50 transition-all">
+                <td class="py-3 px-4 font-mono font-bold text-slate-900">CPWD/2026/099</td>
+                <td class="py-3 px-4">cpwd.gov.in</td>
+                <td class="py-3 px-4 text-rose-600 font-semibold">Corrupted PDF byte-stream in corrigendum attachment</td>
+                <td class="py-3 px-4">Attempt 3 of 5</td>
+                <td class="py-3 px-4 text-right">
+                  <button onclick="retrySingleJob('row-job-3', 'CPWD/2026/099', 'cpwd.gov.in', this)" class="px-3 py-1.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-800 font-bold rounded-lg text-xs transition-colors">Retry Now</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div id="failed-empty-state" class="hidden p-8 text-center space-y-2">
+            <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto font-bold">
+              <i data-lucide="check" class="w-6 h-6"></i>
+            </div>
+            <p class="font-bold text-slate-800 text-sm">All Ingestion Exceptions Resolved!</p>
+            <p class="text-xs text-slate-400">Queue is clean. All tender scrapers are actively synchronizing without errors.</p>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    let remainingErrors = 3;
+
+    function getTimeStamp() {
+      const now = new Date();
+      return now.toTimeString().split(' ')[0];
+    }
+
+    function appendTerminalLog(type, color, msg) {
+      const term = document.getElementById('terminal-logs');
+      if (!term) return;
+      const p = document.createElement('p');
+      p.innerHTML = `<span class="text-slate-500">[${getTimeStamp()}]</span> <span class="${color}">[${type}]</span> ${msg}`;
+      term.appendChild(p);
+      term.scrollTop = term.scrollHeight;
+    }
+
+    function updateCounters() {
+      remainingErrors = Math.max(0, remainingErrors - 1);
+      const statFailed = document.getElementById('stat-failed-count');
+      const headerFailed = document.getElementById('failed-queue-header');
+      const subFailed = document.getElementById('stat-failed-sub');
+
+      if (remainingErrors === 0) {
+        if (statFailed) {
+          statFailed.innerText = "0 Errors";
+          statFailed.className = "text-2xl font-black text-emerald-600";
+        }
+        if (subFailed) {
+          subFailed.innerText = "All crawlers 100% healthy";
+          subFailed.className = "text-[11px] text-emerald-600 font-semibold";
+        }
+        if (headerFailed) headerFailed.innerText = "Collection Exceptions Queue (0 Items)";
+        const tbody = document.getElementById('failed-jobs-tbody');
+        if (tbody) tbody.innerHTML = '';
+        const empty = document.getElementById('failed-empty-state');
+        if (empty) empty.classList.remove('hidden');
+        const btnRetryAll = document.getElementById('btn-retry-all');
+        if (btnRetryAll) btnRetryAll.classList.add('hidden');
+      } else {
+        if (statFailed) statFailed.innerText = `${remainingErrors} Errors`;
+        if (headerFailed) headerFailed.innerText = `Collection Exceptions Queue (${remainingErrors} Items)`;
+      }
+    }
+
+    function retrySingleJob(rowId, tenderId, portal, btn) {
+      btn.disabled = true;
+      btn.innerHTML = `<span class="inline-flex items-center gap-1.5 text-blue-600"><span class="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></span> Retrying...</span>`;
+
+      appendTerminalLog('RETRY-DISPATCH', 'text-yellow-400', `Re-queuing ingestion worker for <strong class="text-white">${tenderId}</strong> on ${portal}...`);
+
+      setTimeout(() => {
+        appendTerminalLog('DOWNLOAD', 'text-blue-400', `Contacted endpoint: HTTP 200 OK. Downloaded document payload for <strong class="text-cyan-300">${tenderId}</strong>.`);
+        
+        setTimeout(() => {
+          appendTerminalLog('RESOLVED', 'text-emerald-400', `OCR parsing complete for <strong class="text-emerald-300">${tenderId}</strong>. Hash verified and committed to catalog.`);
+          
+          const row = document.getElementById(rowId);
+          if (row) {
+            row.classList.add('bg-emerald-50', 'text-emerald-900');
+            row.innerHTML = `<td colspan="5" class="py-3 px-4 text-emerald-700 font-bold flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i> ${tenderId} successfully ingested & parsed!</td>`;
+            lucide.createIcons();
+            setTimeout(() => {
+              row.style.opacity = '0';
+              setTimeout(() => {
+                row.remove();
+                updateCounters();
+                showToast(`Job for ${tenderId} successfully retried and resolved!`, 'success');
+              }, 300);
+            }, 800);
+          }
+        }, 600);
+      }, 700);
+    }
+
+    function retryAllJobs() {
+      const btn = document.getElementById('btn-retry-all');
+      btn.disabled = true;
+      btn.innerText = "Processing Queue...";
+      appendTerminalLog('BATCH-RETRY', 'text-purple-400', 'Dispatched batch retry across all 3 failed crawler exception jobs.');
+
+      setTimeout(() => {
+        appendTerminalLog('RESOLVED', 'text-emerald-400', 'Batch complete: 3/3 jobs successfully resolved and ingested.');
+        remainingErrors = 1;
+        updateCounters();
+        showToast('All 3 failed crawler jobs retried and resolved successfully!', 'success');
+      }, 1200);
+    }
+
+    function restartWorkerPool(btn) {
+      btn.disabled = true;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = `<span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Restarting...</span>`;
+
+      appendTerminalLog('SYS-RESTART', 'text-amber-400', 'Signal sent to crawler supervisor: Gracefully draining 8 worker threads.');
+
+      setTimeout(() => {
+        appendTerminalLog('SYS-ONLINE', 'text-emerald-400', 'Worker pool rebooted. 8 clean worker threads initialized and listening on queue.');
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        showToast('Worker pool restarted with 8 worker threads online.', 'success');
+        lucide.createIcons();
+      }, 900);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      initSharedNav('collection');
+    });
+  </script>
+</body></html>

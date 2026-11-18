@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    // Prevent ALL browser alert/confirm popups immediately
+    window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
+    window.confirm = function(msg) { return true; };
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Version Details - Module 4</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+      /* Fixed sidebar - prevents sidebar from scrolling with page */
+    aside.fixed-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 50;
+    }
+    .main-with-sidebar {
+      margin-left: 256px;
+      height: 100vh;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased flex min-h-screen">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-[#0b192c] text-white flex flex-col justify-between shrink-0 hidden md:flex border-r border-slate-800">
+    <div class="p-5 space-y-6">
+      <a href="dashboard.html" class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+          <i data-lucide="scale" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="text-sm font-extrabold tracking-tight text-white block leading-tight">Tender Corrigendum &<br>Amendment Tracker</span>
+          <span class="text-[10px] text-blue-300 font-semibold tracking-wider uppercase mt-0.5 block">Module 4: Versioning</span>
+        </div>
+      </a>
+
+      <nav class="space-y-1 text-xs font-semibold">
+        <a href="dashboard.html" data-page="dashboard" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="tenders.html" data-page="tenders" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="file-text" class="w-4 h-4"></i>
+          <span>Tenders</span>
+        </a>
+        <a href="versions.html" data-page="versions" class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-blue-600 text-white font-bold transition-all shadow-md shadow-blue-600/30">
+          <div class="flex items-center gap-3">
+            <i data-lucide="git-branch" class="w-4 h-4 text-white"></i>
+            <span>Version History</span>
+          </div>
+          <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-white text-blue-800">M4</span>
+        </a>
+        <a href="review.html" data-page="review" class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="check-square" class="w-4 h-4"></i>
+            <span>Review Queue</span>
+          </div>
+          <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">18</span>
+        </a>
+        <a href="sources.html" data-page="sources" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="globe" class="w-4 h-4"></i>
+          <span>Sources</span>
+        </a>
+        <a href="collection-monitor.html" data-page="collection" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="activity" class="w-4 h-4"></i>
+          <span>Collection Monitor</span>
+        </a>
+        <a href="analytics.html" data-page="analytics" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+          <span>Analytics & Reports</span>
+        </a>
+        <div class="pt-4 pb-1">
+          <span class="px-3.5 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Administration</span>
+        </div>
+        <a href="users.html" data-page="users" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="users" class="w-4 h-4"></i>
+          <span>Users & Roles</span>
+        </a>
+        <a href="audit-logs.html" data-page="audit" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="shield-alert" class="w-4 h-4"></i>
+          <span>Audit Logs</span>
+        </a>
+        <a href="settings.html" data-page="settings" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- CONTENT WRAPPER -->
+  <div class="flex-1 flex flex-col main-with-sidebar min-w-0">
+
+    <!-- HEADER -->
+    <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between gap-4 sticky top-0 z-40">
+  <script>
+    // Prevent ALL browser alert/confirm popups immediately
+    window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
+    window.confirm = function(msg) { return true; };
+  </script>
+      <div class="flex items-center gap-4 flex-1 max-w-xl">
+        <div class="relative w-full">
+          <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <i data-lucide="search" class="w-4 h-4"></i>
+          </span>
+          <input type="text" placeholder="Search version specifications..." class="w-full pl-10 pr-4 py-2 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-blue-500 text-xs font-semibold text-slate-800 outline-none transition-all">
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <!-- Notification Bell & Dropdown -->
+        <div class="relative">
+          <button id="notification-bell-btn" onclick="toggleDropdown('notification-dropdown-menu')" class="relative p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors" title="Notifications">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span id="notification-badge" class="absolute top-1.5 right-1.5 w-4 h-4 bg-rose-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center animate-pulse">3</span>
+          </button>
+          <div id="notification-dropdown-menu" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 overflow-hidden text-xs">
+            <div class="px-4 py-3 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-slate-800 text-sm">Notifications</span>
+                <span id="unread-count-pill" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">3 New</span>
+              </div>
+              <button onclick="markAllNotificationsAsRead()" class="text-[11px] font-bold text-blue-600 hover:underline">Mark all read</button>
+            </div>
+            <div class="divide-y divide-slate-100 max-h-80 overflow-y-auto" id="notification-items-container"></div>
+            <div class="p-2.5 bg-slate-50 border-t border-slate-100 text-center">
+              <a href="audit-logs.html" class="text-xs font-bold text-slate-600 hover:text-blue-600 flex items-center justify-center gap-1.5 transition-colors">
+                <i data-lucide="history" class="w-3.5 h-3.5"></i>
+                <span>View Full System Audit Trail</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Menu Dropdown -->
+        <div class="relative">
+          <button id="user-menu-btn" onclick="toggleDropdown('user-dropdown-menu')" class="flex items-center gap-2.5 p-1.5 pr-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all">
+            <div class="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center text-xs shadow-xs" id="nav-user-avatar">A</div>
+            <div class="text-left hidden sm:block">
+              <span class="text-xs font-bold text-slate-800 block leading-tight" id="nav-user-name">Admin Officer</span>
+              <span class="text-[10px] font-semibold text-blue-600 block uppercase" id="nav-user-role">ADMIN</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+          </button>
+          <div id="user-dropdown-menu" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 z-50 text-xs space-y-1">
+            <div class="px-3 py-2 border-b border-slate-100">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Role Simulation</span>
+              <p class="font-bold text-slate-800">Switch Permission Level</p>
+            </div>
+            <button onclick="switchRole('ADMIN')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center justify-between">
+              <span>👑 Admin (Full)</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-800">Admin</span>
+            </button>
+            <button onclick="switchRole('OPERATOR')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center justify-between">
+              <span>👷 Tender Operator</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Operator</span>
+            </button>
+            <button onclick="switchRole('VIEWER')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center justify-between">
+              <span>👁️ Viewer (Read Only)</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">Viewer</span>
+            </button>
+            <div class="border-t border-slate-100 pt-1">
+              <a href="login.html" class="w-full text-left px-3 py-2 text-rose-600 hover:bg-rose-50 rounded-lg font-bold flex items-center gap-2">
+                <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Sign Out
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN BODY -->
+    <main class="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto">
+
+      <!-- BREADCRUMB -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-1">
+            <a href="tenders.html" class="hover:text-blue-600">Tenders</a>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+            <a href="versions.html" class="hover:text-blue-600 font-bold" id="bread-tender-id">GJ/2026/105</a>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+            <span>Module 4: Version Details</span>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+            <span class="text-blue-600 font-bold" id="bread-version-badge">v1.2</span>
+          </div>
+          <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight" id="version-title-header">Version Specification Snapshot</h1>
+          <p class="text-xs text-slate-500 mt-0.5" id="version-subtitle">Detailed state, old vs new parameter values, and amendment audit trail</p>
+        </div>
+
+        <div class="flex items-center gap-2.5">
+          <select id="version-selector-dropdown" onchange="switchVersion(this.value)" class="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 shadow-xs cursor-pointer outline-none">
+            <!-- Populated dynamically -->
+          </select>
+          <a id="btn-compare-link" href="compare-versions.html" class="px-3.5 py-2 bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 font-bold rounded-xl text-xs flex items-center gap-1.5 transition-colors">
+            <i data-lucide="git-compare" class="w-3.5 h-3.5"></i>
+            <span>Compare With Base</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- MODULE 4 SUB-NAVIGATION TABS -->
+      <div class="flex items-center gap-2 border-b border-slate-200 text-xs font-bold text-slate-500 overflow-x-auto">
+        <a href="versions.html" class="px-4 py-2.5 hover:text-slate-900 flex items-center gap-1.5 transition-colors whitespace-nowrap">
+          <i data-lucide="history" class="w-4 h-4"></i>
+          <span>1. Tender Version History</span>
+        </a>
+        <a href="version-details.html" class="px-4 py-2.5 border-b-2 border-blue-600 text-blue-600 flex items-center gap-1.5 whitespace-nowrap">
+          <i data-lucide="layers" class="w-4 h-4"></i>
+          <span>2. Version Details</span>
+        </a>
+        <a href="compare-versions.html" class="px-4 py-2.5 hover:text-slate-900 flex items-center gap-1.5 transition-colors whitespace-nowrap">
+          <i data-lucide="git-compare" class="w-4 h-4"></i>
+          <span>3. Compare Two Versions</span>
+        </a>
+        <a href="latest-tender.html" class="px-4 py-2.5 hover:text-slate-900 flex items-center gap-1.5 transition-colors whitespace-nowrap">
+          <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+          <span>4. Latest Tender Information</span>
+        </a>
+      </div>
+
+      <!-- VERSION SUMMARY BANNER -->
+      <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+          <div class="flex items-center gap-3">
+            <span class="w-12 h-12 rounded-2xl bg-blue-600 text-white font-extrabold text-base flex items-center justify-center font-mono shadow-md shadow-blue-500/20" id="badge-version-number">
+              v1.2
+            </span>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-base font-extrabold text-slate-900" id="detail-version-name">Corrigendum 02 (v1.2)</h2>
+                <span id="badge-version-status" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                  Active (Latest)
+                </span>
+              </div>
+              <p class="text-xs text-slate-500" id="detail-published-meta">Published on 07 Nov 2026 by Rajesh Kumar (Tender Operator)</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 font-mono text-xs text-slate-600">
+            <span class="px-3 py-1.5 bg-slate-100 rounded-xl font-bold flex items-center gap-1.5">
+              <i data-lucide="file-text" class="w-3.5 h-3.5 text-blue-600"></i>
+              <span id="detail-corrigendum-ref">Corrigendum No. 02/2026</span>
+            </span>
+          </div>
+        </div>
+
+        <p class="text-xs text-slate-600 leading-relaxed font-medium" id="detail-description">
+          Official 10-day extension of bid submission deadline and technical bid opening schedule due to public holidays.
+        </p>
+      </div>
+
+      <!-- OLD VALUES VS NEW VALUES SECTION (Core Module 4 requirement) -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-6 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+              <i data-lucide="git-commit" class="w-4 h-4 text-blue-600"></i>
+              <span>Old Values vs New Values Comparison</span>
+            </h3>
+            <p class="text-xs text-slate-500">Explicitly identified modified fields resulting from this corrigendum revision</p>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-purple-100 text-purple-800" id="count-modified-badge">2 Fields Modified</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-50 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider border-y border-slate-100">
+              <tr>
+                <th class="py-3 px-4">Field Name</th>
+                <th class="py-3 px-4">Previous Value (Old)</th>
+                <th class="py-3 px-4">Revised Value (New)</th>
+                <th class="py-3 px-4">Diff Status</th>
+                <th class="py-3 px-4">Justification / Reason</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100" id="diff-table-body">
+              <!-- Populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- COMPLETE TENDER STATE AT THIS VERSION (Snapshot) -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-6 space-y-4">
+        <div class="border-b border-slate-100 pb-3">
+          <h3 class="text-sm font-extrabold text-slate-900">Complete Master State at Version Snapshot</h3>
+          <p class="text-xs text-slate-500">The authoritative consolidated tender parameter values as of this revision</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs" id="snapshot-fields-container">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    let currentTenderKey = urlParams.get('tender') || 'GJ-2026-105';
+    let currentVersionKey = urlParams.get('v') || 'v1.2';
+
+    function switchVersion(ver) {
+      currentVersionKey = ver;
+      renderVersionDetails();
+    }
+
+    function renderVersionDetails() {
+      const tender = getTenderVersionData(currentTenderKey);
+      let verObj = tender.versions.find(v => v.version === currentVersionKey);
+      if (!verObj) verObj = tender.versions[tender.versions.length - 1];
+      currentVersionKey = verObj.version;
+
+      document.getElementById('bread-tender-id').innerText = tender.tenderId;
+      document.getElementById('bread-version-badge').innerText = verObj.version;
+      document.getElementById('badge-version-number').innerText = verObj.version;
+      document.getElementById('detail-version-name').innerText = `${verObj.type} (${verObj.version})`;
+      document.getElementById('detail-corrigendum-ref').innerText = verObj.corrigendumNo;
+      document.getElementById('detail-published-meta').innerText = `Published on ${verObj.publishDate} by ${verObj.publishedBy}`;
+      document.getElementById('detail-description').innerText = verObj.description;
+
+      const isLatest = verObj.status.includes('Active') || verObj.version === tender.currentVersion;
+      document.getElementById('badge-version-status').className = isLatest 
+        ? "px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200"
+        : "px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600";
+      document.getElementById('badge-version-status').innerText = isLatest ? "Active (Latest)" : "Superseded";
+
+      document.getElementById('btn-compare-link').href = `compare-versions.html?tender=${currentTenderKey}&from=v1.0&to=${verObj.version}`;
+
+      // Populate version selector dropdown
+      const dropdown = document.getElementById('version-selector-dropdown');
+      dropdown.innerHTML = tender.versions.map(v => `
+        <option value="${v.version}" ${v.version === currentVersionKey ? 'selected' : ''}>
+          ${v.version} - ${v.type} (${v.publishDate})
+        </option>
+      `).join('');
+
+      // Populate Diff Table
+      const diffBody = document.getElementById('diff-table-body');
+      const changed = verObj.changedFields || [];
+      document.getElementById('count-modified-badge').innerText = `${changed.length} Field(s) Modified`;
+
+      if (changed.length === 0) {
+        diffBody.innerHTML = `
+          <tr>
+            <td colspan="5" class="py-6 text-center text-slate-400 italic">
+              Base version (v1.0) release. All fields established as master original baselines.
+            </td>
+          </tr>
+        `;
+      } else {
+        diffBody.innerHTML = changed.map(c => `
+          <tr class="hover:bg-slate-50/70 transition-colors">
+            <td class="py-3 px-4 font-bold text-slate-800 flex items-center gap-1.5">
+              <i data-lucide="check-circle" class="w-3.5 h-3.5 text-blue-600"></i>
+              ${c.field}
+            </td>
+            <td class="py-3 px-4 text-rose-600 font-mono line-through bg-rose-50/30">
+              ${c.oldVal}
+            </td>
+            <td class="py-3 px-4 text-emerald-800 font-mono font-bold bg-emerald-50/40">
+              ${c.newVal}
+            </td>
+            <td class="py-3 px-4">
+              <span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-amber-100 text-amber-800">
+                ${c.status || 'MODIFIED'}
+              </span>
+            </td>
+            <td class="py-3 px-4 text-slate-600 italic">
+              ${c.reason}
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      // Populate Snapshot
+      const snapContainer = document.getElementById('snapshot-fields-container');
+      const vals = verObj.values || {};
+      const fieldLabels = {
+        submissionDeadline: "Submission Deadline",
+        technicalBidOpening: "Technical Bid Opening",
+        financialBidOpening: "Financial Bid Opening",
+        eligibilityTurnover: "Eligibility Annual Turnover",
+        emdAmount: "EMD Amount",
+        completionPeriod: "Completion Period",
+        preBidMeeting: "Pre-Bid Meeting Date & Location",
+        technicalSpecs: "Technical Specification Standards",
+        warrantyPeriod: "Warranty Period",
+        certificationRequired: "Required Certification",
+        deliveryPeriod: "Delivery Schedule"
+      };
+
+      snapContainer.innerHTML = Object.keys(vals).map(k => {
+        const isChangedInThisVer = changed.some(c => c.key === k);
+        return `
+          <div class="p-3.5 rounded-xl border ${isChangedInThisVer ? 'border-emerald-300 bg-emerald-50/20' : 'border-slate-200 bg-slate-50/50'} space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">${fieldLabels[k] || k}</span>
+              ${isChangedInThisVer ? '<span class="text-[9px] px-1.5 py-0.2 rounded font-bold bg-emerald-100 text-emerald-800">Amended in this ver</span>' : '<span class="text-[9px] text-slate-400">Baseline</span>'}
+            </div>
+            <p class="font-bold text-slate-900 font-mono text-xs">${vals[k]}</p>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    lucide.createIcons();
+    initSharedNav('versions');
+    renderVersionDetails();
+  </script>
+</body>
+</html>
