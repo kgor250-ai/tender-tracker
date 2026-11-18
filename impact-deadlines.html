@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    // Redirect to login if not authenticated
+    if (!sessionStorage.getItem('activeUser')) { window.location.replace('login.html'); }
+    // Prevent ALL browser alert/confirm popups immediately
+    window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
+    window.confirm = function(msg) { return true; };
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deadline Change Report - Module 5 | Tender Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .bg-sidebar { background-color: #0b192c; }
+    aside.fixed-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 50;
+    }
+    .main-with-sidebar {
+      margin-left: 256px;
+      min-height: 100vh;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex min-h-screen">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-sidebar fixed-sidebar text-white flex flex-col justify-between shrink-0 min-h-screen border-r border-slate-800">
+    <div>
+      <!-- Brand Logo -->
+      <a href="dashboard.html" class="p-5 flex items-center gap-3 border-b border-slate-800/80 hover:bg-slate-800/40 transition-colors block">
+        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-600/30">
+          <i data-lucide="scale" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-sm tracking-tight block">Tender Tracker</span>
+          <span class="text-[10px] text-slate-400 font-medium block">Amendment Management</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="p-3 space-y-1 text-xs font-semibold">
+        <a href="dashboard.html" data-page="dashboard" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="tenders.html" data-page="tenders" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="file-text" class="w-4 h-4"></i>
+          <span>Tenders</span>
+        </a>
+
+        <!-- Module 4 -->
+        <a href="versions.html" data-page="versions" class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="git-branch" class="w-4 h-4"></i>
+            <span>Version History</span>
+          </div>
+          <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-700 text-slate-300">M4</span>
+        </a>
+
+        <!-- Module 5: Change Impact Analysis -->
+        <div class="pt-2">
+          <div class="flex items-center justify-between px-3.5 py-1 text-[10px] font-extrabold text-blue-400 uppercase tracking-wider">
+            <span>Module 5: Change Impact</span>
+            <span class="px-1.5 py-0.2 rounded text-[8px] font-black bg-blue-500/20 text-blue-300 border border-blue-500/30">NEW</span>
+          </div>
+          <div class="space-y-0.5 mt-1 pl-2 border-l-2 border-blue-600/40 ml-4">
+            <a href="impact-changed-fields.html" data-page="impact-fields" class="sidebar-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all text-[11px]">
+              <i data-lucide="git-commit" class="w-3.5 h-3.5"></i>
+              <span>Changed Fields</span>
+            </a>
+            <a href="impact-deadlines.html" data-page="impact-deadlines" class="sidebar-link flex items-center gap-2.5 px-3 py-2 rounded-lg bg-blue-600 text-white font-bold transition-all shadow-md shadow-blue-600/20 text-[11px]">
+              <i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i>
+              <span>Deadline Changes</span>
+            </a>
+            <a href="impact-financial.html" data-page="impact-financial" class="sidebar-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all text-[11px]">
+              <i data-lucide="indian-rupee" class="w-3.5 h-3.5"></i>
+              <span>Financial Impact</span>
+            </a>
+            <a href="impact-summary.html" data-page="impact-summary" class="sidebar-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all text-[11px]">
+              <i data-lucide="file-check-2" class="w-3.5 h-3.5"></i>
+              <span>Amendment Summary</span>
+            </a>
+          </div>
+        </div>
+
+        <a href="review.html" data-page="review" class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="check-square" class="w-4 h-4"></i>
+            <span>Review Queue</span>
+          </div>
+          <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">18</span>
+        </a>
+
+        <a href="collection-monitor.html" data-page="collection" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="activity" class="w-4 h-4"></i>
+          <span>Collection Monitor</span>
+        </a>
+
+        <a href="analytics.html" data-page="analytics" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+          <span>Analytics & Reports</span>
+        </a>
+
+        <div class="pt-3 pb-1">
+          <span class="px-3.5 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Admin</span>
+        </div>
+
+        <a href="users.html" data-page="users" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="users" class="w-4 h-4"></i>
+          <span>Users & Roles</span>
+        </a>
+
+        <a href="audit-logs.html" data-page="audit" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="shield-alert" class="w-4 h-4"></i>
+          <span>Audit Logs</span>
+        </a>
+
+        <a href="settings.html" data-page="settings" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Sidebar Footer -->
+    <div class="p-4 border-t border-slate-800/80 space-y-2">
+      <div class="flex items-center gap-2 text-xs text-slate-400">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="font-medium text-[11px]">Impact Engine v5.0 Active</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT AREA -->
+  <div class="flex-1 flex flex-col main-with-sidebar min-w-0">
+
+    <!-- TOP HEADER -->
+    <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between gap-4 sticky top-0 z-40">
+      <div class="flex items-center gap-3 flex-1 max-w-xl">
+        <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+          <i data-lucide="calendar-clock" class="w-4 h-4 text-blue-600"></i>
+          <span>Module 5: Tender Timeline & Deadline Impact Analyzer</span>
+        </h2>
+      </div>
+
+      <!-- Right Header Actions -->
+      <div class="flex items-center gap-3">
+        <!-- Tender Selector -->
+        <div class="flex items-center gap-2 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
+          <span class="text-slate-500 pl-2 font-semibold">Tender:</span>
+          <select id="tender-select" onchange="onTenderChange()" class="bg-white font-bold text-slate-800 py-1 px-2.5 rounded-lg border-0 shadow-sm outline-none cursor-pointer">
+            <option value="GJ-2026-105" selected>GJ/2026/105 - Six Lane Highway</option>
+            <option value="GJ-2026-104">GJ/2026/104 - ICU Ventilators</option>
+            <option value="GJ-2026-089">GJ/2026/089 - Hospital Solar Grid</option>
+          </select>
+        </div>
+
+        <!-- Notification Bell -->
+        <div class="relative">
+          <button id="notification-bell-btn" onclick="toggleDropdown('notification-dropdown-menu')" class="p-2 rounded-xl text-slate-500 hover:bg-slate-100 transition-colors relative">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span id="notification-badge" class="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center">2</span>
+          </button>
+          <div id="notification-dropdown-menu" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 overflow-hidden">
+            <div class="p-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+              <span class="font-bold text-xs text-slate-800">Notifications</span>
+              <span id="unread-count-pill" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">2 New</span>
+            </div>
+            <div id="notification-items-container" class="max-h-72 overflow-y-auto divide-y divide-slate-100 text-xs"></div>
+          </div>
+        </div>
+
+        <!-- User Profile Pill -->
+        <div class="relative">
+          <button id="user-menu-btn" onclick="toggleDropdown('user-dropdown-menu')" class="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl border border-slate-200 hover:border-slate-300 bg-white transition-all text-xs">
+            <div id="nav-user-avatar" class="w-7 h-7 rounded-lg bg-blue-600 text-white font-extrabold flex items-center justify-center text-xs">A</div>
+            <div class="text-left">
+              <span id="nav-user-name" class="font-bold text-slate-900 block leading-tight">Admin Officer</span>
+              <span id="nav-user-role" class="text-[10px] text-slate-400 font-semibold block leading-tight">ADMIN</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+          </button>
+          <div id="user-dropdown-menu" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2 z-50 text-xs">
+            <div class="px-3.5 py-2 border-b border-slate-100">
+              <span class="text-[10px] font-bold text-slate-400 uppercase">Switch Active Role</span>
+            </div>
+            <button onclick="switchRole('ADMIN')" class="w-full px-3.5 py-2 text-left hover:bg-slate-50 flex items-center justify-between font-semibold">
+              <span>Admin Officer</span>
+              <span class="text-[10px] px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded font-bold">Admin</span>
+            </button>
+            <button onclick="switchRole('OPERATOR')" class="w-full px-3.5 py-2 text-left hover:bg-slate-50 flex items-center justify-between font-semibold">
+              <span>Rajesh Kumar</span>
+              <span class="text-[10px] px-1.5 py-0.5 bg-emerald-50 text-emerald-700 rounded font-bold">Operator</span>
+            </button>
+            <button onclick="switchRole('VIEWER')" class="w-full px-3.5 py-2 text-left hover:bg-slate-50 flex items-center justify-between font-semibold">
+              <span>Pooja Sharma</span>
+              <span class="text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-700 rounded font-bold">Viewer</span>
+            </button>
+            <div class="border-t border-slate-100 my-1"></div>
+            <a href="login.html" onclick="sessionStorage.clear()" class="w-full px-3.5 py-2 text-left hover:bg-rose-50 text-rose-600 font-bold block">
+              Sign Out
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MODULE 5 NAV TABS -->
+    <div class="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-1 text-xs">
+        <a href="impact-changed-fields.html" class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-semibold flex items-center gap-2 transition-colors">
+          <i data-lucide="git-commit" class="w-3.5 h-3.5"></i>
+          <span>Changed Fields Report</span>
+        </a>
+        <a href="impact-deadlines.html" class="px-3.5 py-1.5 rounded-lg bg-blue-50 text-blue-700 font-bold flex items-center gap-2 border border-blue-200">
+          <i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i>
+          <span>Deadline Change Report</span>
+        </a>
+        <a href="impact-financial.html" class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-semibold flex items-center gap-2 transition-colors">
+          <i data-lucide="indian-rupee" class="w-3.5 h-3.5"></i>
+          <span>Financial Change Report</span>
+        </a>
+        <a href="impact-summary.html" class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-semibold flex items-center gap-2 transition-colors">
+          <i data-lucide="file-check-2" class="w-3.5 h-3.5"></i>
+          <span>Tender Amendment Summary</span>
+        </a>
+      </div>
+
+      <!-- Quick Action -->
+      <div class="flex items-center gap-2">
+        <a href="versions.html" class="px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-sm">
+          <i data-lucide="git-branch" class="w-3.5 h-3.5"></i>
+          <span>View Version Tree</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- MAIN PAGE BODY -->
+    <main class="p-6 space-y-6 max-w-7xl">
+
+      <!-- Breadcrumbs & Title -->
+      <div>
+        <div class="flex items-center gap-2 text-xs text-slate-500 font-semibold mb-1">
+          <a href="dashboard.html" class="hover:text-blue-600">Home</a>
+          <span>/</span>
+          <span class="text-blue-600 font-bold">Module 5: Change Impact</span>
+          <span>/</span>
+          <span class="text-slate-800 font-bold">Deadline Change Report</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-xl font-black text-slate-900 tracking-tight">Deadline Change & Extension Report</h1>
+            <p class="text-xs text-slate-500 mt-0.5">Track progression of critical milestone shifts, extension days added, and active bidding countdown</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="px-3 py-1 rounded-full text-xs font-black bg-amber-100 text-amber-800 border border-amber-300 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-amber-600 animate-ping"></span>
+              <span id="extension-summary-pill">Submission deadline extended by 15 days</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- HIGHLIGHT EXTENSION BANNER (Module 5 Core Example) -->
+      <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 p-5 rounded-2xl text-white shadow-lg flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center shrink-0 text-white">
+            <i data-lucide="calendar-plus" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-black bg-white/25 uppercase tracking-wider">Official Extension Notice</span>
+            <h3 id="banner-title" class="text-base font-black mt-0.5">Submission deadline extended by 5 days in C1, followed by +10 days in C2</h3>
+            <p id="banner-subtitle" class="text-xs text-amber-100 mt-0.5">Original Due: 15 Nov 2026 &rarr; Revised Authoritative Due: 30 Nov 2026, 17:00 IST</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 bg-black/20 px-4 py-2 rounded-xl backdrop-blur">
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-amber-200 block">Total Days Added</span>
+            <span id="banner-net-days" class="text-2xl font-black block leading-tight">+15 Days</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISUAL TIMELINE PROGRESSION COMPONENT -->
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div class="flex items-center gap-2">
+            <i data-lucide="git-commit" class="w-4 h-4 text-blue-600"></i>
+            <h3 class="font-bold text-sm text-slate-900">Visual Timeline Shift Progression (v1.0 &rarr; v1.1 &rarr; v1.2)</h3>
+          </div>
+          <span class="text-xs text-slate-500 font-semibold">Base Release: 31 Oct 2026</span>
+        </div>
+
+        <div id="timeline-progression-container" class="space-y-4 pt-2">
+          <!-- Item 1: Original -->
+          <div class="relative pl-6 pb-2 border-l-2 border-slate-200">
+            <div class="absolute -left-2 top-0 w-4 h-4 rounded-full bg-slate-400 border-2 border-white"></div>
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="px-2 py-0.5 rounded text-[10px] font-black bg-slate-100 text-slate-700">v1.0 Baseline NIT</span>
+                <span class="text-xs font-bold text-slate-900 ml-2">15 Nov 2026, 17:00 IST</span>
+              </div>
+              <span class="text-xs text-slate-400 font-mono">Original Window: 15 Days</span>
+            </div>
+            <p class="text-xs text-slate-500 mt-1">Initial notice inviting tender published by PWD Road Project Division.</p>
+          </div>
+
+          <!-- Item 2: Corrigendum 01 -->
+          <div class="relative pl-6 pb-2 border-l-2 border-amber-300">
+            <div class="absolute -left-2 top-0 w-4 h-4 rounded-full bg-amber-500 border-2 border-white"></div>
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="px-2 py-0.5 rounded text-[10px] font-black bg-amber-100 text-amber-800">v1.1 (Corrigendum 01)</span>
+                <span class="text-xs font-bold text-slate-900 ml-2">20 Nov 2026, 17:00 IST</span>
+                <span class="ml-2 px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-700">+5 Days Extension</span>
+              </div>
+              <span class="text-xs text-slate-500 font-mono">Published: 04 Nov 2026</span>
+            </div>
+            <p class="text-xs text-slate-600 mt-1">Pre-bid meeting queries resolution required 5 extra working days for response publication.</p>
+          </div>
+
+          <!-- Item 3: Corrigendum 02 -->
+          <div class="relative pl-6 border-l-2 border-emerald-500">
+            <div class="absolute -left-2 top-0 w-4 h-4 rounded-full bg-emerald-600 border-2 border-white"></div>
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-100 text-emerald-800">v1.2 (Corrigendum 02 - Current)</span>
+                <span class="text-xs font-black text-emerald-700 ml-2">30 Nov 2026, 17:00 IST</span>
+                <span class="ml-2 px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-700">+10 Days Additional</span>
+              </div>
+              <span class="text-xs text-emerald-700 font-bold">AUTHORITATIVE DEADLINE</span>
+            </div>
+            <p class="text-xs text-slate-600 mt-1">Public holiday period extension approved by Chief Engineer PWD Gandhinagar.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- DETAILED DEADLINE MILESTONES TABLE -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
+          <div class="flex items-center gap-2">
+            <i data-lucide="clock" class="w-4 h-4 text-amber-600"></i>
+            <h2 class="font-bold text-sm text-slate-800">Milestone Shift Breakdown & Bidder Impact</h2>
+          </div>
+          <button onclick="downloadDeadlineMemo()" class="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1">
+            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+            <span>Export Milestone Schedule (PDF)</span>
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+              <tr>
+                <th class="py-3 px-4">Procurement Milestone</th>
+                <th class="py-3 px-4">Original Scheduled Date</th>
+                <th class="py-3 px-4">Latest Revised Date</th>
+                <th class="py-3 px-4 text-center">Net Variance</th>
+                <th class="py-3 px-4">Corrigendum Notice</th>
+                <th class="py-3 px-4">Impact on Bidders</th>
+              </tr>
+            </thead>
+            <tbody id="milestones-tbody" class="divide-y divide-slate-100">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- BIDDER ADVISORY CARD -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-blue-50 border border-blue-200 p-5 rounded-2xl space-y-2">
+          <div class="flex items-center gap-2 text-blue-900 font-bold text-xs">
+            <i data-lucide="info" class="w-4 h-4 text-blue-600"></i>
+            <span>Bank Guarantee (BG) & EMD Validity Advisory</span>
+          </div>
+          <p class="text-xs text-blue-800 leading-relaxed">
+            Due to the 15-day extension of the bid submission deadline to <strong>30 Nov 2026</strong>, all prospective bidders must ensure that Earnest Money Deposit (EMD) Bank Guarantees are valid up to a minimum of <strong>180 days from the revised submission date</strong> (i.e. Valid until 29 May 2027).
+          </p>
+        </div>
+
+        <div class="bg-emerald-50 border border-emerald-200 p-5 rounded-2xl space-y-2">
+          <div class="flex items-center gap-2 text-emerald-900 font-bold text-xs">
+            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+            <span>Technical Evaluation Window Alignment</span>
+          </div>
+          <p class="text-xs text-emerald-800 leading-relaxed">
+            Technical bid opening has been rescheduled to <strong>01 Dec 2026 at 11:00 IST</strong>. Bidders who have already uploaded technical bids on the portal may withdraw or re-upload amended bids any time before the revised cutoff without penalty.
+          </p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    const DEADLINE_DATA = {
+      "GJ-2026-105": {
+        bannerTitle: "Submission deadline extended by 5 days in C1, followed by +10 days in C2",
+        bannerSub: "Original Due: 15 Nov 2026 → Revised Authoritative Due: 30 Nov 2026, 17:00 IST",
+        netDays: "+15 Days",
+        pillText: "Submission deadline extended by 15 days",
+        timeline: [
+          {
+            ver: "v1.0 Baseline NIT",
+            date: "15 Nov 2026, 17:00 IST",
+            badge: "Original",
+            badgeClass: "bg-slate-100 text-slate-700",
+            notes: "Initial tender notice issued with 15-day submission window."
+          },
+          {
+            ver: "v1.1 (Corrigendum 01)",
+            date: "20 Nov 2026, 17:00 IST",
+            badge: "+5 Days Extension",
+            badgeClass: "bg-amber-100 text-amber-800",
+            notes: "Extended by 5 days to resolve pre-bid queries on turnover thresholds."
+          },
+          {
+            ver: "v1.2 (Corrigendum 02 - Current)",
+            date: "30 Nov 2026, 17:00 IST",
+            badge: "+10 Days Additional",
+            badgeClass: "bg-emerald-100 text-emerald-800",
+            notes: "Further 10-day extension approved due to regional festival holidays."
+          }
+        ],
+        milestones: [
+          {
+            name: "Pre-Bid Meeting",
+            orig: "10 Nov 2026, 14:00 IST",
+            rev: "12 Nov 2026, 14:00 IST",
+            var: "+2 Days",
+            corr: "Corrigendum 01",
+            impact: "Moved to Webex virtual mode to accommodate outstation bidders."
+          },
+          {
+            name: "Bid Submission Deadline",
+            orig: "15 Nov 2026, 17:00 IST",
+            rev: "30 Nov 2026, 17:00 IST",
+            var: "+15 Days Net",
+            corr: "Corrigendum 01 & 02",
+            impact: "Extended preparation window for MSME consortium partners."
+          },
+          {
+            name: "Technical Bid Opening",
+            orig: "16 Nov 2026, 11:00 IST",
+            rev: "01 Dec 2026, 11:00 IST",
+            var: "+15 Days",
+            corr: "Corrigendum 02",
+            impact: "Evaluator committee scheduled for physical opening on 01 Dec."
+          },
+          {
+            name: "Financial Bid Opening",
+            orig: "25 Nov 2026, 15:00 IST",
+            rev: "05 Dec 2026, 15:00 IST",
+            var: "+10 Days",
+            corr: "Corrigendum 02",
+            impact: "Commercial envelope opening postponed to align with technical review."
+          }
+        ]
+      },
+      "GJ-2026-104": {
+        bannerTitle: "Submission deadline extended by 7 days in Corrigendum 01",
+        bannerSub: "Original Due: 18 Nov 2026 → Revised Due: 25 Nov 2026, 16:00 IST",
+        netDays: "+7 Days",
+        pillText: "Submission deadline extended by 7 days",
+        timeline: [
+          {
+            ver: "v1.0 Baseline NIT",
+            date: "18 Nov 2026, 16:00 IST",
+            badge: "Original",
+            badgeClass: "bg-slate-100 text-slate-700",
+            notes: "Base procurement notice for 40 ICU Ventilator units."
+          },
+          {
+            ver: "v1.1 (Corrigendum 01 - Current)",
+            date: "25 Nov 2026, 16:00 IST",
+            badge: "+7 Days Extension",
+            badgeClass: "bg-emerald-100 text-emerald-800",
+            notes: "7-day extension for medical device OEMs to upload BIS certificates."
+          }
+        ],
+        milestones: [
+          {
+            name: "Bid Submission Deadline",
+            orig: "18 Nov 2026, 16:00 IST",
+            rev: "25 Nov 2026, 16:00 IST",
+            var: "+7 Days",
+            corr: "Corrigendum 01",
+            impact: "Allowed indigenous Indian manufacturers to participate."
+          },
+          {
+            name: "Technical Bid Opening",
+            orig: "19 Nov 2026, 12:00 IST",
+            rev: "26 Nov 2026, 12:00 IST",
+            var: "+7 Days",
+            corr: "Corrigendum 01",
+            impact: "Hospital biomedical engineering cell review rescheduled."
+          }
+        ]
+      },
+      "GJ-2026-089": {
+        bannerTitle: "Submission deadline extended by 10 days for Solar Grid expansion",
+        bannerSub: "Original Due: 10 Nov 2026 → Revised Due: 20 Nov 2026, 15:00 IST",
+        netDays: "+10 Days",
+        pillText: "Submission deadline extended by 10 days",
+        timeline: [
+          {
+            ver: "v1.0 Baseline NIT",
+            date: "10 Nov 2026, 15:00 IST",
+            badge: "Original",
+            badgeClass: "bg-slate-100 text-slate-700",
+            notes: "Initial solar rooftop RFP."
+          },
+          {
+            ver: "v1.1 (Corrigendum 01 - Current)",
+            date: "20 Nov 2026, 15:00 IST",
+            badge: "+10 Days Extension",
+            badgeClass: "bg-emerald-100 text-emerald-800",
+            notes: "10 days granted for structural load calculation of Hospital blocks."
+          }
+        ],
+        milestones: [
+          {
+            name: "Bid Submission Deadline",
+            orig: "10 Nov 2026, 15:00 IST",
+            rev: "20 Nov 2026, 15:00 IST",
+            var: "+10 Days",
+            corr: "Corrigendum 01",
+            impact: "Additional time for site inspection of rooftop structures."
+          }
+        ]
+      }
+    };
+
+    function onTenderChange() {
+      renderDeadlinesView();
+    }
+
+    function renderDeadlinesView() {
+      const tenderKey = document.getElementById('tender-select').value;
+      const data = DEADLINE_DATA[tenderKey] || DEADLINE_DATA["GJ-2026-105"];
+
+      // Update banner
+      document.getElementById('banner-title').innerText = data.bannerTitle;
+      document.getElementById('banner-subtitle').innerText = data.bannerSub;
+      document.getElementById('banner-net-days').innerText = data.netDays;
+      document.getElementById('extension-summary-pill').innerText = data.pillText;
+
+      // Update timeline progression
+      const timelineContainer = document.getElementById('timeline-progression-container');
+      timelineContainer.innerHTML = data.timeline.map((item, idx) => {
+        const isLast = idx === data.timeline.length - 1;
+        const borderClass = isLast ? 'border-emerald-500' : 'border-slate-300';
+        const dotClass = isLast ? 'bg-emerald-600' : 'bg-slate-400';
+        return `
+          <div class="relative pl-6 ${isLast ? '' : 'pb-3'} border-l-2 ${borderClass}">
+            <div class="absolute -left-2 top-0 w-4 h-4 rounded-full ${dotClass} border-2 border-white"></div>
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="px-2 py-0.5 rounded text-[10px] font-black ${item.badgeClass}">${item.ver}</span>
+                <span class="text-xs font-bold text-slate-900 ml-2">${item.date}</span>
+                <span class="ml-2 px-2 py-0.5 rounded-full text-[10px] font-black bg-blue-50 text-blue-700">${item.badge}</span>
+              </div>
+              <span class="text-xs text-slate-400 font-mono">${isLast ? 'Active Cutoff' : 'Superseded'}</span>
+            </div>
+            <p class="text-xs text-slate-600 mt-1">${item.notes}</p>
+          </div>
+        `;
+      }).join('');
+
+      // Update milestones table
+      const tbody = document.getElementById('milestones-tbody');
+      tbody.innerHTML = data.milestones.map(m => {
+        return `
+          <tr class="hover:bg-slate-50 transition-colors">
+            <td class="py-3 px-4 font-bold text-slate-900">
+              <div class="flex items-center gap-2">
+                <i data-lucide="calendar" class="w-3.5 h-3.5 text-blue-600"></i>
+                <span>${m.name}</span>
+              </div>
+            </td>
+            <td class="py-3 px-4 font-mono text-slate-500 line-through">${m.orig}</td>
+            <td class="py-3 px-4 font-mono font-bold text-emerald-700">${m.rev}</td>
+            <td class="py-3 px-4 text-center">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-200">${m.var}</span>
+            </td>
+            <td class="py-3 px-4 font-semibold text-slate-600">${m.corr}</td>
+            <td class="py-3 px-4 text-slate-600 text-[11px]">${m.impact}</td>
+          </tr>
+        `;
+      }).join('');
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function downloadDeadlineMemo() {
+      showToast("Generating official Deadline Extension Gazette Notification...", "info");
+      setTimeout(() => {
+        window.print();
+      }, 500);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initSharedNav('impact-deadlines');
+      renderDeadlinesView();
+    });
+  </script>
+</body>
+</html>
