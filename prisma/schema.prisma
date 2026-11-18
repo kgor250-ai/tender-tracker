@@ -1,0 +1,496 @@
+// ==============================================================================
+// Tender Corrigendum & Amendment Tracker - Prisma Database Schema
+// ==============================================================================
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ------------------------------------------------------------------------------
+// Enums
+// ------------------------------------------------------------------------------
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+}
+
+enum RoleName {
+  SUPER_ADMIN
+  REVIEWER
+  REGISTERED_USER
+  SYSTEM_AGENT
+}
+
+enum TenderStatus {
+  DRAFT
+  PUBLISHED
+  AMENDED
+  CLOSED
+  AWARDED
+  CANCELLED
+  UNKNOWN
+}
+
+enum AmendmentType {
+  DEADLINE_EXTENSION
+  ELIGIBILITY_CRITERIA
+  FINANCIAL_TERMS
+  TECHNICAL_SPECIFICATION
+  DOCUMENT_CORRECTION
+  MEETING_SCHEDULE
+  CANCELLATION
+  REOPENING
+  OTHER
+}
+
+enum ReviewStatus {
+  DISCOVERED
+  PROCESSING
+  NEEDS_REVIEW
+  APPROVED
+  REJECTED
+  FAILED
+  REVOKED
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  MANUALLY_CORRECTED
+}
+
+enum SourceMethod {
+  API
+  RSS_FEED
+  PERMITTED_HTML
+  MANUAL_ONLY
+}
+
+enum JobStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum MatchStatus {
+  EXACT_MATCH
+  HIGH_CONFIDENCE
+  UNCERTAIN
+  NO_MATCH
+  RESOLVED
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  WEBHOOK
+}
+
+enum NotificationStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  FAILED
+  READ
+}
+
+enum ActorType {
+  USER
+  SYSTEM_AGENT
+}
+
+enum ImpactLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+// ------------------------------------------------------------------------------
+// Authentication & RBAC Models
+// ------------------------------------------------------------------------------
+
+model User {
+  id           String      @id @default(uuid()) @db.Uuid
+  email        String      @unique @db.VarChar(255)
+  passwordHash String      @map("password_hash") @db.VarChar(255)
+  name         String      @db.VarChar(255)
+  status       UserStatus  @default(ACTIVE)
+  lastLoginAt  DateTime?   @map("last_login_at")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+
+  roles            UserRole[]
+  reviewRecords    ReviewRecord[]
+  followedTenders  FollowedTender[]
+  notifications    Notification[]
+  auditLogs        AuditLog[]
+  versionsCreated  TenderVersion[]
+  reportJobs       ReportJob[]
+
+  @@map("users")
+}
+
+model Role {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        RoleName  @unique
+  description String?   @db.Text
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  users UserRole[]
+
+  @@map("roles")
+}
+
+model UserRole {
+  userId     String   @map("user_id") @db.Uuid
+  roleId     String   @map("role_id") @db.Uuid
+  assignedAt DateTime @default(now()) @map("assigned_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+  @@map("user_roles")
+}
+
+// ------------------------------------------------------------------------------
+// Procurement Authority Models
+// ------------------------------------------------------------------------------
+
+model Organization {
+  id             String   @id @default(uuid()) @db.Uuid
+  name           String   @db.VarChar(255)
+  normalizedName String   @map("normalized_name") @db.VarChar(255)
+  code           String?  @unique @db.VarChar(50)
+  parentId       String?  @map("parent_id") @db.Uuid
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  parent      Organization?  @relation("OrgHierarchy", fields: [parentId], references: [id])
+  children    Organization[] @relation("OrgHierarchy")
+  departments Department[]
+
+  @@index([normalizedName])
+  @@map("organizations")
+}
+
+model Department {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  name           String   @db.VarChar(255)
+  code           String?  @db.VarChar(50)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  tenders      Tender[]
+
+  @@map("departments")
+}
+
+// ------------------------------------------------------------------------------
+// Portal Sources & Ingestion Tracking
+// ------------------------------------------------------------------------------
+
+model PortalSource {
+  id                String       @id @default(uuid()) @db.Uuid
+  name              String       @db.VarChar(255)
+  baseUrl           String       @map("base_url") @db.Text
+  adapterKey        String       @map("adapter_key") @db.VarChar(100)
+  collectionMethod  SourceMethod @default(MANUAL_ONLY) @map("collection_method")
+  isEnabled         Boolean      @default(true) @map("is_enabled")
+  scheduleCron      String?      @map("schedule_cron") @db.VarChar(100)
+  rateLimitDelayMs  Int          @default(2000) @map("rate_limit_delay_ms")
+  termsReviewedAt   DateTime?    @map("terms_reviewed_at")
+  lastSuccessfulRun DateTime?    @map("last_successful_run")
+  createdAt         DateTime     @default(now()) @map("created_at")
+  updatedAt         DateTime     @updatedAt @map("updated_at")
+
+  tenders        Tender[]
+  collectionJobs CollectionJob[]
+
+  @@map("portal_sources")
+}
+
+model CollectionJob {
+  id          String    @id @default(uuid()) @db.Uuid
+  sourceId    String    @map("source_id") @db.Uuid
+  jobType     String    @map("job_type") @db.VarChar(50)
+  status      JobStatus @default(PENDING)
+  startedAt   DateTime  @default(now()) @map("started_at")
+  completedAt DateTime? @map("completed_at")
+  countsJson  Json?     @map("counts_json")
+  errorLog    String?   @map("error_log") @db.Text
+
+  source PortalSource     @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  items  CollectionItem[]
+
+  @@map("collection_jobs")
+}
+
+model CollectionItem {
+  id              String      @id @default(uuid()) @db.Uuid
+  jobId           String      @map("job_id") @db.Uuid
+  sourceRecordRef String?     @map("source_record_ref") @db.VarChar(255)
+  sourceUrl       String      @map("source_url") @db.Text
+  rawMetadataJson Json        @map("raw_metadata_json")
+  matchStatus     MatchStatus @default(UNCERTAIN) @map("match_status")
+  linkedTenderId  String?     @map("linked_tender_id") @db.Uuid
+  createdAt       DateTime    @default(now()) @map("created_at")
+
+  job          CollectionJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  linkedTender Tender?       @relation(fields: [linkedTenderId], references: [id], onDelete: SetNull)
+
+  @@index([sourceRecordRef])
+  @@map("collection_items")
+}
+
+// ------------------------------------------------------------------------------
+// Tender & Amendment Master Models
+// ------------------------------------------------------------------------------
+
+model Tender {
+  id                     String       @id @default(uuid()) @db.Uuid
+  sourceId               String?      @map("source_id") @db.Uuid
+  sourceTenderRef        String?      @map("source_tender_ref") @db.VarChar(255)
+  tenderNumber           String       @map("tender_number") @db.VarChar(255)
+  normalizedTenderNumber String       @map("normalized_tender_number") @db.VarChar(255)
+  title                  String       @db.Text
+  departmentId           String?      @map("department_id") @db.Uuid
+  status                 TenderStatus @default(DRAFT)
+  publicationDate        DateTime?    @map("publication_date")
+  submissionDeadline     DateTime?    @map("submission_deadline")
+  currency               String?      @default("INR") @db.VarChar(3)
+  estimatedValue         Decimal?     @map("estimated_value") @db.Decimal(18, 2)
+  category               String?      @db.VarChar(100)
+  location               String?      @db.VarChar(100)
+  sourceUrl              String?      @map("source_url") @db.Text
+  createdAt              DateTime     @default(now()) @map("created_at")
+  updatedAt              DateTime     @updatedAt @map("updated_at")
+
+  source          PortalSource?    @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+  department      Department?      @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  versions        TenderVersion[]
+  amendments      Amendment[]
+  documents       Document[]
+  followers       FollowedTender[]
+  collectionItems CollectionItem[]
+
+  @@index([normalizedTenderNumber])
+  @@index([status, submissionDeadline])
+  @@index([departmentId])
+  @@map("tenders")
+}
+
+model TenderVersion {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenderId      String   @map("tender_id") @db.Uuid
+  versionNumber Int      @map("version_number")
+  eventType     String   @map("event_type") @db.VarChar(50)
+  snapshotJson  Json     @map("snapshot_json")
+  createdBy     String?  @map("created_by") @db.Uuid
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  tender Tender @relation(fields: [tenderId], references: [id], onDelete: Restrict)
+  author User?  @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+
+  @@unique([tenderId, versionNumber])
+  @@map("tender_versions")
+}
+
+model Amendment {
+  id                 String        @id @default(uuid()) @db.Uuid
+  tenderId           String        @map("tender_id") @db.Uuid
+  sourceAmendmentRef String?       @map("source_amendment_ref") @db.VarChar(255)
+  amendmentNumber    String        @map("amendment_number") @db.VarChar(50)
+  title              String?       @db.Text
+  description        String?       @db.Text
+  publicationDate    DateTime?     @map("publication_date")
+  amendmentType      AmendmentType @default(OTHER) @map("amendment_type")
+  reviewStatus       ReviewStatus  @default(DISCOVERED) @map("review_status")
+  sourceUrl          String?       @map("source_url") @db.Text
+  createdAt          DateTime      @default(now()) @map("created_at")
+  updatedAt          DateTime      @updatedAt @map("updated_at")
+
+  tender        Tender            @relation(fields: [tenderId], references: [id], onDelete: Restrict)
+  changes       AmendmentChange[]
+  documents     Document[]
+  reviewRecords ReviewRecord[]
+  analyses      ChangeAnalysis[]
+  notifications Notification[]
+
+  @@index([tenderId, publicationDate])
+  @@map("amendments")
+}
+
+model AmendmentChange {
+  id                 String             @id @default(uuid()) @db.Uuid
+  amendmentId        String             @map("amendment_id") @db.Uuid
+  fieldKey           String             @map("field_key") @db.VarChar(100)
+  changeType         String             @map("change_type") @db.VarChar(50)
+  oldValue           String?            @map("old_value") @db.Text
+  newValue           String?            @map("new_value") @db.Text
+  confidence         Decimal?           @db.Decimal(5, 4)
+  evidenceJson       Json?              @map("evidence_json")
+  verificationStatus VerificationStatus @default(PENDING) @map("verification_status")
+  createdAt          DateTime           @default(now()) @map("created_at")
+
+  amendment Amendment @relation(fields: [amendmentId], references: [id], onDelete: Cascade)
+
+  @@index([amendmentId, fieldKey])
+  @@map("amendment_changes")
+}
+
+model ChangeAnalysis {
+  id                 String      @id @default(uuid()) @db.Uuid
+  amendmentId        String      @map("amendment_id") @db.Uuid
+  modelOrRuleVersion String      @map("model_or_rule_version") @db.VarChar(100)
+  summary            String      @db.Text
+  impactLevel        ImpactLevel @default(MEDIUM) @map("impact_level")
+  categoriesJson     Json?       @map("categories_json")
+  status             String      @default("COMPLETED") @db.VarChar(50)
+  createdAt          DateTime    @default(now()) @map("created_at")
+
+  amendment Amendment @relation(fields: [amendmentId], references: [id], onDelete: Cascade)
+
+  @@map("change_analyses")
+}
+
+model ReviewRecord {
+  id          String   @id @default(uuid()) @db.Uuid
+  amendmentId String   @map("amendment_id") @db.Uuid
+  reviewerId  String   @map("reviewer_id") @db.Uuid
+  decision    String   @db.VarChar(50)
+  notes       String?  @db.Text
+  reviewedAt  DateTime @default(now()) @map("reviewed_at")
+
+  amendment Amendment @relation(fields: [amendmentId], references: [id], onDelete: Cascade)
+  reviewer  User      @relation(fields: [reviewerId], references: [id], onDelete: Restrict)
+
+  @@map("review_records")
+}
+
+// ------------------------------------------------------------------------------
+// Document Storage & OCR Extractions
+// ------------------------------------------------------------------------------
+
+model Document {
+  id               String   @id @default(uuid()) @db.Uuid
+  tenderId         String?  @map("tender_id") @db.Uuid
+  amendmentId      String?  @map("amendment_id") @db.Uuid
+  objectKey        String   @map("object_key") @db.Text
+  originalFilename String   @map("original_filename") @db.VarChar(255)
+  mimeType         String   @map("mime_type") @db.VarChar(100)
+  sizeBytes        BigInt   @map("size_bytes")
+  sha256           String   @db.VarChar(64)
+  pageCount        Int?     @map("page_count")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  tender      Tender?              @relation(fields: [tenderId], references: [id], onDelete: SetNull)
+  amendment   Amendment?           @relation(fields: [amendmentId], references: [id], onDelete: SetNull)
+  extractions DocumentExtraction[]
+
+  @@index([sha256])
+  @@map("documents")
+}
+
+model DocumentExtraction {
+  id               String   @id @default(uuid()) @db.Uuid
+  documentId       String   @map("document_id") @db.Uuid
+  engine           String   @db.VarChar(50)
+  language         String?  @db.VarChar(50)
+  status           String   @default("COMPLETED") @db.VarChar(50)
+  extractedTextKey String?  @map("extracted_text_key") @db.Text
+  pageMetadataJson Json?    @map("page_metadata_json")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@map("document_extractions")
+}
+
+// ------------------------------------------------------------------------------
+// Subscriptions & Notifications
+// ------------------------------------------------------------------------------
+
+model FollowedTender {
+  id                         String   @id @default(uuid()) @db.Uuid
+  userId                     String   @map("user_id") @db.Uuid
+  tenderId                   String   @map("tender_id") @db.Uuid
+  notificationPreferencesJson Json?   @map("notification_preferences_json")
+  createdAt                  DateTime @default(now()) @map("created_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tender Tender @relation(fields: [tenderId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, tenderId])
+  @@map("followed_tenders")
+}
+
+model Notification {
+  id          String              @id @default(uuid()) @db.Uuid
+  userId      String              @map("user_id") @db.Uuid
+  amendmentId String?             @map("amendment_id") @db.Uuid
+  channel     NotificationChannel @default(IN_APP)
+  status      NotificationStatus  @default(QUEUED)
+  subject     String              @db.VarChar(255)
+  payloadJson Json                @map("payload_json")
+  sentAt      DateTime?           @map("sent_at")
+  errorCode   String?             @map("error_code") @db.VarChar(100)
+  createdAt   DateTime            @default(now()) @map("created_at")
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amendment Amendment? @relation(fields: [amendmentId], references: [id], onDelete: SetNull)
+
+  @@index([userId, status])
+  @@map("notifications")
+}
+
+// ------------------------------------------------------------------------------
+// Audit Trail & Reports
+// ------------------------------------------------------------------------------
+
+model AuditLog {
+  id           String    @id @default(uuid()) @db.Uuid
+  actorType    ActorType @map("actor_type")
+  actorId      String?   @map("actor_id") @db.Uuid
+  action       String    @db.VarChar(100)
+  resourceType String    @map("resource_type") @db.VarChar(100)
+  resourceId   String    @map("resource_id") @db.Uuid
+  beforeJson   Json?     @map("before_json")
+  afterJson    Json?     @map("after_json")
+  ipHash       String?   @map("ip_hash") @db.VarChar(64)
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([resourceType, resourceId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model ReportJob {
+  id          String    @id @default(uuid()) @db.Uuid
+  requestedBy String    @map("requested_by") @db.Uuid
+  reportType  String    @map("report_type") @db.VarChar(50)
+  filtersJson Json?     @map("filters_json")
+  status      JobStatus @default(PENDING)
+  objectKey   String?   @map("object_key") @db.Text
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  requester User @relation(fields: [requestedBy], references: [id], onDelete: Cascade)
+
+  @@map("report_jobs")
+}
+

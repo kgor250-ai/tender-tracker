@@ -1,0 +1,23 @@
+{
+  "name": "@tender-tracker/collection-worker",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts"
+  },
+  "dependencies": {
+    "@tender-tracker/shared-types": "workspace:*",
+    "@tender-tracker/config": "workspace:*",
+    "axios": "^1.6.7",
+    "bullmq": "^5.4.1",
+    "ioredis": "^5.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
+
