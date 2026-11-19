@@ -3,6 +3,8 @@
 
 <head>
   <script>
+    // Redirect to login if not authenticated
+    // Auth checked via shared.js
     // Prevent ALL browser alert/confirm popups immediately
     window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
     window.confirm = function(msg) { return true; };
@@ -26,17 +28,22 @@
       background-color: #0b192c;
     }
       /* Fixed sidebar - prevents sidebar from scrolling with page */
+          /* Fixed sidebar - prevents sidebar from scrolling with page */
+          /* Fixed sidebar - prevents sidebar from scrolling with page */
     aside.fixed-sidebar {
       position: fixed;
       top: 0;
       left: 0;
+      width: 16rem;
       height: 100vh;
       overflow-y: auto;
       z-index: 50;
     }
     .main-with-sidebar {
-      margin-left: 256px;
-      height: 100vh;
+      margin-left: 16rem;
+      width: calc(100% - 16rem);
+      min-width: 0;
+      min-height: 100vh;
       overflow-y: auto;
     }
   </style>
@@ -60,26 +67,27 @@
 
       <nav class="p-3 space-y-1 text-xs font-semibold">
         <a href="dashboard.html" data-page="dashboard"
-          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all">
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
           <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
           <span>Dashboard</span>
         </a>
+
         <a href="tenders.html" data-page="tenders"
           class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
           <i data-lucide="file-text" class="w-4 h-4"></i>
           <span>Tenders</span>
         </a>
 
-        <!-- Module 4: Version Management Link -->
         <a href="versions.html" data-page="versions"
           class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
           <div class="flex items-center gap-3">
             <i data-lucide="git-branch" class="w-4 h-4"></i>
             <span>Version History</span>
           </div>
-          
         </a>
-        <a href="notifications.html" data-page="notifications" class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+
+        <a href="notifications.html" data-page="notifications"
+          class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
           <div class="flex items-center gap-3">
             <i data-lucide="bell" class="w-4 h-4"></i>
             <span>Notifications</span>
@@ -87,11 +95,125 @@
           <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">4</span>
         </a>
 
-        <a href="deadlines.html" data-page="deadlines" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+        <a href="deadlines.html" data-page="deadlines"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
           <i data-lucide="calendar-clock" class="w-4 h-4"></i>
           <span>Upcoming Deadlines</span>
         </a>
 
+        <a href="review.html" data-page="review"
+          class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="check-square" class="w-4 h-4"></i>
+            <span>Review Queue</span>
+          </div>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">18</span>
+        </a>
+
+        <a href="sources.html" data-page="sources"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="globe" class="w-4 h-4"></i>
+          <span>Sources</span>
+        </a>
+
+        <a href="collection-monitor.html" data-page="collection"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="activity" class="w-4 h-4"></i>
+          <span>Collection Monitor</span>
+        </a>
+
+        <a href="analytics.html" data-page="analytics"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+          <span>Analytics & Reports</span>
+        </a>
+
+        <div class="pt-5 pb-1 px-3.5 text-[10px] uppercase font-bold tracking-wider text-slate-500">
+          Administration
+        </div>
+
+        <a href="users.html" data-page="users"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="users" class="w-4 h-4"></i>
+          <span>Users & Roles</span>
+        </a>
+
+        <a href="audit-logs.html" data-page="audit"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="shield-alert" class="w-4 h-4"></i>
+          <span>Audit Logs</span>
+        </a>
+
+        <a href="settings.html" data-page="settings"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="p-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="font-medium">System Online</span>
+      </div>
+      <span class="font-mono text-slate-500">v1.0.0</span>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT AREA -->
+  <div class="flex-1 flex flex-col main-with-sidebar min-h-screen overflow-x-hidden min-w-0">
+    <!-- TOP HEADER BAR -->
+    <header
+      class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+  <script>
+    // Prevent ALL browser alert/confirm popups immediately
+    window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
+    window.confirm = function(msg) { return true; };
+  </script>
+      <div class="flex items-center gap-4 flex-1 max-w-xl">
+        <div class="relative w-full">
+          <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <i data-lucide="search" class="w-4 h-4"></i>
+          </span>
+          <input type="text" placeholder="Search tenders, amendments..."
+            class="w-full pl-10 pr-4 py-2 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-blue-500 text-xs font-semibold text-slate-800 outline-none transition-all">
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <!-- Notification Bell & Dropdown -->
+        <div class="relative">
+          <button id="notification-bell-btn" onclick="toggleDropdown('notification-dropdown-menu')"
+            class="relative p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors"
+            title="Notifications">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span id="notification-badge"
+              class="absolute top-1.5 right-1.5 w-4 h-4 bg-rose-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center animate-pulse">3</span>
+          </button>
+
+          <!-- Notification Dropdown Menu -->
+          <div id="notification-dropdown-menu"
+            class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 overflow-hidden text-xs">
+            <div class="px-4 py-3 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-slate-800 text-sm">Notifications</span>
+                <span id="unread-count-pill"
+                  class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">3 New</span>
+              </div>
+              <button onclick="markAllNotificationsAsRead()"
+                class="text-[11px] font-bold text-blue-600 hover:underline">Mark all read</button>
+            </div>
+            <div class="divide-y divide-slate-100 max-h-80 overflow-y-auto" id="notification-items-container"></div>
+            <div class="p-2.5 bg-slate-50 border-t border-slate-100 text-center">
+              <a href="audit-logs.html"
+                class="text-xs font-bold text-slate-600 hover:text-blue-600 flex items-center justify-center gap-1.5 transition-colors">
+                <i data-lucide="history" class="w-3.5 h-3.5"></i>
+                <span>View Full System Audit Trail</span>
+              </a>
+            </div>
+          </div>
+        </div>
 
         <div class="relative">
           <button id="user-menu-btn" onclick="toggleDropdown('user-dropdown-menu')"

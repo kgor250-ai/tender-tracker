@@ -8,7 +8,7 @@ const DEFAULT_USER = {
 };
 
 function getActiveUser() {
-  const stored = localStorage.getItem('activeUser');
+  const stored = localStorage.getItem('activeUser') || sessionStorage.getItem('activeUser');
   if (stored) {
     try { return JSON.parse(stored); } catch (e) {}
   }
@@ -17,6 +17,7 @@ function getActiveUser() {
 
 function setActiveUser(user) {
   localStorage.setItem('activeUser', JSON.stringify(user));
+  sessionStorage.setItem('activeUser', JSON.stringify(user));
   window.dispatchEvent(new Event('userChanged'));
 }
 
@@ -51,6 +52,9 @@ function switchRole(roleKey) {
 function initSharedNav(activePage) {
   // Update user badge in top bar
   const user = getActiveUser();
+  if (!sessionStorage.getItem('activeUser')) {
+    try { sessionStorage.setItem('activeUser', JSON.stringify(user)); } catch (e) {}
+  }
   const userNameEl = document.getElementById('nav-user-name');
   const userRoleEl = document.getElementById('nav-user-role');
   const userAvatarEl = document.getElementById('nav-user-avatar');
