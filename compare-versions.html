@@ -62,109 +62,21 @@
             <i data-lucide="git-branch" class="w-4 h-4 text-white"></i>
             <span>Version History</span>
           </div>
-          <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-white text-blue-800">M4</span>
+          
         </a>
-        <!-- Module 6: Notifications & Deadlines -->
-        <div class="pt-2">
-          <div class="flex items-center justify-between px-3.5 py-1 text-[10px] font-extrabold text-blue-400 uppercase tracking-wider">
-            <span>Module 6: Monitoring</span>
-            <span class="px-1.5 py-0.2 rounded text-[8px] font-black bg-blue-500/20 text-blue-300 border border-blue-500/30">M6</span>
-          </div>
-          <div class="space-y-0.5 mt-1 pl-2 border-l-2 border-blue-600/40 ml-4">
-            <a href="notifications.html" data-page="notifications" class="sidebar-link flex items-center justify-between px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all text-[11px]">
-              <div class="flex items-center gap-2.5">
-                <i data-lucide="bell" class="w-3.5 h-3.5"></i>
-                <span>Notification List</span>
-              </div>
-              <span class="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-rose-500 text-white">4</span>
-            </a>
-            <a href="deadlines.html" data-page="deadlines" class="sidebar-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all text-[11px]">
-              <i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i>
-              <span>Upcoming Deadlines</span>
-            </a>
-          </div>
-        </div>
-        <a href="review.html" data-page="review" class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+        <a href="notifications.html" data-page="notifications" class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
           <div class="flex items-center gap-3">
-            <i data-lucide="check-square" class="w-4 h-4"></i>
-            <span>Review Queue</span>
+            <i data-lucide="bell" class="w-4 h-4"></i>
+            <span>Notifications</span>
           </div>
-          <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">18</span>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">4</span>
         </a>
-        <a href="sources.html" data-page="sources" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
-          <i data-lucide="globe" class="w-4 h-4"></i>
-          <span>Sources</span>
-        </a>
-        <a href="collection-monitor.html" data-page="collection" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
-          <i data-lucide="activity" class="w-4 h-4"></i>
-          <span>Collection Monitor</span>
-        </a>
-        <a href="analytics.html" data-page="analytics" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
-          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
-          <span>Analytics & Reports</span>
-        </a>
-        <div class="pt-4 pb-1">
-          <span class="px-3.5 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Administration</span>
-        </div>
-        <a href="users.html" data-page="users" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
-          <i data-lucide="users" class="w-4 h-4"></i>
-          <span>Users & Roles</span>
-        </a>
-        <a href="audit-logs.html" data-page="audit" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
-          <i data-lucide="shield-alert" class="w-4 h-4"></i>
-          <span>Audit Logs</span>
-        </a>
-        <a href="settings.html" data-page="settings" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
-          <i data-lucide="settings" class="w-4 h-4"></i>
-          <span>Settings</span>
-        </a>
-      </nav>
-    </div>
-  </aside>
 
-  <!-- CONTENT WRAPPER -->
-  <div class="flex-1 flex flex-col main-with-sidebar min-w-0">
+        <a href="deadlines.html" data-page="deadlines" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="calendar-clock" class="w-4 h-4"></i>
+          <span>Upcoming Deadlines</span>
+        </a>
 
-    <!-- HEADER -->
-    <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between gap-4 sticky top-0 z-40">
-  <script>
-    // Prevent ALL browser alert/confirm popups immediately
-    window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
-    window.confirm = function(msg) { return true; };
-  </script>
-      <div class="flex items-center gap-4 flex-1 max-w-xl">
-        <div class="relative w-full">
-          <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-            <i data-lucide="search" class="w-4 h-4"></i>
-          </span>
-          <input type="text" placeholder="Search parameters in version diff..." class="w-full pl-10 pr-4 py-2 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-blue-500 text-xs font-semibold text-slate-800 outline-none transition-all">
-        </div>
-      </div>
-
-      <div class="flex items-center gap-4">
-        <!-- Notification Bell & Dropdown -->
-        <div class="relative">
-          <button id="notification-bell-btn" onclick="toggleDropdown('notification-dropdown-menu')" class="relative p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors" title="Notifications">
-            <i data-lucide="bell" class="w-5 h-5"></i>
-            <span id="notification-badge" class="absolute top-1.5 right-1.5 w-4 h-4 bg-rose-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center animate-pulse">3</span>
-          </button>
-          <div id="notification-dropdown-menu" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 overflow-hidden text-xs">
-            <div class="px-4 py-3 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <span class="font-bold text-slate-800 text-sm">Notifications</span>
-                <span id="unread-count-pill" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">3 New</span>
-              </div>
-              <button onclick="markAllNotificationsAsRead()" class="text-[11px] font-bold text-blue-600 hover:underline">Mark all read</button>
-            </div>
-            <div class="divide-y divide-slate-100 max-h-80 overflow-y-auto" id="notification-items-container"></div>
-            <div class="p-2.5 bg-slate-50 border-t border-slate-100 text-center">
-              <a href="audit-logs.html" class="text-xs font-bold text-slate-600 hover:text-blue-600 flex items-center justify-center gap-1.5 transition-colors">
-                <i data-lucide="history" class="w-3.5 h-3.5"></i>
-                <span>View Full System Audit Trail</span>
-              </a>
-            </div>
-          </div>
-        </div>
 
         <!-- User Menu Dropdown -->
         <div class="relative">
@@ -213,188 +125,19 @@
             <a href="tenders.html" class="hover:text-blue-600">Tenders</a>
             <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
             <a href="versions.html" class="hover:text-blue-600 font-bold" id="bread-tender-id">GJ/2026/105</a>
-        <!-- Module 6: Notifications & Deadlines -->
-        <div class="pt-2">
-          <div class="flex items-center justify-between px-3.5 py-1 text-[10px] font-extrabold text-blue-400 uppercase tracking-wider">
-            <span>Module 6: Monitoring</span>
-            <span class="px-1.5 py-0.2 rounded text-[8px] font-black bg-blue-500/20 text-blue-300 border border-blue-500/30">M6</span>
+        <a href="notifications.html" data-page="notifications" class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="bell" class="w-4 h-4"></i>
+            <span>Notifications</span>
           </div>
-          <div class="space-y-0.5 mt-1 pl-2 border-l-2 border-blue-600/40 ml-4">
-            <a href="notifications.html" data-page="notifications" class="sidebar-link flex items-center justify-between px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all text-[11px]">
-              <div class="flex items-center gap-2.5">
-                <i data-lucide="bell" class="w-3.5 h-3.5"></i>
-                <span>Notification List</span>
-              </div>
-              <span class="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-rose-500 text-white">4</span>
-            </a>
-            <a href="deadlines.html" data-page="deadlines" class="sidebar-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all text-[11px]">
-              <i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i>
-              <span>Upcoming Deadlines</span>
-            </a>
-          </div>
-        </div>
-            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
-            <span>Module 4: Compare Two Versions</span>
-          </div>
-          <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Version Comparison Matrix</h1>
-          <p class="text-xs text-slate-500 mt-0.5">Select two versions to perform structured side-by-side delta inspection and clause comparison</p>
-        </div>
-
-        <div class="flex items-center gap-2.5">
-          <button onclick="showToast('Exporting side-by-side comparison report (PDF & CSV)...', 'info')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-500/20 flex items-center gap-2">
-            <i data-lucide="download" class="w-4 h-4"></i>
-            <span>Export Comparison Report</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- MODULE 4 SUB-NAVIGATION TABS -->
-      <div class="flex items-center gap-2 border-b border-slate-200 text-xs font-bold text-slate-500 overflow-x-auto">
-        <a href="versions.html" class="px-4 py-2.5 hover:text-slate-900 flex items-center gap-1.5 transition-colors whitespace-nowrap">
-          <i data-lucide="history" class="w-4 h-4"></i>
-          <span>1. Tender Version History</span>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">4</span>
         </a>
-        <!-- Module 6: Notifications & Deadlines -->
-        <div class="pt-2">
-          <div class="flex items-center justify-between px-3.5 py-1 text-[10px] font-extrabold text-blue-400 uppercase tracking-wider">
-            <span>Module 6: Monitoring</span>
-            <span class="px-1.5 py-0.2 rounded text-[8px] font-black bg-blue-500/20 text-blue-300 border border-blue-500/30">M6</span>
-          </div>
-          <div class="space-y-0.5 mt-1 pl-2 border-l-2 border-blue-600/40 ml-4">
-            <a href="notifications.html" data-page="notifications" class="sidebar-link flex items-center justify-between px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all text-[11px]">
-              <div class="flex items-center gap-2.5">
-                <i data-lucide="bell" class="w-3.5 h-3.5"></i>
-                <span>Notification List</span>
-              </div>
-              <span class="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-rose-500 text-white">4</span>
-            </a>
-            <a href="deadlines.html" data-page="deadlines" class="sidebar-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all text-[11px]">
-              <i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i>
-              <span>Upcoming Deadlines</span>
-            </a>
-          </div>
-        </div>
-        <a href="version-details.html" class="px-4 py-2.5 hover:text-slate-900 flex items-center gap-1.5 transition-colors whitespace-nowrap">
-          <i data-lucide="layers" class="w-4 h-4"></i>
-          <span>2. Version Details</span>
+
+        <a href="deadlines.html" data-page="deadlines" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="calendar-clock" class="w-4 h-4"></i>
+          <span>Upcoming Deadlines</span>
         </a>
-        <a href="compare-versions.html" class="px-4 py-2.5 border-b-2 border-blue-600 text-blue-600 flex items-center gap-1.5 whitespace-nowrap">
-          <i data-lucide="git-compare" class="w-4 h-4"></i>
-          <span>3. Compare Two Versions</span>
-        </a>
-        <a href="latest-tender.html" class="px-4 py-2.5 hover:text-slate-900 flex items-center gap-1.5 transition-colors whitespace-nowrap">
-          <i data-lucide="check-circle-2" class="w-4 h-4"></i>
-          <span>4. Latest Tender Information</span>
-        </a>
-      </div>
 
-      <!-- VERSION PICKER BAR -->
-      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        
-        <!-- BASE VERSION (A) -->
-        <div class="flex-1 space-y-1">
-          <label class="block text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Base Version (Left / Source)</label>
-          <select id="select-ver-a" onchange="triggerComparison()" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-800 text-xs cursor-pointer outline-none focus:ring-2 focus:ring-blue-500">
-            <!-- Populated dynamically -->
-          </select>
-        </div>
-
-        <!-- SWAP BUTTON -->
-        <div class="flex items-center justify-center pt-4 md:pt-0">
-          <button onclick="swapVersions()" class="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors shadow-xs" title="Swap comparison directions">
-            <i data-lucide="arrow-left-right" class="w-4 h-4"></i>
-          </button>
-        </div>
-
-        <!-- TARGET VERSION (B) -->
-        <div class="flex-1 space-y-1">
-          <label class="block text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Comparison Target (Right / Revision)</label>
-          <select id="select-ver-b" onchange="triggerComparison()" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-800 text-xs cursor-pointer outline-none focus:ring-2 focus:ring-blue-500">
-            <!-- Populated dynamically -->
-          </select>
-        </div>
-
-      </div>
-
-      <!-- COMPARISON SUMMARY TILES -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
-          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Modified Parameters</span>
-          <p class="text-2xl font-extrabold text-purple-600" id="diff-modified-count">2 Fields</p>
-          <p class="text-[11px] text-slate-500" id="diff-modified-subtitle">Values updated between selections</p>
-        </div>
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
-          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Identical Parameters</span>
-          <p class="text-2xl font-extrabold text-emerald-600" id="diff-unchanged-count">6 Fields</p>
-          <p class="text-[11px] text-slate-500">Unchanged specification baselines</p>
-        </div>
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
-          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Timeline Lag</span>
-          <p class="text-2xl font-extrabold text-blue-600" id="diff-lag-count">6 Days</p>
-          <p class="text-[11px] text-slate-500" id="diff-lag-subtitle">01 Nov 2026 to 07 Nov 2026</p>
-        </div>
-      </div>
-
-      <!-- COMPARISON VIEW TABS (Matrix vs Document Diff) -->
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-        <div class="px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50">
-          <div>
-            <h3 class="text-sm font-extrabold text-slate-900">Structured Field-by-Field Matrix</h3>
-            <p class="text-xs text-slate-500">Direct parameter alignment highlighting specific value deviations</p>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="text-[11px] font-bold text-slate-400">View Mode:</span>
-            <button id="tab-matrix-btn" onclick="setViewMode('matrix')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-blue-600 shadow-xs border border-slate-200">Table Matrix</button>
-            <button id="tab-doc-btn" onclick="setViewMode('document')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900">Clause Reader</button>
-          </div>
-        </div>
-
-        <!-- VIEW 1: STRUCTURED TABLE MATRIX -->
-        <div id="view-matrix" class="p-6">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-50 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider border-y border-slate-100">
-                <tr>
-                  <th class="py-3 px-4 w-1/4">Specification Parameter</th>
-                  <th class="py-3 px-4 w-1/3" id="th-ver-a">Base (v1.0)</th>
-                  <th class="py-3 px-4 w-1/3" id="th-ver-b">Comparison Target (v1.2)</th>
-                  <th class="py-3 px-4 text-center">Status</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-100" id="matrix-tbody">
-                <!-- Populated dynamically -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- VIEW 2: DOCUMENT CLAUSE READER -->
-        <div id="view-document" class="hidden p-6 space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-mono text-xs">
-            <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block border-b border-slate-200 pb-2" id="doc-title-a">Version A Clauses</span>
-              <p class="text-slate-600">Clause 2.1 - Bid Submission Schedule:</p>
-              <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900" id="doc-clause-a">
-                Bids close on 20 Nov 2026, 17:00 IST. Technical bid evaluation begins 21 Nov 2026, 11:00 IST.
-              </div>
-              <p class="text-slate-600">Clause 3.4 - Minimum Financial Eligibility:</p>
-              <div class="p-3 bg-slate-100 border border-slate-200 rounded-xl text-slate-700" id="doc-turnover-a">
-                Bidder must demonstrate average annual turnover of ₹ 15,00,00,000 across last 3 financial years.
-              </div>
-            </div>
-
-            <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-              <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider block border-b border-slate-200 pb-2" id="doc-title-b">Version B Clauses (Revised)</span>
-              <p class="text-slate-600">Clause 2.1 - Bid Submission Schedule (Amended):</p>
-              <div class="p-3 bg-emerald-50 border border-emerald-300 rounded-xl text-emerald-900 font-bold" id="doc-clause-b">
-                Bids close on 30 Nov 2026, 17:00 IST. Technical bid evaluation begins 01 Dec 2026, 11:00 IST.
-              </div>
-              <p class="text-slate-600">Clause 3.4 - Minimum Financial Eligibility (Amended):</p>
-              <div class="p-3 bg-emerald-50 border border-emerald-300 rounded-xl text-emerald-900 font-bold" id="doc-turnover-b">
-                Bidder must demonstrate average annual turnover of ₹ 10,00,00,000 across last 3 financial years.
-              </div>
-            </div>
-          </div>
         </div>
 
       </div>

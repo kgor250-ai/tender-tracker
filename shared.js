@@ -141,6 +141,10 @@ document.addEventListener('click', (e) => {
     const el = document.getElementById('date-range-dropdown');
     if (el) el.classList.add('hidden');
   }
+  if (!e.target.closest('[onclick*="sim-dropdown"]') && !e.target.closest('#sim-dropdown')) {
+    const el = document.getElementById('sim-dropdown');
+    if (el) el.classList.add('hidden');
+  }
 });
 
 // Notifications State & Logic - Module 6: Notifications & Deadline Monitoring
@@ -234,6 +238,11 @@ function renderNotificationUI() {
       badge.classList.add('hidden');
     }
   }
+
+  // Update sidebar notification badges
+  document.querySelectorAll('#nav-badge-notif-sidebar, #nav-badge-deadlines-sidebar, .notif-badge-pill').forEach(el => {
+    el.innerText = unreadCount;
+  });
   if (countPill) {
     countPill.innerText = unreadCount > 0 ? `${unreadCount} New` : '0 New';
     countPill.className = unreadCount > 0 

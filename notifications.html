@@ -2,15 +2,13 @@
 <html lang="en">
 <head>
   <script>
-    // Redirect to login if not authenticated
-    if (!sessionStorage.getItem('activeUser')) { window.location.replace('login.html'); }
     // Prevent ALL browser alert/confirm popups immediately
     window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
     window.confirm = function(msg) { return true; };
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Notification List - Module 6 | Tender Tracker</title>
+  <title>Notifications | Tender Tracker</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -67,29 +65,21 @@
             <i data-lucide="git-branch" class="w-4 h-4"></i>
             <span>Version History</span>
           </div>
-          <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-700 text-slate-300">M4</span>
+          
         </a>
 
-        <!-- Module 6: Notifications & Deadline Monitoring (Active) -->
-        <div class="pt-2">
-          <div class="flex items-center justify-between px-3.5 py-1 text-[10px] font-extrabold text-blue-400 uppercase tracking-wider">
-            <span>Module 6: Monitoring</span>
-            <span class="px-1.5 py-0.2 rounded text-[8px] font-black bg-blue-500/20 text-blue-300 border border-blue-500/30">M6</span>
+        <a href="notifications.html" data-page="notifications" class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-blue-600 text-white font-bold transition-all shadow-md shadow-blue-600/30">
+          <div class="flex items-center gap-3">
+            <i data-lucide="bell" class="w-4 h-4 text-white"></i>
+            <span>Notifications</span>
           </div>
-          <div class="space-y-0.5 mt-1 pl-2 border-l-2 border-blue-600/40 ml-4">
-            <a href="notifications.html" data-page="notifications" class="sidebar-link flex items-center justify-between px-3 py-2 rounded-lg bg-blue-600 text-white font-bold transition-all shadow-md shadow-blue-600/20 text-[11px]">
-              <div class="flex items-center gap-2.5">
-                <i data-lucide="bell" class="w-3.5 h-3.5"></i>
-                <span>Notification List</span>
-              </div>
-              <span id="nav-badge-notif-sidebar" class="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-rose-500 text-white">4</span>
-            </a>
-            <a href="deadlines.html" data-page="deadlines" class="sidebar-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all text-[11px]">
-              <i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i>
-              <span>Upcoming Deadlines</span>
-            </a>
-          </div>
-        </div>
+          <span id="nav-badge-notif-sidebar" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white text-blue-700">4</span>
+        </a>
+
+        <a href="deadlines.html" data-page="deadlines" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="calendar-clock" class="w-4 h-4"></i>
+          <span>Upcoming Deadlines</span>
+        </a>
 
         <a href="review.html" data-page="review" class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
           <div class="flex items-center gap-3">
@@ -239,9 +229,7 @@
         <div class="flex items-center gap-2 text-xs text-slate-500 font-semibold mb-1">
           <a href="dashboard.html" class="hover:text-blue-600">Home</a>
           <span>/</span>
-          <span class="text-blue-600 font-bold">Module 6: Monitoring</span>
-          <span>/</span>
-          <span class="text-slate-800 font-bold">Notification List</span>
+          <span class="text-slate-800 font-bold">Notifications</span>
         </div>
         <div class="flex items-center justify-between">
           <div>
@@ -401,7 +389,7 @@
           </div>
           <div>
             <h3 class="font-extrabold text-sm text-slate-900">Email Alert Preferences</h3>
-            <span class="text-[11px] text-slate-500">Module 6 Email Integration</span>
+            <span class="text-[11px] text-slate-500">Email Notification Integration</span>
           </div>
         </div>
         <button onclick="closeEmailConfigModal()" class="p-1 rounded-lg text-slate-400 hover:bg-slate-200 text-xs">
