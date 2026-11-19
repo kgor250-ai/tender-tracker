@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    // Redirect to login if not authenticated
+    if (!sessionStorage.getItem('activeUser')) { window.location.replace('login.html'); }
+    // Prevent ALL browser alert/confirm popups immediately
+    window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
+    window.confirm = function(msg) { return true; };
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notification List - Module 6 | Tender Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .bg-sidebar { background-color: #0b192c; }
+    aside.fixed-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 50;
+    }
+    .main-with-sidebar {
+      margin-left: 256px;
+      min-height: 100vh;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex min-h-screen">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-sidebar fixed-sidebar text-white flex flex-col justify-between shrink-0 min-h-screen border-r border-slate-800">
+    <div>
+      <!-- Brand Logo -->
+      <a href="dashboard.html" class="p-5 flex items-center gap-3 border-b border-slate-800/80 hover:bg-slate-800/40 transition-colors block">
+        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-600/30">
+          <i data-lucide="scale" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-sm tracking-tight block">Tender Tracker</span>
+          <span class="text-[10px] text-slate-400 font-medium block">Amendment Management</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="p-3 space-y-1 text-xs font-semibold">
+        <a href="dashboard.html" data-page="dashboard" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="tenders.html" data-page="tenders" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="file-text" class="w-4 h-4"></i>
+          <span>Tenders</span>
+        </a>
+
+        <!-- Module 4 -->
+        <a href="versions.html" data-page="versions" class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="git-branch" class="w-4 h-4"></i>
+            <span>Version History</span>
+          </div>
+          <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-700 text-slate-300">M4</span>
+        </a>
+
+        <!-- Module 6: Notifications & Deadline Monitoring (Active) -->
+        <div class="pt-2">
+          <div class="flex items-center justify-between px-3.5 py-1 text-[10px] font-extrabold text-blue-400 uppercase tracking-wider">
+            <span>Module 6: Monitoring</span>
+            <span class="px-1.5 py-0.2 rounded text-[8px] font-black bg-blue-500/20 text-blue-300 border border-blue-500/30">M6</span>
+          </div>
+          <div class="space-y-0.5 mt-1 pl-2 border-l-2 border-blue-600/40 ml-4">
+            <a href="notifications.html" data-page="notifications" class="sidebar-link flex items-center justify-between px-3 py-2 rounded-lg bg-blue-600 text-white font-bold transition-all shadow-md shadow-blue-600/20 text-[11px]">
+              <div class="flex items-center gap-2.5">
+                <i data-lucide="bell" class="w-3.5 h-3.5"></i>
+                <span>Notification List</span>
+              </div>
+              <span id="nav-badge-notif-sidebar" class="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-rose-500 text-white">4</span>
+            </a>
+            <a href="deadlines.html" data-page="deadlines" class="sidebar-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all text-[11px]">
+              <i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i>
+              <span>Upcoming Deadlines</span>
+            </a>
+          </div>
+        </div>
+
+        <a href="review.html" data-page="review" class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="check-square" class="w-4 h-4"></i>
+            <span>Review Queue</span>
+          </div>
+          <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">18</span>
+        </a>
+
+        <a href="collection-monitor.html" data-page="collection" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="activity" class="w-4 h-4"></i>
+          <span>Collection Monitor</span>
+        </a>
+
+        <a href="analytics.html" data-page="analytics" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+          <span>Analytics & Reports</span>
+        </a>
+
+        <div class="pt-3 pb-1">
+          <span class="px-3.5 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Admin</span>
+        </div>
+
+        <a href="users.html" data-page="users" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="users" class="w-4 h-4"></i>
+          <span>Users & Roles</span>
+        </a>
+
+        <a href="audit-logs.html" data-page="audit" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="shield-alert" class="w-4 h-4"></i>
+          <span>Audit Logs</span>
+        </a>
+
+        <a href="settings.html" data-page="settings" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Sidebar Footer -->
+    <div class="p-4 border-t border-slate-800/80 space-y-2">
+      <div class="flex items-center gap-2 text-xs text-slate-400">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="font-medium text-[11px]">Monitoring Engine v6.0 Active</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT AREA -->
+  <div class="flex-1 flex flex-col main-with-sidebar min-w-0">
+
+    <!-- TOP HEADER -->
+    <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between gap-4 sticky top-0 z-40">
+      <div class="flex items-center gap-3 flex-1 max-w-xl">
+        <div class="relative w-full">
+          <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <i data-lucide="search" class="w-4 h-4"></i>
+          </span>
+          <input type="text" id="notif-search-input" onkeyup="filterNotifications()" placeholder="Search notifications by tender, corrigendum, keyword..." class="w-full pl-10 pr-4 py-2 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-blue-500 text-xs font-semibold text-slate-800 outline-none transition-all">
+        </div>
+      </div>
+
+      <!-- Right Header Actions -->
+      <div class="flex items-center gap-3">
+        <!-- Notification Bell -->
+        <div class="relative">
+          <button id="notification-bell-btn" onclick="toggleDropdown('notification-dropdown-menu')" class="p-2 rounded-xl text-slate-500 hover:bg-slate-100 transition-colors relative">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span id="notification-badge" class="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center">4</span>
+          </button>
+          <div id="notification-dropdown-menu" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 overflow-hidden">
+            <div class="p-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+              <span class="font-bold text-xs text-slate-800">Notifications</span>
+              <span id="unread-count-pill" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">4 New</span>
+            </div>
+            <div id="notification-items-container" class="max-h-72 overflow-y-auto divide-y divide-slate-100 text-xs"></div>
+          </div>
+        </div>
+
+        <!-- User Profile Pill -->
+        <div class="relative">
+          <button id="user-menu-btn" onclick="toggleDropdown('user-dropdown-menu')" class="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl border border-slate-200 hover:border-slate-300 bg-white transition-all text-xs">
+            <div id="nav-user-avatar" class="w-7 h-7 rounded-lg bg-blue-600 text-white font-extrabold flex items-center justify-center text-xs">A</div>
+            <div class="text-left">
+              <span id="nav-user-name" class="font-bold text-slate-900 block leading-tight">Admin Officer</span>
+              <span id="nav-user-role" class="text-[10px] text-slate-400 font-semibold block leading-tight">ADMIN</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+          </button>
+          <div id="user-dropdown-menu" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2 z-50 text-xs">
+            <div class="px-3.5 py-2 border-b border-slate-100">
+              <span class="text-[10px] font-bold text-slate-400 uppercase">Switch Active Role</span>
+            </div>
+            <button onclick="switchRole('ADMIN')" class="w-full px-3.5 py-2 text-left hover:bg-slate-50 flex items-center justify-between font-semibold">
+              <span>Admin Officer</span>
+              <span class="text-[10px] px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded font-bold">Admin</span>
+            </button>
+            <button onclick="switchRole('OPERATOR')" class="w-full px-3.5 py-2 text-left hover:bg-slate-50 flex items-center justify-between font-semibold">
+              <span>Rajesh Kumar</span>
+              <span class="text-[10px] px-1.5 py-0.5 bg-emerald-50 text-emerald-700 rounded font-bold">Operator</span>
+            </button>
+            <button onclick="switchRole('VIEWER')" class="w-full px-3.5 py-2 text-left hover:bg-slate-50 flex items-center justify-between font-semibold">
+              <span>Pooja Sharma</span>
+              <span class="text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-700 rounded font-bold">Viewer</span>
+            </button>
+            <div class="border-t border-slate-100 my-1"></div>
+            <a href="login.html" onclick="sessionStorage.clear()" class="w-full px-3.5 py-2 text-left hover:bg-rose-50 text-rose-600 font-bold block">
+              Sign Out
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MODULE 6 SUBNAV -->
+    <div class="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-1 text-xs">
+        <a href="notifications.html" class="px-3.5 py-1.5 rounded-lg bg-blue-50 text-blue-700 font-bold flex items-center gap-2 border border-blue-200">
+          <i data-lucide="bell" class="w-3.5 h-3.5"></i>
+          <span>Notification List</span>
+        </a>
+        <a href="deadlines.html" class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-semibold flex items-center gap-2 transition-colors">
+          <i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i>
+          <span>Upcoming Deadlines</span>
+        </a>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="flex items-center gap-2">
+        <button onclick="markAllNotificationsAsRead(); loadNotificationsList();" class="px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-sm">
+          <i data-lucide="check-check" class="w-3.5 h-3.5 text-blue-600"></i>
+          <span>Mark All Read</span>
+        </button>
+        <button onclick="openEmailConfigModal()" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1.5 transition-colors shadow-sm">
+          <i data-lucide="mail" class="w-3.5 h-3.5 text-blue-400"></i>
+          <span>Email Alert Preferences</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- MAIN BODY -->
+    <main class="p-6 space-y-6 max-w-7xl">
+
+      <!-- Breadcrumbs & Title -->
+      <div>
+        <div class="flex items-center gap-2 text-xs text-slate-500 font-semibold mb-1">
+          <a href="dashboard.html" class="hover:text-blue-600">Home</a>
+          <span>/</span>
+          <span class="text-blue-600 font-bold">Module 6: Monitoring</span>
+          <span>/</span>
+          <span class="text-slate-800 font-bold">Notification List</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-xl font-black text-slate-900 tracking-tight">Notification & Alert Center</h1>
+            <p class="text-xs text-slate-500 mt-0.5">Real-time alerts for new corrigenda, submission deadline shifts, upcoming closing dates, and latest amendments</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+              <span id="unread-count-header">4 Unread Alerts</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 REQUIREMENTS METRIC TILES -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Tile 1: Corrigenda -->
+        <div onclick="setCategoryFilter('CORRIGENDUM')" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:border-blue-400 transition-all cursor-pointer group">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">New Corrigenda</span>
+            <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <i data-lucide="file-diff" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <span id="tile-corrigendum-count" class="text-2xl font-black text-slate-900 mt-2 block">2 Alerts</span>
+          <span class="text-[11px] text-blue-600 font-bold mt-0.5 block">Published amendments</span>
+        </div>
+
+        <!-- Tile 2: Deadline Changed -->
+        <div onclick="setCategoryFilter('DEADLINE_CHANGE')" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:border-amber-400 transition-all cursor-pointer group">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Deadlines Changed</span>
+            <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <i data-lucide="calendar-clock" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <span id="tile-deadline-change-count" class="text-2xl font-black text-amber-600 mt-2 block">1 Extension</span>
+          <span class="text-[11px] text-amber-700 font-bold mt-0.5 block">+10 Days shift in GJ/2026/105</span>
+        </div>
+
+        <!-- Tile 3: Upcoming Deadlines -->
+        <div onclick="setCategoryFilter('UPCOMING_DEADLINE')" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:border-rose-400 transition-all cursor-pointer group">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Upcoming Deadlines</span>
+            <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <i data-lucide="alert-circle" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <span id="tile-upcoming-count" class="text-2xl font-black text-rose-600 mt-2 block">1 Urgent</span>
+          <span class="text-[11px] text-rose-700 font-bold mt-0.5 block">ICU Ventilators closing soon</span>
+        </div>
+
+        <!-- Tile 4: Amendments Available -->
+        <div onclick="setCategoryFilter('LATEST_AMENDMENT')" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-400 transition-all cursor-pointer group">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Latest Amendments</span>
+            <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <i data-lucide="file-check-2" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <span id="tile-amendment-count" class="text-2xl font-black text-emerald-600 mt-2 block">1 Available</span>
+          <span class="text-[11px] text-emerald-700 font-bold mt-0.5 block">Master Spec v1.2 ready</span>
+        </div>
+      </div>
+
+      <!-- FILTER TABS & SIMULATION CONTROLS -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+        <!-- Category Filter Tabs -->
+        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+          <button id="tab-all" onclick="setCategoryFilter('ALL')" class="px-3 py-1.5 rounded-xl font-bold bg-blue-600 text-white transition-all shadow-sm">
+            All Alerts (<span id="count-all">5</span>)
+          </button>
+          <button id="tab-corrigendum" onclick="setCategoryFilter('CORRIGENDUM')" class="px-3 py-1.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 transition-all">
+            Corrigenda (<span id="count-corr">2</span>)
+          </button>
+          <button id="tab-deadline-change" onclick="setCategoryFilter('DEADLINE_CHANGE')" class="px-3 py-1.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 transition-all">
+            Deadline Changed (<span id="count-dchange">1</span>)
+          </button>
+          <button id="tab-upcoming" onclick="setCategoryFilter('UPCOMING_DEADLINE')" class="px-3 py-1.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 transition-all">
+            Upcoming Deadlines (<span id="count-up">1</span>)
+          </button>
+          <button id="tab-amendment" onclick="setCategoryFilter('LATEST_AMENDMENT')" class="px-3 py-1.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 transition-all">
+            Amendments (<span id="count-amend">1</span>)
+          </button>
+          <button id="tab-unread" onclick="setCategoryFilter('UNREAD')" class="px-3 py-1.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 transition-all">
+            Unread Only (<span id="count-unread">4</span>)
+          </button>
+        </div>
+
+        <!-- Simulation Dropdown (Test Live Alerts) -->
+        <div class="flex items-center gap-2">
+          <div class="relative">
+            <button onclick="toggleDropdown('sim-dropdown')" class="px-3 py-1.5 rounded-xl border border-dashed border-blue-400 bg-blue-50/50 hover:bg-blue-100/50 text-blue-700 text-xs font-bold flex items-center gap-1.5 transition-colors">
+              <i data-lucide="play-circle" class="w-3.5 h-3.5"></i>
+              <span>Simulate Event</span>
+              <i data-lucide="chevron-down" class="w-3 h-3 text-blue-400"></i>
+            </button>
+            <div id="sim-dropdown" class="hidden absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2 z-50 text-xs">
+              <div class="px-3.5 py-1.5 border-b border-slate-100">
+                <span class="text-[10px] font-bold text-slate-400 uppercase">Trigger In-App Alert</span>
+              </div>
+              <button onclick="simulateCorrigendumAlert()" class="w-full px-3.5 py-2 text-left hover:bg-slate-50 flex items-center gap-2 font-semibold text-slate-800">
+                <i data-lucide="file-diff" class="w-4 h-4 text-blue-600"></i>
+                <span>New Corrigendum Published</span>
+              </button>
+              <button onclick="simulateDeadlineChangeAlert()" class="w-full px-3.5 py-2 text-left hover:bg-slate-50 flex items-center gap-2 font-semibold text-slate-800">
+                <i data-lucide="calendar-clock" class="w-4 h-4 text-amber-600"></i>
+                <span>Submission Deadline Changed</span>
+              </button>
+              <button onclick="simulateUpcomingDeadlineAlert()" class="w-full px-3.5 py-2 text-left hover:bg-slate-50 flex items-center gap-2 font-semibold text-slate-800">
+                <i data-lucide="clock" class="w-4 h-4 text-rose-600"></i>
+                <span>Upcoming Deadline Reminder (<48h)</span>
+              </button>
+              <button onclick="simulateAmendmentAlert()" class="w-full px-3.5 py-2 text-left hover:bg-slate-50 flex items-center gap-2 font-semibold text-slate-800">
+                <i data-lucide="file-check-2" class="w-4 h-4 text-emerald-600"></i>
+                <span>Latest Amendment Available</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTIFICATIONS LIST CONTAINER -->
+      <div class="space-y-3" id="notifications-list-container">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- EMAIL NOTIFICATION ENHANCEMENT BANNER (Requested by User) -->
+      <div class="bg-gradient-to-r from-slate-900 to-blue-950 p-6 rounded-2xl text-white shadow-md flex flex-wrap items-center justify-between gap-4">
+        <div class="space-y-1 max-w-2xl">
+          <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] font-black uppercase tracking-wider border border-blue-400/30">
+            <i data-lucide="mail-check" class="w-3 h-3"></i> Optional Notification Enhancement
+          </div>
+          <h3 class="text-base font-extrabold mt-1">Automated Email Notifications for Tender Corrigenda</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Configure automated instant dispatch of Corrigendum Notices, Deadline Extensions, and 48-Hour Deadline Reminders directly to registered bidders and procurement officers.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="openEmailConfigModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-extrabold rounded-xl text-xs transition-colors shadow-md shadow-blue-600/30">
+            Configure Email Alerts
+          </button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- EMAIL NOTIFICATION MODAL -->
+  <div id="email-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden">
+      <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center">
+            <i data-lucide="mail" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-extrabold text-sm text-slate-900">Email Alert Preferences</h3>
+            <span class="text-[11px] text-slate-500">Module 6 Email Integration</span>
+          </div>
+        </div>
+        <button onclick="closeEmailConfigModal()" class="p-1 rounded-lg text-slate-400 hover:bg-slate-200 text-xs">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Notification Email Recipient</label>
+          <input type="email" id="email-input" class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono text-slate-900 outline-none focus:ring-2 focus:ring-blue-500 text-xs">
+          <span class="text-[10px] text-slate-400 mt-1 block">Tender officers and registered vendors receive alerts here</span>
+        </div>
+
+        <div class="space-y-2 pt-2 border-t border-slate-100">
+          <span class="font-bold text-slate-800 block text-xs">Trigger Events:</span>
+
+          <label class="flex items-center gap-2 cursor-pointer font-semibold text-slate-700">
+            <input type="checkbox" id="email-corrigendum-check" checked class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+            <span>Send email when New Corrigendum is published</span>
+          </label>
+
+          <label class="flex items-center gap-2 cursor-pointer font-semibold text-slate-700">
+            <input type="checkbox" id="email-deadline-check" checked class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+            <span>Send email when Submission Deadline is changed / extended</span>
+          </label>
+
+          <label class="flex items-center gap-2 cursor-pointer font-semibold text-slate-700">
+            <input type="checkbox" id="email-upcoming-check" checked class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+            <span>Send urgent reminder 48 hours before submission cutoff</span>
+          </label>
+        </div>
+
+        <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-blue-900 text-[11px] leading-relaxed">
+          <strong>Application First:</strong> In-app notifications are delivered instantly. Email dispatches are simulated and logged to the system audit trail.
+        </div>
+      </div>
+
+      <div class="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2">
+        <button onclick="closeEmailConfigModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-100">
+          Cancel
+        </button>
+        <button onclick="saveEmailModalSettings()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/30">
+          Save Preferences
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    let activeCategory = 'ALL';
+
+    function setCategoryFilter(cat) {
+      activeCategory = cat;
+      const tabIds = {
+        'ALL': 'tab-all',
+        'CORRIGENDUM': 'tab-corrigendum',
+        'DEADLINE_CHANGE': 'tab-deadline-change',
+        'UPCOMING_DEADLINE': 'tab-upcoming',
+        'LATEST_AMENDMENT': 'tab-amendment',
+        'UNREAD': 'tab-unread'
+      };
+
+      Object.keys(tabIds).forEach(key => {
+        const btn = document.getElementById(tabIds[key]);
+        if (btn) {
+          if (key === cat) {
+            btn.className = "px-3 py-1.5 rounded-xl font-bold bg-blue-600 text-white transition-all shadow-sm";
+          } else {
+            btn.className = "px-3 py-1.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 transition-all";
+          }
+        }
+      });
+
+      loadNotificationsList();
+    }
+
+    function loadNotificationsList() {
+      const items = getNotifications();
+      const searchKeyword = (document.getElementById('notif-search-input').value || '').toLowerCase().trim();
+
+      // Counts
+      const totalCount = items.length;
+      const corrCount = items.filter(n => n.category === 'CORRIGENDUM').length;
+      const dchangeCount = items.filter(n => n.category === 'DEADLINE_CHANGE').length;
+      const upcomingCount = items.filter(n => n.category === 'UPCOMING_DEADLINE').length;
+      const amendCount = items.filter(n => n.category === 'LATEST_AMENDMENT').length;
+      const unreadCount = items.filter(n => !n.read).length;
+
+      document.getElementById('count-all').innerText = totalCount;
+      document.getElementById('count-corr').innerText = corrCount;
+      document.getElementById('count-dchange').innerText = dchangeCount;
+      document.getElementById('count-up').innerText = upcomingCount;
+      document.getElementById('count-amend').innerText = amendCount;
+      document.getElementById('count-unread').innerText = unreadCount;
+      document.getElementById('unread-count-header').innerText = `${unreadCount} Unread Alerts`;
+      
+      const navBadge = document.getElementById('nav-badge-notif-sidebar');
+      if (navBadge) navBadge.innerText = unreadCount;
+
+      // Filter
+      const filtered = items.filter(n => {
+        if (activeCategory === 'UNREAD' && n.read) return false;
+        if (activeCategory !== 'ALL' && activeCategory !== 'UNREAD' && n.category !== activeCategory) return false;
+        if (searchKeyword) {
+          const matchTitle = n.title.toLowerCase().includes(searchKeyword);
+          const matchDesc = n.desc.toLowerCase().includes(searchKeyword);
+          const matchTender = (n.tenderId || '').toLowerCase().includes(searchKeyword);
+          if (!matchTitle && !matchDesc && !matchTender) return false;
+        }
+        return true;
+      });
+
+      const container = document.getElementById('notifications-list-container');
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white p-12 rounded-2xl border border-slate-200 text-center space-y-2">
+            <i data-lucide="bell-off" class="w-10 h-10 mx-auto text-slate-300"></i>
+            <h3 class="font-extrabold text-sm text-slate-700">No notifications in this category</h3>
+            <p class="text-xs text-slate-400">Try selecting "All Alerts" or simulate an event from the top menu.</p>
+          </div>
+        `;
+        if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = filtered.map(n => {
+        const colorBg = n.color === 'blue' ? 'bg-blue-100 text-blue-600' :
+                        n.color === 'amber' ? 'bg-amber-100 text-amber-700' :
+                        n.color === 'rose' ? 'bg-rose-100 text-rose-700' :
+                        'bg-emerald-100 text-emerald-700';
+
+        const categoryBadge = n.category === 'CORRIGENDUM'
+          ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">New Corrigendum</span>'
+          : n.category === 'DEADLINE_CHANGE'
+          ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">Deadline Shift</span>'
+          : n.category === 'UPCOMING_DEADLINE'
+          ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800">Urgent Deadline</span>'
+          : '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Latest Amendment</span>';
+
+        const readStatus = n.read 
+          ? '<span class="text-[10px] font-semibold text-slate-400">Read</span>' 
+          : '<span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-blue-600 text-white">NEW</span>';
+
+        return `
+          <div class="bg-white p-5 rounded-2xl border ${n.read ? 'border-slate-200' : 'border-blue-300 shadow-sm'} flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-all hover:border-blue-400">
+            <div class="flex items-start gap-3.5 flex-1">
+              <div class="w-10 h-10 rounded-xl ${colorBg} flex items-center justify-center shrink-0 mt-0.5">
+                <i data-lucide="${n.icon}" class="w-5 h-5"></i>
+              </div>
+              <div class="space-y-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="font-extrabold text-sm text-slate-900 ${n.read ? 'text-slate-700 font-semibold' : ''}">${n.title}</span>
+                  ${categoryBadge}
+                  ${readStatus}
+                </div>
+                <p class="text-xs text-slate-600 leading-relaxed">${n.desc}</p>
+                <div class="flex items-center gap-3 text-[11px] text-slate-400 font-medium pt-0.5">
+                  <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> ${n.time}</span>
+                  ${n.tenderId ? `<span class="font-mono font-bold text-slate-600">${n.tenderId}</span>` : ''}
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-2 self-end md:self-center shrink-0">
+              ${!n.read ? `
+                <button onclick="markAsRead(${n.id})" class="p-2 rounded-xl hover:bg-slate-100 text-slate-500 hover:text-slate-800 text-xs font-semibold flex items-center gap-1" title="Mark as read">
+                  <i data-lucide="check" class="w-4 h-4"></i>
+                </button>
+              ` : ''}
+              <button onclick="deleteNotification(${n.id}); loadNotificationsList();" class="p-2 rounded-xl hover:bg-rose-50 text-slate-400 hover:text-rose-600 text-xs font-semibold" title="Dismiss">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+              <a href="${n.link}" onclick="markAsRead(${n.id})" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1.5 transition-colors shadow-sm">
+                <span>View Details</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function markAsRead(id) {
+      const items = getNotifications().map(n => n.id === id ? { ...n, read: true } : n);
+      saveNotifications(items);
+      loadNotificationsList();
+    }
+
+    function filterNotifications() {
+      loadNotificationsList();
+    }
+
+    // SIMULATION TRIGGERS FOR MODULE 6 REQUIREMENTS
+    function simulateCorrigendumAlert() {
+      addNotification({
+        title: "New Corrigendum 03 Published",
+        desc: "Corrigendum No. 03/2026 released for GJ/2026/105: Updated pre-bid clarification minutes published.",
+        link: "versions.html",
+        icon: "file-diff",
+        color: "blue",
+        category: "CORRIGENDUM",
+        tenderId: "GJ/2026/105"
+      });
+      loadNotificationsList();
+    }
+
+    function simulateDeadlineChangeAlert() {
+      addNotification({
+        title: "Submission Deadline Changed (+5 Days)",
+        desc: "Bid submission deadline for GJ/2026/104 (ICU Ventilators) extended by 5 additional calendar days.",
+        link: "deadlines.html",
+        icon: "calendar-clock",
+        color: "amber",
+        category: "DEADLINE_CHANGE",
+        tenderId: "GJ/2026/104"
+      });
+      loadNotificationsList();
+    }
+
+    function simulateUpcomingDeadlineAlert() {
+      addNotification({
+        title: "Upcoming Deadline: Smart City SCADA",
+        desc: "URGENT: GJ/2026/044 submission deadline closes in 24 hours. Ensure physical tender fee submission.",
+        link: "deadlines.html",
+        icon: "clock",
+        color: "rose",
+        category: "UPCOMING_DEADLINE",
+        tenderId: "GJ/2026/044"
+      });
+      loadNotificationsList();
+    }
+
+    function simulateAmendmentAlert() {
+      addNotification({
+        title: "Latest Technical Amendment Ready",
+        desc: "Authoritative Master Specification v1.3 compiled with revised bidder turnover and guarantee clauses.",
+        link: "latest-tender.html",
+        icon: "file-check-2",
+        color: "emerald",
+        category: "LATEST_AMENDMENT",
+        tenderId: "GJ/2026/105"
+      });
+      loadNotificationsList();
+    }
+
+    // EMAIL CONFIG MODAL
+    function openEmailConfigModal() {
+      const settings = getEmailNotificationSettings();
+      document.getElementById('email-input').value = settings.email || '';
+      document.getElementById('email-corrigendum-check').checked = settings.corrigendumAlerts !== false;
+      document.getElementById('email-deadline-check').checked = settings.deadlineChangeAlerts !== false;
+      document.getElementById('email-upcoming-check').checked = settings.upcoming24hAlerts !== false;
+      document.getElementById('email-modal').classList.remove('hidden');
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
+
+    function closeEmailConfigModal() {
+      document.getElementById('email-modal').classList.add('hidden');
+    }
+
+    function saveEmailModalSettings() {
+      const email = document.getElementById('email-input').value.trim();
+      if (!email) {
+        showToast('Please enter a valid recipient email address', 'error');
+        return;
+      }
+      const settings = {
+        enabled: true,
+        email: email,
+        corrigendumAlerts: document.getElementById('email-corrigendum-check').checked,
+        deadlineChangeAlerts: document.getElementById('email-deadline-check').checked,
+        upcoming24hAlerts: document.getElementById('email-upcoming-check').checked,
+        digestFrequency: "IMMEDIATE"
+      };
+      saveEmailNotificationSettings(settings);
+      closeEmailConfigModal();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initSharedNav('notifications');
+      loadNotificationsList();
+    });
+  </script>
+</body>
+</html>

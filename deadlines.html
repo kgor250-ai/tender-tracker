@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    // Redirect to login if not authenticated
+    if (!sessionStorage.getItem('activeUser')) { window.location.replace('login.html'); }
+    // Prevent ALL browser alert/confirm popups immediately
+    window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
+    window.confirm = function(msg) { return true; };
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upcoming Deadlines - Module 6 | Tender Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .bg-sidebar { background-color: #0b192c; }
+    aside.fixed-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 50;
+    }
+    .main-with-sidebar {
+      margin-left: 256px;
+      min-height: 100vh;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex min-h-screen">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-sidebar fixed-sidebar text-white flex flex-col justify-between shrink-0 min-h-screen border-r border-slate-800">
+    <div>
+      <!-- Brand Logo -->
+      <a href="dashboard.html" class="p-5 flex items-center gap-3 border-b border-slate-800/80 hover:bg-slate-800/40 transition-colors block">
+        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-600/30">
+          <i data-lucide="scale" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-sm tracking-tight block">Tender Tracker</span>
+          <span class="text-[10px] text-slate-400 font-medium block">Amendment Management</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="p-3 space-y-1 text-xs font-semibold">
+        <a href="dashboard.html" data-page="dashboard" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="tenders.html" data-page="tenders" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="file-text" class="w-4 h-4"></i>
+          <span>Tenders</span>
+        </a>
+
+        <!-- Module 4 -->
+        <a href="versions.html" data-page="versions" class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="git-branch" class="w-4 h-4"></i>
+            <span>Version History</span>
+          </div>
+          <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-700 text-slate-300">M4</span>
+        </a>
+
+        <!-- Module 6: Notifications & Deadline Monitoring (Active) -->
+        <div class="pt-2">
+          <div class="flex items-center justify-between px-3.5 py-1 text-[10px] font-extrabold text-blue-400 uppercase tracking-wider">
+            <span>Module 6: Monitoring</span>
+            <span class="px-1.5 py-0.2 rounded text-[8px] font-black bg-blue-500/20 text-blue-300 border border-blue-500/30">M6</span>
+          </div>
+          <div class="space-y-0.5 mt-1 pl-2 border-l-2 border-blue-600/40 ml-4">
+            <a href="notifications.html" data-page="notifications" class="sidebar-link flex items-center justify-between px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all text-[11px]">
+              <div class="flex items-center gap-2.5">
+                <i data-lucide="bell" class="w-3.5 h-3.5"></i>
+                <span>Notification List</span>
+              </div>
+              <span id="nav-badge-deadlines-sidebar" class="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-rose-500 text-white">4</span>
+            </a>
+            <a href="deadlines.html" data-page="deadlines" class="sidebar-link flex items-center gap-2.5 px-3 py-2 rounded-lg bg-blue-600 text-white font-bold transition-all shadow-md shadow-blue-600/20 text-[11px]">
+              <i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i>
+              <span>Upcoming Deadlines</span>
+            </a>
+          </div>
+        </div>
+
+        <a href="review.html" data-page="review" class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="check-square" class="w-4 h-4"></i>
+            <span>Review Queue</span>
+          </div>
+          <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">18</span>
+        </a>
+
+        <a href="collection-monitor.html" data-page="collection" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="activity" class="w-4 h-4"></i>
+          <span>Collection Monitor</span>
+        </a>
+
+        <a href="analytics.html" data-page="analytics" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+          <span>Analytics & Reports</span>
+        </a>
+
+        <div class="pt-3 pb-1">
+          <span class="px-3.5 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Admin</span>
+        </div>
+
+        <a href="users.html" data-page="users" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="users" class="w-4 h-4"></i>
+          <span>Users & Roles</span>
+        </a>
+
+        <a href="audit-logs.html" data-page="audit" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="shield-alert" class="w-4 h-4"></i>
+          <span>Audit Logs</span>
+        </a>
+
+        <a href="settings.html" data-page="settings" class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Sidebar Footer -->
+    <div class="p-4 border-t border-slate-800/80 space-y-2">
+      <div class="flex items-center gap-2 text-xs text-slate-400">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="font-medium text-[11px]">Monitoring Engine v6.0 Active</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT AREA -->
+  <div class="flex-1 flex flex-col main-with-sidebar min-w-0">
+
+    <!-- TOP HEADER -->
+    <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between gap-4 sticky top-0 z-40">
+      <div class="flex items-center gap-3 flex-1 max-w-xl">
+        <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+          <i data-lucide="calendar-clock" class="w-4 h-4 text-blue-600"></i>
+          <span>Module 6: Tender Submission Deadlines & Countdown Monitor</span>
+        </h2>
+      </div>
+
+      <!-- Right Header Actions -->
+      <div class="flex items-center gap-3">
+        <!-- Notification Bell -->
+        <div class="relative">
+          <button id="notification-bell-btn" onclick="toggleDropdown('notification-dropdown-menu')" class="p-2 rounded-xl text-slate-500 hover:bg-slate-100 transition-colors relative">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span id="notification-badge" class="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center">4</span>
+          </button>
+          <div id="notification-dropdown-menu" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 overflow-hidden">
+            <div class="p-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+              <span class="font-bold text-xs text-slate-800">Notifications</span>
+              <span id="unread-count-pill" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">4 New</span>
+            </div>
+            <div id="notification-items-container" class="max-h-72 overflow-y-auto divide-y divide-slate-100 text-xs"></div>
+          </div>
+        </div>
+
+        <!-- User Profile Pill -->
+        <div class="relative">
+          <button id="user-menu-btn" onclick="toggleDropdown('user-dropdown-menu')" class="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl border border-slate-200 hover:border-slate-300 bg-white transition-all text-xs">
+            <div id="nav-user-avatar" class="w-7 h-7 rounded-lg bg-blue-600 text-white font-extrabold flex items-center justify-center text-xs">A</div>
+            <div class="text-left">
+              <span id="nav-user-name" class="font-bold text-slate-900 block leading-tight">Admin Officer</span>
+              <span id="nav-user-role" class="text-[10px] text-slate-400 font-semibold block leading-tight">ADMIN</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+          </button>
+          <div id="user-dropdown-menu" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2 z-50 text-xs">
+            <div class="px-3.5 py-2 border-b border-slate-100">
+              <span class="text-[10px] font-bold text-slate-400 uppercase">Switch Active Role</span>
+            </div>
+            <button onclick="switchRole('ADMIN')" class="w-full px-3.5 py-2 text-left hover:bg-slate-50 flex items-center justify-between font-semibold">
+              <span>Admin Officer</span>
+              <span class="text-[10px] px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded font-bold">Admin</span>
+            </button>
+            <button onclick="switchRole('OPERATOR')" class="w-full px-3.5 py-2 text-left hover:bg-slate-50 flex items-center justify-between font-semibold">
+              <span>Rajesh Kumar</span>
+              <span class="text-[10px] px-1.5 py-0.5 bg-emerald-50 text-emerald-700 rounded font-bold">Operator</span>
+            </button>
+            <button onclick="switchRole('VIEWER')" class="w-full px-3.5 py-2 text-left hover:bg-slate-50 flex items-center justify-between font-semibold">
+              <span>Pooja Sharma</span>
+              <span class="text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-700 rounded font-bold">Viewer</span>
+            </button>
+            <div class="border-t border-slate-100 my-1"></div>
+            <a href="login.html" onclick="sessionStorage.clear()" class="w-full px-3.5 py-2 text-left hover:bg-rose-50 text-rose-600 font-bold block">
+              Sign Out
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MODULE 6 SUBNAV -->
+    <div class="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-1 text-xs">
+        <a href="notifications.html" class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-semibold flex items-center gap-2 transition-colors">
+          <i data-lucide="bell" class="w-3.5 h-3.5"></i>
+          <span>Notification List</span>
+        </a>
+        <a href="deadlines.html" class="px-3.5 py-1.5 rounded-lg bg-blue-50 text-blue-700 font-bold flex items-center gap-2 border border-blue-200">
+          <i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i>
+          <span>Upcoming Deadlines</span>
+        </a>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-2">
+        <button onclick="exportDeadlinesCSV()" class="px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-sm">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i>
+          <span>Export Deadlines Schedule</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- MAIN BODY -->
+    <main class="p-6 space-y-6 max-w-7xl">
+
+      <!-- Breadcrumbs & Title -->
+      <div>
+        <div class="flex items-center gap-2 text-xs text-slate-500 font-semibold mb-1">
+          <a href="dashboard.html" class="hover:text-blue-600">Home</a>
+          <span>/</span>
+          <span class="text-blue-600 font-bold">Module 6: Monitoring</span>
+          <span>/</span>
+          <span class="text-slate-800 font-bold">Upcoming Deadlines</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-xl font-black text-slate-900 tracking-tight">Tender Submission Deadlines & Active Countdowns</h1>
+            <p class="text-xs text-slate-500 mt-0.5">Live monitoring of bid closing windows, corrigendum extensions, and upcoming opening dates</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="px-3 py-1 rounded-full text-xs font-black bg-rose-100 text-rose-800 border border-rose-200 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-rose-600 animate-ping"></span>
+              <span>2 Tenders Closing in &lt; 48 Hours</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DEADLINE SUMMARY KPI CARDS -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <div>
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Active Tenders Monitored</span>
+            <span class="text-2xl font-black text-slate-900 mt-1 block">5 Tenders</span>
+            <span class="text-[11px] text-emerald-600 font-bold mt-0.5 block">100% Tracking Active</span>
+          </div>
+          <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+            <i data-lucide="radar" class="w-5 h-5"></i>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <div>
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Critical (&lt; 48 Hours)</span>
+            <span class="text-2xl font-black text-rose-600 mt-1 block">2 Urgent</span>
+            <span class="text-[11px] text-rose-700 font-bold mt-0.5 block">Immediate action required</span>
+          </div>
+          <div class="w-11 h-11 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+            <i data-lucide="alarm-clock" class="w-5 h-5"></i>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <div>
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Corrigendum Extensions</span>
+            <span class="text-2xl font-black text-amber-600 mt-1 block">3 Extended</span>
+            <span class="text-[11px] text-amber-700 font-bold mt-0.5 block">+32 Days cumulative added</span>
+          </div>
+          <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+            <i data-lucide="calendar-plus" class="w-5 h-5"></i>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <div>
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Total Procurement Value</span>
+            <span class="text-2xl font-black text-purple-600 mt-1 block">₹ 39.25 Cr</span>
+            <span class="text-[11px] text-slate-500 font-semibold mt-0.5 block">Across 5 live RFPs</span>
+          </div>
+          <div class="w-11 h-11 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+            <i data-lucide="coins" class="w-5 h-5"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILTER CONTROLS -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-1.5 text-xs font-semibold">
+          <button id="btn-filter-all" onclick="setDeadlineFilter('ALL')" class="px-3 py-1.5 rounded-xl font-bold bg-blue-600 text-white transition-all shadow-sm">
+            All Tenders (5)
+          </button>
+          <button id="btn-filter-urgent" onclick="setDeadlineFilter('URGENT')" class="px-3 py-1.5 rounded-xl text-slate-600 hover:bg-slate-100 transition-all flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+            <span>Critical &lt; 48h (2)</span>
+          </button>
+          <button id="btn-filter-extended" onclick="setDeadlineFilter('EXTENDED')" class="px-3 py-1.5 rounded-xl text-slate-600 hover:bg-slate-100 transition-all flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+            <span>Extended Deadlines (3)</span>
+          </button>
+          <button id="btn-filter-normal" onclick="setDeadlineFilter('NORMAL')" class="px-3 py-1.5 rounded-xl text-slate-600 hover:bg-slate-100 transition-all">
+            Normal Window (1)
+          </button>
+        </div>
+
+        <div class="text-xs text-slate-500 font-semibold flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Real-time Ticker Running</span>
+        </div>
+      </div>
+
+      <!-- UPCOMING DEADLINES CARDS -->
+      <div id="deadlines-cards-container" class="space-y-4">
+        <!-- Rendered via JS with live countdown -->
+      </div>
+
+    </main>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    let currentFilter = 'ALL';
+
+    function setDeadlineFilter(filter) {
+      currentFilter = filter;
+      const map = {
+        'ALL': 'btn-filter-all',
+        'URGENT': 'btn-filter-urgent',
+        'EXTENDED': 'btn-filter-extended',
+        'NORMAL': 'btn-filter-normal'
+      };
+
+      Object.keys(map).forEach(key => {
+        const btn = document.getElementById(map[key]);
+        if (btn) {
+          if (key === filter) {
+            btn.className = "px-3 py-1.5 rounded-xl font-bold bg-blue-600 text-white transition-all shadow-sm flex items-center gap-1.5";
+          } else {
+            btn.className = "px-3 py-1.5 rounded-xl text-slate-600 hover:bg-slate-100 transition-all flex items-center gap-1.5";
+          }
+        }
+      });
+
+      renderDeadlinesCards();
+    }
+
+    function renderDeadlinesCards() {
+      const items = getUpcomingDeadlines();
+      const filtered = items.filter(d => {
+        if (currentFilter === 'URGENT') return d.status === 'URGENT';
+        if (currentFilter === 'EXTENDED') return d.status === 'EXTENDED';
+        if (currentFilter === 'NORMAL') return d.status === 'NORMAL';
+        return true;
+      });
+
+      const container = document.getElementById('deadlines-cards-container');
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white p-12 rounded-2xl border border-slate-200 text-center space-y-2">
+            <i data-lucide="calendar-x" class="w-10 h-10 mx-auto text-slate-300"></i>
+            <h3 class="font-extrabold text-sm text-slate-700">No deadlines match this filter</h3>
+            <p class="text-xs text-slate-400">Select "All Tenders" to view the full procurement schedule.</p>
+          </div>
+        `;
+        if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = filtered.map(t => {
+        const isUrgent = t.status === 'URGENT';
+        const isExtended = t.status === 'EXTENDED';
+
+        const urgencyPill = isUrgent
+          ? '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-rose-100 text-rose-800 border border-rose-300 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-rose-600 animate-ping"></span> URGENT &lt; 48H</span>'
+          : isExtended
+          ? `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-300 flex items-center gap-1"><i data-lucide="calendar-plus" class="w-3 h-3"></i> EXTENDED +${t.extensionDays} DAYS</span>`
+          : '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-slate-100 text-slate-700 border border-slate-200">NORMAL WINDOW</span>';
+
+        return `
+          <div class="bg-white rounded-2xl border ${isUrgent ? 'border-rose-300 shadow-md shadow-rose-100' : 'border-slate-200 shadow-sm'} p-6 transition-all hover:border-blue-400">
+            <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+              
+              <!-- Left Details -->
+              <div class="space-y-2.5 flex-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="font-mono font-bold text-xs px-2.5 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200">${t.tenderRef}</span>
+                  <span class="text-xs font-semibold text-slate-400">&bull;</span>
+                  <span class="text-xs font-semibold text-slate-600">${t.department}</span>
+                  ${urgencyPill}
+                </div>
+
+                <h3 class="text-base font-extrabold text-slate-900 leading-snug">
+                  <a href="tender-details.html" class="hover:text-blue-600 transition-colors">${t.title}</a>
+                </h3>
+
+                <!-- Timeline Shift Meta -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 text-xs">
+                  <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase block">Submission Cutoff</span>
+                    <span class="font-mono font-black text-slate-900 block mt-0.5">${t.submissionDeadline}</span>
+                    ${t.extensionDays > 0 ? `<span class="text-[10px] text-amber-700 font-bold block mt-0.5">Extended from ${t.originalDate}</span>` : ''}
+                  </div>
+
+                  <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase block">Technical Bid Opening</span>
+                    <span class="font-mono font-bold text-slate-800 block mt-0.5">${t.technicalOpening}</span>
+                    <span class="text-[10px] text-slate-400 block mt-0.5">Evaluator Committee</span>
+                  </div>
+
+                  <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase block">EMD Required</span>
+                    <span class="font-mono font-black text-slate-900 block mt-0.5">${t.emdAmount}</span>
+                    <span class="text-[10px] text-slate-500 font-semibold block mt-0.5">Est: ${t.estimatedCost}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Countdown Clock -->
+              <div class="flex flex-col items-center justify-center p-5 rounded-2xl ${isUrgent ? 'bg-gradient-to-br from-rose-50 to-orange-50 border border-rose-200' : 'bg-slate-50 border border-slate-200'} shrink-0 w-full lg:w-72">
+                <span class="text-[10px] font-black uppercase tracking-wider ${isUrgent ? 'text-rose-700' : 'text-slate-500'} block mb-2">
+                  ${isUrgent ? 'Urgent Deadline Countdown' : 'Time Remaining to Submit'}
+                </span>
+
+                <div class="flex items-center gap-2 font-mono">
+                  <div class="text-center">
+                    <div class="w-12 h-12 rounded-xl ${isUrgent ? 'bg-rose-600 text-white' : 'bg-slate-900 text-white'} flex items-center justify-center text-lg font-black shadow-sm">
+                      ${t.daysRemaining}
+                    </div>
+                    <span class="text-[9px] font-bold text-slate-500 uppercase mt-1 block">Days</span>
+                  </div>
+
+                  <span class="font-black text-slate-400 text-lg mb-4">:</span>
+
+                  <div class="text-center">
+                    <div class="w-12 h-12 rounded-xl ${isUrgent ? 'bg-rose-600 text-white' : 'bg-slate-900 text-white'} flex items-center justify-center text-lg font-black shadow-sm">
+                      ${String(t.hoursRemaining).padStart(2, '0')}
+                    </div>
+                    <span class="text-[9px] font-bold text-slate-500 uppercase mt-1 block">Hours</span>
+                  </div>
+
+                  <span class="font-black text-slate-400 text-lg mb-4">:</span>
+
+                  <div class="text-center">
+                    <div class="w-12 h-12 rounded-xl ${isUrgent ? 'bg-rose-600 text-white' : 'bg-slate-900 text-white'} flex items-center justify-center text-lg font-black shadow-sm" id="sec-ticker-${t.id}">
+                      45
+                    </div>
+                    <span class="text-[9px] font-bold text-slate-500 uppercase mt-1 block">Sec</span>
+                  </div>
+                </div>
+
+                <!-- Action Button in Card -->
+                <div class="w-full mt-4 flex items-center gap-2">
+                  <a href="latest-tender.html" class="flex-1 text-center py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors shadow-sm">
+                    View Master Spec
+                  </a>
+                  <button onclick="addToCalendar('${t.tenderRef}', '${t.submissionDeadline}')" class="p-2 rounded-xl border border-slate-300 hover:bg-white text-slate-600 text-xs font-semibold" title="Download Calendar Alert (.ics)">
+                    <i data-lucide="calendar" class="w-4 h-4"></i>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    // Live second ticker
+    let tickerSec = 45;
+    setInterval(() => {
+      tickerSec = (tickerSec - 1 + 60) % 60;
+      const formatted = String(tickerSec).padStart(2, '0');
+      document.querySelectorAll('[id^="sec-ticker-"]').forEach(el => {
+        el.innerText = formatted;
+      });
+    }, 1000);
+
+    function addToCalendar(ref, dateStr) {
+      showToast(`Calendar alert downloaded for ${ref} (${dateStr})`, 'success');
+      const icsData = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:Bid Submission Deadline for ${ref}\nDESCRIPTION:Mandatory tender submission cutoff deadline.\nEND:VEVENT\nEND:VCALENDAR`;
+      const blob = new Blob([icsData], { type: 'text/calendar' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Tender_Deadline_${ref.replace(/\//g, '_')}.ics`;
+      a.click();
+    }
+
+    function exportDeadlinesCSV() {
+      const items = getUpcomingDeadlines();
+      let csv = "Tender Ref,Title,Department,Submission Deadline,Days Remaining,Status,Original Date,Extension Days\n";
+      items.forEach(t => {
+        csv += `"${t.tenderRef}","${t.title}","${t.department}","${t.submissionDeadline}","${t.daysRemaining}","${t.status}","${t.originalDate}","${t.extensionDays}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "Tender_Deadlines_Schedule.csv";
+      a.click();
+      showToast('Deadlines schedule exported as CSV', 'success');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initSharedNav('deadlines');
+      renderDeadlinesCards();
+    });
+  </script>
+</body>
+</html>

@@ -143,37 +143,67 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// Notifications State & Logic
+// Notifications State & Logic - Module 6: Notifications & Deadline Monitoring
 const DEFAULT_NOTIFICATIONS = [
   {
     id: 1,
-    title: "Corrigendum 02 Published",
+    title: "New Corrigendum 02 Published",
     time: "5m ago",
-    desc: "GJ/2026/105 deadline extended to 30 Nov 2026 for Road Construction Works.",
+    desc: "Corrigendum No. 02/2026 published for GJ/2026/105 (Six Lane Ring Road Project). Scope and schedule amended.",
     link: "tender-details.html",
     icon: "file-diff",
     color: "blue",
+    category: "CORRIGENDUM",
+    tenderId: "GJ/2026/105",
     read: false
   },
   {
     id: 2,
-    title: "Verification Required",
-    time: "22m ago",
-    desc: "GJ/2026/104 specification clause 4.2 revised. Awaiting operator sign-off.",
-    link: "review.html",
-    icon: "alert-triangle",
+    title: "Submission Deadline Changed (+10 Days)",
+    time: "15m ago",
+    desc: "Bid submission deadline for GJ/2026/105 officially extended from 20 Nov to 30 Nov 2026, 17:00 IST.",
+    link: "deadlines.html",
+    icon: "calendar-clock",
     color: "amber",
+    category: "DEADLINE_CHANGE",
+    tenderId: "GJ/2026/105",
     read: false
   },
   {
     id: 3,
-    title: "Crawler Sync Completed",
-    time: "1h ago",
-    desc: "Gujarat E-Procurement adapter scraped 14 new updates successfully.",
-    link: "collection-monitor.html",
-    icon: "refresh-cw",
-    color: "emerald",
+    title: "Upcoming Deadline: ICU Ventilators",
+    time: "45m ago",
+    desc: "GJ/2026/104 bids close in 6 days (25 Nov 2026, 16:00 IST). Ensure EMD Bank Guarantee is uploaded.",
+    link: "deadlines.html",
+    icon: "alert-circle",
+    color: "rose",
+    category: "UPCOMING_DEADLINE",
+    tenderId: "GJ/2026/104",
     read: false
+  },
+  {
+    id: 4,
+    title: "Latest Amendment v1.2 Available",
+    time: "2h ago",
+    desc: "Authoritative Master Specification v1.2 for Highway Project is compiled and ready for contractor download.",
+    link: "latest-tender.html",
+    icon: "file-check-2",
+    color: "emerald",
+    category: "LATEST_AMENDMENT",
+    tenderId: "GJ/2026/105",
+    read: false
+  },
+  {
+    id: 5,
+    title: "Pre-Bid Meeting Rescheduled",
+    time: "3h ago",
+    desc: "GJ/2026/089 Pre-bid conference shifted to virtual Webex mode on 12 Nov 2026.",
+    link: "tender-details.html",
+    icon: "video",
+    color: "blue",
+    category: "CORRIGENDUM",
+    tenderId: "GJ/2026/089",
+    read: true
   }
 ];
 
@@ -242,6 +272,13 @@ function renderNotificationUI() {
           </div>
         `;
       }).join('');
+      container.innerHTML += `
+        <div class="p-2.5 bg-slate-50 border-t border-slate-200 text-center">
+          <a href="notifications.html" class="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center justify-center gap-1">
+            <span>Open Notification Center</span> &rarr;
+          </a>
+        </div>
+      `;
     }
     if (window.lucide && typeof lucide.createIcons === 'function') {
       lucide.createIcons();
@@ -253,6 +290,163 @@ function markAllNotificationsAsRead() {
   const items = getNotifications().map(n => ({ ...n, read: true }));
   saveNotifications(items);
   showToast('All notifications marked as read', 'success');
+}
+
+function deleteNotification(id) {
+  const items = getNotifications().filter(n => n.id !== id);
+  saveNotifications(items);
+  showToast('Notification dismissed', 'info');
+}
+
+function addNotification(notif) {
+  const items = getNotifications();
+  const newNotif = {
+    id: Date.now(),
+    title: notif.title || "Tender Alert",
+    time: "Just now",
+    desc: notif.desc || "",
+    link: notif.link || "notifications.html",
+    icon: notif.icon || "bell",
+    color: notif.color || "blue",
+    category: notif.category || "CORRIGENDUM",
+    tenderId: notif.tenderId || "GJ/2026/105",
+    read: false
+  };
+  items.unshift(newNotif);
+  saveNotifications(items);
+  showToast(`New Notification: ${newNotif.title}`, 'info');
+  return newNotif;
+}
+
+// Module 6: Upcoming Deadlines Data Provider
+const DEFAULT_UPCOMING_DEADLINES = [
+  {
+    id: "GJ-2026-105",
+    tenderRef: "GJ/2026/105",
+    title: "Construction of Six-Lane Elevated Corridor on SG Highway",
+    department: "Roads & Buildings Dept (PWD)",
+    category: "Civil Works",
+    estimatedCost: "₹ 24,50,00,000",
+    emdAmount: "₹ 10,00,000",
+    submissionDeadline: "30 Nov 2026, 17:00 IST",
+    daysRemaining: 11,
+    hoursRemaining: 6,
+    status: "EXTENDED",
+    urgencyLevel: "UPCOMING",
+    originalDate: "15 Nov 2026",
+    extensionDays: 15,
+    corrigendumRef: "Corrigendum 02/2026",
+    technicalOpening: "01 Dec 2026, 11:00 IST",
+    portalLink: "https://tender-tracker.gov.in/gj2026105"
+  },
+  {
+    id: "GJ-2026-104",
+    tenderRef: "GJ/2026/104",
+    title: "Supply of Advanced ICU Ventilators & Telemetry Systems",
+    department: "Health Department",
+    category: "Medical Equipment",
+    estimatedCost: "₹ 3,20,00,000",
+    emdAmount: "₹ 6,40,000",
+    submissionDeadline: "25 Nov 2026, 16:00 IST",
+    daysRemaining: 6,
+    hoursRemaining: 4,
+    status: "EXTENDED",
+    urgencyLevel: "UPCOMING",
+    originalDate: "18 Nov 2026",
+    extensionDays: 7,
+    corrigendumRef: "Corrigendum 01/2026",
+    technicalOpening: "26 Nov 2026, 12:00 IST",
+    portalLink: "https://tender-tracker.gov.in/gj2026104"
+  },
+  {
+    id: "GJ-2026-089",
+    tenderRef: "GJ/2026/089",
+    title: "Turnkey Rooftop Solar PV System (250 kWp) with BESS",
+    department: "Energy & Petrochemicals",
+    category: "Solar Energy",
+    estimatedCost: "₹ 1,00,00,000",
+    emdAmount: "₹ 2,00,000",
+    submissionDeadline: "20 Nov 2026, 15:00 IST",
+    daysRemaining: 1,
+    hoursRemaining: 18,
+    status: "URGENT",
+    urgencyLevel: "CRITICAL",
+    originalDate: "10 Nov 2026",
+    extensionDays: 10,
+    corrigendumRef: "Corrigendum 01/2026",
+    technicalOpening: "21 Nov 2026, 11:00 IST",
+    portalLink: "https://tender-tracker.gov.in/gj2026089"
+  },
+  {
+    id: "GJ-2026-044",
+    tenderRef: "GJ/2026/044",
+    title: "Deployment of Smart City Automated Water Metering SCADA",
+    department: "Urban Development",
+    category: "IoT / SCADA",
+    estimatedCost: "₹ 8,75,00,000",
+    emdAmount: "₹ 4,35,000",
+    submissionDeadline: "21 Nov 2026, 18:00 IST",
+    daysRemaining: 2,
+    hoursRemaining: 8,
+    status: "URGENT",
+    urgencyLevel: "CRITICAL",
+    originalDate: "21 Nov 2026",
+    extensionDays: 0,
+    corrigendumRef: "N/A (Original Schedule)",
+    technicalOpening: "22 Nov 2026, 11:30 IST",
+    portalLink: "https://tender-tracker.gov.in/gj2026044"
+  },
+  {
+    id: "GJ-2026-012",
+    tenderRef: "GJ/2026/012",
+    title: "Comprehensive Annual Maintenance Contract for IT Datacenter",
+    department: "Science & Technology",
+    category: "IT Infrastructure",
+    estimatedCost: "₹ 1,80,00,000",
+    emdAmount: "₹ 90,000",
+    submissionDeadline: "05 Dec 2026, 17:00 IST",
+    daysRemaining: 16,
+    hoursRemaining: 2,
+    status: "NORMAL",
+    urgencyLevel: "NORMAL",
+    originalDate: "05 Dec 2026",
+    extensionDays: 0,
+    corrigendumRef: "N/A (Base NIT)",
+    technicalOpening: "06 Dec 2026, 14:00 IST",
+    portalLink: "https://tender-tracker.gov.in/gj2026012"
+  }
+];
+
+function getUpcomingDeadlines() {
+  const stored = localStorage.getItem('upcomingDeadlinesStore');
+  if (stored) {
+    try { return JSON.parse(stored); } catch (e) {}
+  }
+  return DEFAULT_UPCOMING_DEADLINES;
+}
+
+function saveUpcomingDeadlines(items) {
+  localStorage.setItem('upcomingDeadlinesStore', JSON.stringify(items));
+}
+
+function getEmailNotificationSettings() {
+  const stored = localStorage.getItem('emailNotificationSettings');
+  if (stored) {
+    try { return JSON.parse(stored); } catch (e) {}
+  }
+  return {
+    enabled: true,
+    email: "procurement-alerts@gujarat.gov.in",
+    corrigendumAlerts: true,
+    deadlineChangeAlerts: true,
+    upcoming24hAlerts: true,
+    digestFrequency: "IMMEDIATE"
+  };
+}
+
+function saveEmailNotificationSettings(settings) {
+  localStorage.setItem('emailNotificationSettings', JSON.stringify(settings));
+  showToast('Email alert preferences saved successfully', 'success');
 }
 
 function handleNotificationClick(id, link) {
