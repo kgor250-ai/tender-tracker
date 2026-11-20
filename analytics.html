@@ -8,18 +8,15 @@
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Analytics & Reports - Tender Corrigendum Tracker</title>
+  <title>Reports & Amendment Analytics - Tender Corrigendum Tracker</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
     .bg-sidebar { background-color: #0b192c; }
-      /* Fixed sidebar - prevents sidebar from scrolling with page */
-          /* Fixed sidebar - prevents sidebar from scrolling with page */
-          /* Fixed sidebar - prevents sidebar from scrolling with page */
     aside.fixed-sidebar {
       position: fixed;
       top: 0;
@@ -38,19 +35,21 @@
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex antialiased">
 
+  <!-- ========================================================================= -->
   <!-- SIDEBAR -->
-  <aside class="w-64 bg-sidebar fixed-sidebar text-white flex flex-col justify-between shrink-0 min-h-screen border-r border-slate-800">
+  <!-- ========================================================================= -->
+  <aside class="w-64 bg-sidebar fixed-sidebar text-white flex flex-col justify-between shrink-0 min-h-screen border-r border-slate-800 select-none">
     <div>
-      <div class="p-5 flex items-center gap-3 border-b border-slate-800/80">
-        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-600/30">
+      <a href="dashboard.html" class="p-5 flex items-center gap-3 border-b border-slate-800/80 hover:bg-slate-800/40 transition-colors block">
+        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-600/30 shrink-0">
           <i data-lucide="scale" class="w-5 h-5"></i>
         </div>
         <div>
           <h1 class="text-sm font-bold tracking-tight text-white leading-tight">Tender Corrigendum &<br>Amendment Tracker</h1>
         </div>
-      </div>
+      </a>
 
       <nav class="p-3 space-y-1 text-xs font-semibold">
         <a href="dashboard.html" data-page="dashboard"
@@ -109,14 +108,20 @@
           <span>Collection Monitor</span>
         </a>
 
-        <a href="analytics.html" data-page="analytics"
+        <a href="amendment-summary.html" data-page="amendment-summary"
           class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
-          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
-          <span>Analytics & Reports</span>
+          <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+          <span>Amendment Summary</span>
         </a>
 
-        <div class="pt-5 pb-1 px-3.5 text-[10px] uppercase font-bold tracking-wider text-slate-500">
-          Administration
+        <a href="analytics.html" data-page="analytics"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-blue-600 text-white font-bold transition-all shadow-md shadow-blue-600/30">
+          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+          <span>Reports &amp; Analytics</span>
+        </a>
+
+        <div class="pt-4 pb-1 px-3.5 text-[10px] uppercase font-bold tracking-wider text-slate-400">
+          ADMINISTRATION
         </div>
 
         <a href="users.html" data-page="users"
@@ -148,16 +153,13 @@
     </div>
   </aside>
 
+  <!-- ========================================================================= -->
   <!-- MAIN AREA -->
+  <!-- ========================================================================= -->
   <div class="flex-1 flex flex-col main-with-sidebar min-h-screen overflow-x-hidden min-w-0">
 
     <!-- TOP HEADER -->
     <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
-  <script>
-    // Prevent ALL browser alert/confirm popups immediately
-    window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
-    window.confirm = function(msg) { return true; };
-  </script>
       <div class="flex items-center gap-4 flex-1 max-w-xl">
         <div class="relative w-full">
           <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -168,34 +170,17 @@
       </div>
 
       <div class="flex items-center gap-4">
-        <!-- Notification Bell & Dropdown -->
+        <!-- Notification Bell -->
         <div class="relative">
           <button id="notification-bell-btn" onclick="toggleDropdown('notification-dropdown-menu')" class="relative p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors" title="Notifications">
             <i data-lucide="bell" class="w-5 h-5"></i>
-            <span id="notification-badge" class="absolute top-1.5 right-1.5 w-4 h-4 bg-rose-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center animate-pulse">3</span>
+            <span id="notification-badge" class="absolute top-1.5 right-1.5 w-4 h-4 bg-rose-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center">4</span>
           </button>
-
-          <!-- Notification Dropdown Menu -->
-          <div id="notification-dropdown-menu" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 overflow-hidden text-xs">
-            <div class="px-4 py-3 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <span class="font-bold text-slate-800 text-sm">Notifications</span>
-                <span id="unread-count-pill" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">3 New</span>
-              </div>
-              <button onclick="markAllNotificationsAsRead()" class="text-[11px] font-bold text-blue-600 hover:underline">Mark all read</button>
-            </div>
-            <div class="divide-y divide-slate-100 max-h-80 overflow-y-auto" id="notification-items-container"></div>
-            <div class="p-2.5 bg-slate-50 border-t border-slate-100 text-center">
-              <a href="audit-logs.html" class="text-xs font-bold text-slate-600 hover:text-blue-600 flex items-center justify-center gap-1.5 transition-colors">
-                <i data-lucide="history" class="w-3.5 h-3.5"></i>
-                <span>View Full System Audit Trail</span>
-              </a>
-            </div>
-          </div>
         </div>
 
+        <!-- User Menu -->
         <div class="relative">
-          <button id="user-menu-btn" onclick="toggleDropdown('user-dropdown-menu')" class="flex items-center gap-2.5 p-1.5 pr-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all">
+          <button id="user-menu-btn" onclick="toggleDropdown('user-dropdown-menu')" class="flex items-center gap-2.5 p-1.5 pr-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all">
             <div class="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center text-xs shadow-xs" id="nav-user-avatar">A</div>
             <div class="text-left hidden sm:block">
               <span class="text-xs font-bold text-slate-800 block leading-tight" id="nav-user-name">Admin Officer</span>
@@ -203,30 +188,6 @@
             </div>
             <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
           </button>
-
-          <div id="user-dropdown-menu" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 z-50 text-xs space-y-1">
-            <div class="px-3 py-2 border-b border-slate-100">
-              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Role Simulation</span>
-              <p class="font-bold text-slate-800">Switch Permission Level</p>
-            </div>
-            <button onclick="switchRole('ADMIN')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center justify-between">
-              <span>👑 Admin (Full)</span>
-              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-800">Admin</span>
-            </button>
-            <button onclick="switchRole('OPERATOR')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center justify-between">
-              <span>👷 Tender Operator</span>
-              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Operator</span>
-            </button>
-            <button onclick="switchRole('VIEWER')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 flex items-center justify-between">
-              <span>👁️ Viewer (Read Only)</span>
-              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">Viewer</span>
-            </button>
-            <div class="border-t border-slate-100 pt-1">
-              <a href="login.html" class="w-full text-left px-3 py-2 text-rose-600 hover:bg-rose-50 rounded-lg font-bold flex items-center gap-2">
-                <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Sign Out
-              </a>
-            </div>
-          </div>
         </div>
       </div>
     </header>
@@ -234,253 +195,330 @@
     <!-- MAIN BODY -->
     <main class="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto">
       
-      <!-- PAGE HEADER -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <!-- TOP SCREEN TABS (Reports vs Tender Amendment Summary) -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/90 pb-4">
         <div>
-          <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Strategic Amendment Intelligence & Analytics</h1>
-          <p class="text-xs text-slate-500 mt-0.5">Deep analytical benchmarking, root-cause distribution, and procurement variance data</p>
-        </div>
-
-        <div class="flex items-center gap-2.5">
-          <!-- Interactive Timeframe Filter -->
-          <div class="relative">
-            <button id="date-range-btn" onclick="toggleDropdown('date-range-dropdown')" class="px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2 shadow-xs transition-colors">
-              <i data-lucide="calendar" class="w-4 h-4 text-purple-600"></i>
-              <span id="selected-date-range-label">FY 2026-27 (All Quarters)</span>
-              <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
-            </button>
-
-            <!-- Dropdown Menu -->
-            <div id="date-range-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-200 p-1.5 z-50 text-xs space-y-0.5">
-              <div class="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Select Financial Period</div>
-              <button onclick="document.getElementById('selected-date-range-label').innerText = 'FY 2026-27 (Q1 & Q2)'; toggleDropdown('date-range-dropdown'); showToast('Analytics period: FY 2026-27 (Q1 & Q2)', 'info');" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-50 flex items-center justify-between font-semibold text-slate-700">
-                <span>FY 2026-27 (Q1 & Q2)</span>
-              </button>
-              <button onclick="document.getElementById('selected-date-range-label').innerText = 'FY 2026-27 (All Quarters)'; toggleDropdown('date-range-dropdown'); showToast('Analytics period: FY 2026-27 (All Quarters)', 'info');" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-50 flex items-center justify-between font-semibold text-slate-700">
-                <span>FY 2026-27 (All Quarters)</span>
-              </button>
-              <button onclick="document.getElementById('selected-date-range-label').innerText = 'FY 2025-26 (Full Year)'; toggleDropdown('date-range-dropdown'); showToast('Analytics period: FY 2025-26 (Full Year)', 'info');" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-50 flex items-center justify-between font-semibold text-slate-700">
-                <span>FY 2025-26 (Full Year)</span>
-              </button>
-            </div>
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-purple-100 text-purple-700">Module: Reporting &amp; Intelligence</span>
           </div>
-          <button onclick="showToast('Exporting Enterprise BI Analysis dossier (PDF & CSV)...', 'info');" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-500/20 flex items-center gap-2">
-            <i data-lucide="download" class="w-4 h-4"></i>
-            <span>Export BI Report</span>
-          </button>
+          <h1 class="text-2xl font-black text-slate-900 tracking-tight mt-1">Reports &amp; Strategic Amendment Analytics</h1>
+          <p class="text-xs text-slate-500 mt-0.5">Statistical breakdowns: tender-wise corrigendum counts, stability ratios, and deadline shifts</p>
+        </div>
+
+        <!-- Screen Toggle Tabs -->
+        <div class="flex items-center gap-2 p-1 bg-slate-200/70 rounded-2xl border border-slate-200">
+          <a href="analytics.html" class="px-4 py-2 rounded-xl text-xs font-bold bg-white text-blue-700 shadow-sm flex items-center gap-2 transition-all">
+            <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+            <span>Reports &amp; Analytics</span>
+          </a>
+          <a href="amendment-summary.html" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-white/60 flex items-center gap-2 transition-all">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+            <span>Amendment Summary</span>
+          </a>
         </div>
       </div>
 
-      <!-- 4 DISTINCT ANALYTICAL KPIS (Completely distinct from dashboard) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <!-- ========================================================================= -->
+      <!-- SECTION 1: 5 KEY AMENDMENT METRICS (Directly answers user requirements) -->
+      <!-- ========================================================================= -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+
+        <!-- 1. Total Corrigenda Count -->
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
-          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-            <i data-lucide="hourglass" class="w-4 h-4 text-purple-600"></i>
-            Avg Amendment Lag
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="layers" class="w-4 h-4 text-blue-600"></i>
+            Total Corrigenda
           </span>
-          <p class="text-3xl font-extrabold text-slate-900">14.2 Days</p>
-          <span class="text-[11px] text-purple-700 font-semibold">Between NIT release & first corrigendum</span>
+          <p class="text-3xl font-black text-slate-900">326</p>
+          <span class="text-[11px] text-blue-700 font-semibold">Across 1,248 active tenders</span>
         </div>
 
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
-          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-            <i data-lucide="indian-rupee" class="w-4 h-4 text-emerald-600"></i>
-            Total Cost Variation
+        <!-- 2. Tenders with No Amendments (Zero) -->
+        <a href="amendment-summary.html?filter=ZERO" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2 hover:border-emerald-300 transition-all block group">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+            No Amendments
           </span>
-          <p class="text-3xl font-extrabold text-emerald-700">₹ 84.60 Cr</p>
-          <span class="text-[11px] text-emerald-600 font-semibold">Cumulative budget variance</span>
-        </div>
+          <p class="text-3xl font-black text-emerald-700">922</p>
+          <span class="text-[11px] text-emerald-600 font-semibold">73.9% of tenders remain unamended</span>
+        </a>
 
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
-          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-            <i data-lucide="percent" class="w-4 h-4 text-blue-600"></i>
-            Amendment Ratio
+        <!-- 3. Tenders with Multiple Amendments (2+) -->
+        <a href="amendment-summary.html?filter=MULTIPLE" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2 hover:border-purple-300 transition-all block group">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="git-merge" class="w-4 h-4 text-purple-600"></i>
+            Multi-Amended
           </span>
-          <p class="text-3xl font-extrabold text-blue-600">26.1%</p>
-          <span class="text-[11px] text-blue-700 font-semibold">Tenders requiring at least 1 revision</span>
-        </div>
+          <p class="text-3xl font-black text-purple-700">142</p>
+          <span class="text-[11px] text-purple-600 font-semibold">11.4% with 2+ corrigenda (high attention)</span>
+        </a>
 
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
-          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+        <!-- 4. Recently Amended (Last 30 Days) -->
+        <a href="amendment-summary.html?filter=RECENT" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2 hover:border-blue-300 transition-all block group">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="clock" class="w-4 h-4 text-blue-600"></i>
+            Recently Amended
+          </span>
+          <p class="text-3xl font-black text-blue-700">48</p>
+          <span class="text-[11px] text-blue-600 font-semibold">Updated in past 30 days</span>
+        </a>
+
+        <!-- 5. Tenders with Changed Submission Deadlines -->
+        <a href="amendment-summary.html?filter=DEADLINE" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2 hover:border-amber-300 transition-all block group">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
             <i data-lucide="calendar-plus" class="w-4 h-4 text-amber-500"></i>
-            Avg Deadline Extension
+            Deadlines Changed
           </span>
-          <p class="text-3xl font-extrabold text-amber-600">+12.4 Days</p>
-          <span class="text-[11px] text-slate-500 font-semibold">Average added bidding window</span>
-        </div>
+          <p class="text-3xl font-black text-amber-600">184</p>
+          <span class="text-[11px] text-amber-700 font-semibold">+12.4 avg days extended</span>
+        </a>
+
       </div>
 
-      <!-- VISUAL ANALYTICS: ROOT CAUSE BREAKDOWN & IMPACT MATRIX -->
+      <!-- ========================================================================= -->
+      <!-- SECTION 2: TENDER-WISE CORRIGENDUM COUNT DISTRIBUTION (Chart & Bars) -->
+      <!-- ========================================================================= -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        <!-- Root Cause Breakdown (Progress Bar Breakdown) -->
+
+        <!-- Corrigendum Count Distribution -->
         <div class="lg:col-span-6 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
           <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h2 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-              <i data-lucide="pie-chart" class="w-4 h-4 text-blue-600"></i>
-              <span>Corrigendum Root-Cause Distribution</span>
-            </h2>
-            <span class="text-[10px] font-bold text-slate-400 uppercase">326 Sampled</span>
+            <div class="flex items-center gap-2">
+              <i data-lucide="bar-chart-2" class="w-4 h-4 text-blue-600"></i>
+              <h2 class="text-sm font-extrabold text-slate-900">Tender-Wise Corrigendum Count Distribution</h2>
+            </div>
+            <span class="text-[10px] font-bold text-slate-400 uppercase">1,248 Tenders</span>
           </div>
 
-          <div class="space-y-4 text-xs">
+          <div class="space-y-4 text-xs pt-1">
+            <!-- 0 Amendments -->
             <div>
               <div class="flex items-center justify-between font-bold text-slate-800 mb-1">
-                <span>Pre-Bid Queries & Clarifications</span>
-                <span class="text-blue-600">41% (134 events)</span>
+                <span class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                  0 Amendments (Stable)
+                </span>
+                <span class="text-emerald-700 font-mono font-bold">922 Tenders (73.9%)</span>
               </div>
-              <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                <div class="h-full bg-blue-600 rounded-full" style="width: 41%"></div>
+              <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+                <div class="h-full bg-emerald-500 rounded-full" style="width: 73.9%"></div>
               </div>
             </div>
 
+            <!-- 1 Corrigendum -->
             <div>
               <div class="flex items-center justify-between font-bold text-slate-800 mb-1">
-                <span>Technical Specification Revisions</span>
-                <span class="text-emerald-600">27% (88 events)</span>
+                <span class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                  1 Corrigendum (Single Correction)
+                </span>
+                <span class="text-blue-700 font-mono font-bold">184 Tenders (14.7%)</span>
               </div>
-              <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                <div class="h-full bg-emerald-500 rounded-full" style="width: 27%"></div>
+              <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+                <div class="h-full bg-blue-600 rounded-full" style="width: 14.7%"></div>
               </div>
             </div>
 
+            <!-- 2 Corrigenda -->
             <div>
               <div class="flex items-center justify-between font-bold text-slate-800 mb-1">
-                <span>Deadline Extension (Low Bidder Turnout)</span>
-                <span class="text-amber-600">18% (59 events)</span>
+                <span class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                  2 Corrigenda (Multi-Amended)
+                </span>
+                <span class="text-purple-700 font-mono font-bold">94 Tenders (7.5%)</span>
               </div>
-              <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                <div class="h-full bg-amber-500 rounded-full" style="width: 18%"></div>
+              <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+                <div class="h-full bg-purple-600 rounded-full" style="width: 7.5%"></div>
               </div>
             </div>
 
+            <!-- 3+ Corrigenda -->
             <div>
               <div class="flex items-center justify-between font-bold text-slate-800 mb-1">
-                <span>Eligibility & Turnover Criteria Relaxations</span>
-                <span class="text-purple-600">9% (29 events)</span>
+                <span class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                  3+ Corrigenda (High Volatility)
+                </span>
+                <span class="text-rose-700 font-mono font-bold">48 Tenders (3.9%)</span>
               </div>
-              <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                <div class="h-full bg-purple-500 rounded-full" style="width: 9%"></div>
+              <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+                <div class="h-full bg-rose-600 rounded-full" style="width: 3.9%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+            <span>Average corrigenda per tender: <strong>0.26</strong></span>
+            <a href="amendment-summary.html" class="text-blue-600 font-bold hover:underline flex items-center gap-1">
+              <span>Explore Summary Table</span>
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Submission Deadline Extension Analysis -->
+        <div class="lg:col-span-6 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div class="flex items-center gap-2">
+                <i data-lucide="calendar-range" class="w-4 h-4 text-amber-600"></i>
+                <h2 class="text-sm font-extrabold text-slate-900">Submission Deadline Shifts &amp; Extensions</h2>
+              </div>
+              <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">184 Affected</span>
+            </div>
+
+            <!-- Metric Breakdown -->
+            <div class="grid grid-cols-3 gap-3 my-4 text-center">
+              <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <span class="text-[10px] text-slate-400 font-bold uppercase block">Avg Extension</span>
+                <span class="text-lg font-black text-amber-600">+12.4 Days</span>
+              </div>
+              <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <span class="text-[10px] text-slate-400 font-bold uppercase block">Max Extension</span>
+                <span class="text-lg font-black text-rose-600">+35 Days</span>
+              </div>
+              <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <span class="text-[10px] text-slate-400 font-bold uppercase block">Min Extension</span>
+                <span class="text-lg font-black text-emerald-600">+3 Days</span>
               </div>
             </div>
 
-            <div>
-              <div class="flex items-center justify-between font-bold text-slate-800 mb-1">
-                <span>Administrative / Scope Corrections</span>
-                <span class="text-slate-500">5% (16 events)</span>
+            <!-- Extension Causes -->
+            <div class="space-y-2 text-xs">
+              <div class="flex items-center justify-between font-medium text-slate-700">
+                <span>Extended due to pre-bid technical queries</span>
+                <span class="font-bold text-slate-900">98 Tenders (53%)</span>
               </div>
-              <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                <div class="h-full bg-slate-400 rounded-full" style="width: 5%"></div>
+              <div class="flex items-center justify-between font-medium text-slate-700">
+                <span>Extended due to low initial bidder turnout</span>
+                <span class="font-bold text-slate-900">54 Tenders (29%)</span>
               </div>
+              <div class="flex items-center justify-between font-medium text-slate-700">
+                <span>Extended due to specification/BOQ modifications</span>
+                <span class="font-bold text-slate-900">32 Tenders (18%)</span>
+              </div>
+            </div>
+          </div>
+
+          <a href="amendment-summary.html?filter=DEADLINE"
+            class="w-full py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 border border-amber-200">
+            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+            <span>View 184 Tenders with Changed Deadlines &rarr;</span>
+          </a>
+        </div>
+
+      </div>
+
+      <!-- ========================================================================= -->
+      <!-- SECTION 3: RECENTLY AMENDED TENDERS & INTEL DOSSIERS -->
+      <!-- ========================================================================= -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Recently Amended Tenders Feed (Last 30 Days) -->
+        <div class="lg:col-span-7 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-2">
+              <i data-lucide="zap" class="w-4 h-4 text-blue-600"></i>
+              <h2 class="text-sm font-extrabold text-slate-900">Recently Amended Tenders (Live Feed)</h2>
+            </div>
+            <a href="amendment-summary.html?filter=RECENT" class="text-xs font-bold text-blue-600 hover:underline">View All 48 &rarr;</a>
+          </div>
+
+          <div class="divide-y divide-slate-100 text-xs">
+            <!-- Item 1 -->
+            <div class="py-3 flex items-center justify-between gap-3 hover:bg-slate-50/70 p-2 rounded-xl transition-colors">
+              <div class="flex items-start gap-3">
+                <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">02</span>
+                <div>
+                  <a href="versions.html?tender=T-2026-1049" class="font-bold text-slate-900 hover:text-blue-600 block">T-2026-1049: IT Infrastructure Services</a>
+                  <span class="text-[11px] text-slate-500">Corrigendum 02 &bull; Payment schedule revised &bull; Deadline extended by 14 days</span>
+                </div>
+              </div>
+              <span class="text-[11px] font-bold text-emerald-600 shrink-0 bg-emerald-50 px-2 py-0.5 rounded-full">Today, 10:30 AM</span>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="py-3 flex items-center justify-between gap-3 hover:bg-slate-50/70 p-2 rounded-xl transition-colors">
+              <div class="flex items-start gap-3">
+                <span class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">01</span>
+                <div>
+                  <a href="versions.html?tender=T-2026-1050" class="font-bold text-slate-900 hover:text-blue-600 block">T-2026-1050: Construction of School Building</a>
+                  <span class="text-[11px] text-slate-500">Corrigendum 01 &bull; Technical drawings updated &bull; Deadline +7 days</span>
+                </div>
+              </div>
+              <span class="text-[11px] font-bold text-emerald-600 shrink-0 bg-emerald-50 px-2 py-0.5 rounded-full">Yesterday</span>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="py-3 flex items-center justify-between gap-3 hover:bg-slate-50/70 p-2 rounded-xl transition-colors">
+              <div class="flex items-start gap-3">
+                <span class="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">03</span>
+                <div>
+                  <a href="versions.html?tender=T-2026-1033" class="font-bold text-slate-900 hover:text-blue-600 block">T-2026-1033: Metro Flyover &amp; Bridge Works</a>
+                  <span class="text-[11px] text-slate-500">Corrigendum 03 &bull; Geotechnical test criteria updated &bull; Cumulative +18d</span>
+                </div>
+              </div>
+              <span class="text-[11px] font-bold text-slate-500 shrink-0">3 days ago</span>
+            </div>
+
+            <!-- Item 4 -->
+            <div class="py-3 flex items-center justify-between gap-3 hover:bg-slate-50/70 p-2 rounded-xl transition-colors">
+              <div class="flex items-start gap-3">
+                <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">02</span>
+                <div>
+                  <a href="versions.html?tender=T-2026-1040" class="font-bold text-slate-900 hover:text-blue-600 block">T-2026-1040: Hospital Laboratory Diagnostics</a>
+                  <span class="text-[11px] text-slate-500">Corrigendum 02 &bull; Pre-bid queries answered &bull; Reagent compliance relaxed</span>
+                </div>
+              </div>
+              <span class="text-[11px] font-bold text-slate-500 shrink-0">5 days ago</span>
             </div>
           </div>
         </div>
 
-        <!-- Downloadable Analytical Dossiers -->
-        <div class="lg:col-span-6 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4 flex flex-col justify-between">
+        <!-- Downloadable Reports & Export Center -->
+        <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4 flex flex-col justify-between">
           <div class="space-y-3">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
               <h2 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
                 <i data-lucide="file-check-2" class="w-4 h-4 text-emerald-600"></i>
-                <span>Generated Intelligence Reports</span>
+                <span>Generated Audit Reports</span>
               </h2>
             </div>
 
             <div class="space-y-2.5 text-xs">
               <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
                 <div>
-                  <p class="font-bold text-slate-900">Annual Corrigendum Intelligence Audit (FY 2026-27)</p>
-                  <p class="text-[11px] text-slate-500">Full audit of all 1,248 tenders & 326 corrigenda &bull; 4.8 MB</p>
+                  <p class="font-bold text-slate-900">Tender Amendment Summary Report</p>
+                  <p class="text-[11px] text-slate-500">All 1,248 tenders &bull; Counts, shifts &amp; stability &bull; CSV</p>
                 </div>
-                <button onclick="showToast('Downloading Annual Intelligence Audit PDF (4.8 MB)...', 'info');" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-xs">PDF</button>
+                <a href="amendment-summary.html" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs">View/CSV</a>
               </div>
 
               <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
                 <div>
-                  <p class="font-bold text-slate-900">Vendor Compliance & Deadline Variance Dataset</p>
-                  <p class="text-[11px] text-slate-500">Raw tabular export for Excel / PowerBI modeling &bull; 2.1 MB</p>
+                  <p class="font-bold text-slate-900">Deadline Extension Variance Audit</p>
+                  <p class="text-[11px] text-slate-500">184 tenders with altered submission dates &bull; PDF</p>
                 </div>
-                <button onclick="showToast('Exporting CSV dataset (2.1 MB)...', 'success');" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs">CSV</button>
+                <button onclick="showToast('Exporting Deadline Extension Variance Audit PDF...', 'info');" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-xs">PDF</button>
               </div>
 
               <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
                 <div>
-                  <p class="font-bold text-slate-900">Department Scope Escalation & Cost Delta Ledger</p>
-                  <p class="text-[11px] text-slate-500">Variance breakdown between initial tender cost & final amended value</p>
+                  <p class="font-bold text-slate-900">High Volatility Tenders Dossier</p>
+                  <p class="text-[11px] text-slate-500">142 tenders with multiple revisions &bull; XLSX</p>
                 </div>
-                <button onclick="showToast('Downloading Cost Delta Ledger XLSX...', 'info');" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg text-xs">XLSX</button>
+                <button onclick="showToast('Exporting High Volatility Dataset (XLSX)...', 'info');" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg text-xs">XLSX</button>
               </div>
             </div>
           </div>
 
           <div class="p-3 bg-blue-50/70 rounded-xl border border-blue-200 text-xs text-blue-900 flex items-center justify-between">
-            <span class="font-medium">Need customized cross-department pivot queries?</span>
-            <button onclick="showToast('Custom Query Builder loaded in active session.', 'info');" class="font-bold text-blue-700 hover:underline">Launch Query Builder &rarr;</button>
+            <span class="font-medium">Need full tabular row-by-row data?</span>
+            <a href="amendment-summary.html" class="font-bold text-blue-700 hover:underline">Open Summary Screen &rarr;</a>
           </div>
         </div>
 
-      </div>
-
-      <!-- DEPARTMENT-WISE AMENDMENT BENCHMARK MATRIX -->
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-        <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-700">Department Performance & Amendment Frequency Index</h2>
-          <span class="text-xs text-slate-500 font-bold">Benchmarking 4 Authorities</span>
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs border-collapse">
-            <thead>
-              <tr class="border-b border-slate-200 text-slate-500 text-[11px] font-bold uppercase">
-                <th class="py-3 px-4">Authority / Department</th>
-                <th class="py-3 px-4">Total Tenders</th>
-                <th class="py-3 px-4">Amended Count</th>
-                <th class="py-3 px-4">Corrigendum Ratio</th>
-                <th class="py-3 px-4">Avg Added Days</th>
-                <th class="py-3 px-4">Net Cost Delta</th>
-                <th class="py-3 px-4 text-right">Risk Index</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
-              <tr class="hover:bg-slate-50">
-                <td class="py-3.5 px-4 font-bold text-slate-900">Public Works Department (PWD)</td>
-                <td class="py-3.5 px-4">420</td>
-                <td class="py-3.5 px-4 font-bold text-slate-900">148</td>
-                <td class="py-3.5 px-4 text-rose-600 font-bold">35.2%</td>
-                <td class="py-3.5 px-4">+14.6 days</td>
-                <td class="py-3.5 px-4 text-emerald-700 font-mono font-bold">+ ₹ 12.40 Cr</td>
-                <td class="py-3.5 px-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">MODERATE</span></td>
-              </tr>
-              <tr class="hover:bg-slate-50">
-                <td class="py-3.5 px-4 font-bold text-slate-900">Gujarat Health Directorate</td>
-                <td class="py-3.5 px-4">310</td>
-                <td class="py-3.5 px-4 font-bold text-slate-900">86</td>
-                <td class="py-3.5 px-4 text-amber-600 font-bold">27.7%</td>
-                <td class="py-3.5 px-4">+9.8 days</td>
-                <td class="py-3.5 px-4 text-slate-700 font-mono font-bold">- ₹ 2.10 Cr</td>
-                <td class="py-3.5 px-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">LOW</span></td>
-              </tr>
-              <tr class="hover:bg-slate-50">
-                <td class="py-3.5 px-4 font-bold text-slate-900">Urban Development & Housing (UDHD)</td>
-                <td class="py-3.5 px-4">280</td>
-                <td class="py-3.5 px-4 font-bold text-slate-900">62</td>
-                <td class="py-3.5 px-4 text-amber-600 font-bold">22.1%</td>
-                <td class="py-3.5 px-4">+18.2 days</td>
-                <td class="py-3.5 px-4 text-rose-600 font-mono font-bold">+ ₹ 28.50 Cr</td>
-                <td class="py-3.5 px-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800">HIGH</span></td>
-              </tr>
-              <tr class="hover:bg-slate-50">
-                <td class="py-3.5 px-4 font-bold text-slate-900">Indian Railways / IRCTC</td>
-                <td class="py-3.5 px-4">238</td>
-                <td class="py-3.5 px-4 font-bold text-slate-900">30</td>
-                <td class="py-3.5 px-4 text-emerald-600 font-bold">12.6%</td>
-                <td class="py-3.5 px-4">+4.5 days</td>
-                <td class="py-3.5 px-4 text-slate-500 font-mono">₹ 0.00 Cr</td>
-                <td class="py-3.5 px-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800">VERY LOW</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
       </div>
 
     </main>

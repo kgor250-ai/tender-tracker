@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script>
+    // Prevent ALL browser alert/confirm popups immediately
+    window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
+    window.confirm = function(msg) { return true; };
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tender Amendment Summary - Reports</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap"
+    rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .bg-sidebar { background-color: #0b192c; }
+    aside.fixed-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 16rem;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 50;
+    }
+    .main-with-sidebar {
+      margin-left: 16rem;
+      width: calc(100% - 16rem);
+      min-width: 0;
+      min-height: 100vh;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 min-h-screen flex antialiased">
+
+  <!-- ========================================================================= -->
+  <!-- SIDEBAR -->
+  <!-- ========================================================================= -->
+  <aside class="w-64 bg-sidebar fixed-sidebar text-white flex flex-col justify-between shrink-0 min-h-screen border-r border-slate-800 select-none">
+    <div>
+      <!-- Brand Logo -->
+      <a href="dashboard.html" class="p-5 flex items-center gap-3 border-b border-slate-800/80 hover:bg-slate-800/40 transition-colors block">
+        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-600/30 shrink-0">
+          <i data-lucide="scale" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="text-sm font-bold tracking-tight text-white leading-tight">Tender Corrigendum &<br>Amendment Tracker</h1>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="p-3 space-y-1 text-xs font-semibold">
+        <a href="dashboard.html" data-page="dashboard"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="tenders.html" data-page="tenders"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="file-text" class="w-4 h-4"></i>
+          <span>Tenders</span>
+        </a>
+
+        <a href="versions.html" data-page="versions"
+          class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="git-branch" class="w-4 h-4"></i>
+            <span>Version History</span>
+          </div>
+        </a>
+
+        <a href="notifications.html" data-page="notifications"
+          class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="bell" class="w-4 h-4"></i>
+            <span>Notifications</span>
+          </div>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">4</span>
+        </a>
+
+        <a href="deadlines.html" data-page="deadlines"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="calendar-clock" class="w-4 h-4"></i>
+          <span>Upcoming Deadlines</span>
+        </a>
+
+        <a href="review.html" data-page="review"
+          class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="check-square" class="w-4 h-4"></i>
+            <span>Review Queue</span>
+          </div>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">18</span>
+        </a>
+
+        <a href="sources.html" data-page="sources"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="globe" class="w-4 h-4"></i>
+          <span>Sources</span>
+        </a>
+
+        <a href="collection-monitor.html" data-page="collection"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="activity" class="w-4 h-4"></i>
+          <span>Collection Monitor</span>
+        </a>
+
+        <!-- Amendment Summary & Analytics (Active) -->
+        <a href="amendment-summary.html" data-page="amendment-summary"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-blue-600 text-white font-bold transition-all shadow-md shadow-blue-600/30">
+          <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+          <span>Amendment Summary</span>
+        </a>
+
+        <a href="analytics.html" data-page="analytics"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+          <span>Reports & Analytics</span>
+        </a>
+
+        <div class="pt-4 pb-1 px-3.5 text-[10px] uppercase font-bold tracking-wider text-slate-400">
+          ADMINISTRATION
+        </div>
+
+        <a href="users.html" data-page="users"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="users" class="w-4 h-4"></i>
+          <span>Users & Roles</span>
+        </a>
+
+        <a href="audit-logs.html" data-page="audit"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="shield-alert" class="w-4 h-4"></i>
+          <span>Audit Logs</span>
+        </a>
+
+        <a href="settings.html" data-page="settings"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Bottom Status -->
+    <div class="p-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="font-medium">System Online</span>
+      </div>
+      <span class="font-mono text-slate-500">v1.0.0</span>
+    </div>
+  </aside>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN CONTENT AREA -->
+  <!-- ========================================================================= -->
+  <div class="flex-1 flex flex-col main-with-sidebar min-h-screen overflow-x-hidden min-w-0">
+
+    <!-- TOP HEADER -->
+    <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+      <div class="flex items-center gap-4 flex-1 max-w-xl">
+        <div class="relative w-full">
+          <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <i data-lucide="search" class="w-4 h-4"></i>
+          </span>
+          <input type="text" id="summary-search-input" onkeyup="filterAmendmentSummaryTable()"
+            placeholder="Search by tender no, title, department, or amendment keyword..."
+            class="w-full pl-10 pr-4 py-2 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-blue-500 text-xs font-semibold text-slate-800 outline-none transition-all">
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <!-- Notification Bell -->
+        <div class="relative">
+          <button id="notification-bell-btn" onclick="toggleDropdown('notification-dropdown-menu')"
+            class="relative p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span id="notification-badge" class="absolute top-1.5 right-1.5 w-4 h-4 bg-rose-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center">4</span>
+          </button>
+        </div>
+
+        <!-- User Menu -->
+        <div class="relative">
+          <button id="user-menu-btn" onclick="toggleDropdown('user-dropdown-menu')"
+            class="flex items-center gap-2.5 p-1.5 pr-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all">
+            <div class="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center text-xs shadow-xs" id="nav-user-avatar">A</div>
+            <div class="text-left hidden sm:block">
+              <span class="text-xs font-bold text-slate-800 block leading-tight" id="nav-user-name">Admin Officer</span>
+              <span class="text-[10px] font-semibold text-blue-600 block uppercase" id="nav-user-role">ADMIN</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN BODY -->
+    <main class="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto">
+
+      <!-- TOP SCREEN TABS (Reports vs Tender Amendment Summary) -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/90 pb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-blue-100 text-blue-700">Module: Reporting &amp; Intelligence</span>
+          </div>
+          <h1 class="text-2xl font-black text-slate-900 tracking-tight mt-1">Tender Amendment Summary</h1>
+          <p class="text-xs text-slate-500 mt-0.5">Comprehensive audit intelligence: corrigendum frequency, deadline shifts, and amendment volatility</p>
+        </div>
+
+        <!-- Navigation Tabs: Amendment Summary vs Full Reports -->
+        <div class="flex items-center gap-2 p-1 bg-slate-200/70 rounded-2xl border border-slate-200">
+          <a href="amendment-summary.html" class="px-4 py-2 rounded-xl text-xs font-bold bg-white text-blue-700 shadow-sm flex items-center gap-2 transition-all">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+            <span>Amendment Summary</span>
+          </a>
+          <a href="analytics.html" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-white/60 flex items-center gap-2 transition-all">
+            <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+            <span>Reports &amp; Analytics</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- ========================================================================= -->
+      <!-- 5 METRIC CARDS FOR THE 5 REQUIRED INSIGHTS -->
+      <!-- ========================================================================= -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+
+        <!-- 1. Tender-Wise Corrigendum Count -->
+        <div onclick="setFilterCategory('ALL')"
+          class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs cursor-pointer hover:border-blue-300 hover:shadow-md transition-all group">
+          <div class="flex items-center justify-between text-slate-500 mb-1">
+            <span class="text-[11px] font-bold text-slate-600 flex items-center gap-1.5">
+              <i data-lucide="layers" class="w-3.5 h-3.5 text-blue-600"></i>
+              Total Tenders
+            </span>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span class="text-2xl font-black text-slate-900">1,248</span>
+            <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">Tracked</span>
+          </div>
+          <p class="text-[10px] text-slate-400 mt-1">326 total corrigenda issued</p>
+        </div>
+
+        <!-- 2. Tenders with No Amendments (Zero) -->
+        <div onclick="setFilterCategory('ZERO')"
+          class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs cursor-pointer hover:border-emerald-300 hover:shadow-md transition-all group">
+          <div class="flex items-center justify-between text-slate-500 mb-1">
+            <span class="text-[11px] font-bold text-slate-600 flex items-center gap-1.5">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+              No Amendments
+            </span>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span class="text-2xl font-black text-emerald-700">922</span>
+            <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">73.9%</span>
+          </div>
+          <p class="text-[10px] text-slate-400 mt-1">Zero corrigenda (Stable)</p>
+        </div>
+
+        <!-- 3. Tenders with Multiple Amendments (2+) -->
+        <div onclick="setFilterCategory('MULTIPLE')"
+          class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs cursor-pointer hover:border-purple-300 hover:shadow-md transition-all group">
+          <div class="flex items-center justify-between text-slate-500 mb-1">
+            <span class="text-[11px] font-bold text-slate-600 flex items-center gap-1.5">
+              <i data-lucide="git-merge" class="w-3.5 h-3.5 text-purple-600"></i>
+              Multi-Amended
+            </span>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span class="text-2xl font-black text-purple-700">142</span>
+            <span class="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full">11.4%</span>
+          </div>
+          <p class="text-[10px] text-slate-400 mt-1">2 or more corrigenda</p>
+        </div>
+
+        <!-- 4. Recently Amended Tenders -->
+        <div onclick="setFilterCategory('RECENT')"
+          class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs cursor-pointer hover:border-blue-300 hover:shadow-md transition-all group">
+          <div class="flex items-center justify-between text-slate-500 mb-1">
+            <span class="text-[11px] font-bold text-slate-600 flex items-center gap-1.5">
+              <i data-lucide="clock" class="w-3.5 h-3.5 text-blue-600"></i>
+              Recently Amended
+            </span>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span class="text-2xl font-black text-blue-700">48</span>
+            <span class="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full">Last 30d</span>
+          </div>
+          <p class="text-[10px] text-slate-400 mt-1">3 amended this week</p>
+        </div>
+
+        <!-- 5. Tenders with Changed Submission Deadlines -->
+        <div onclick="setFilterCategory('DEADLINE')"
+          class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs cursor-pointer hover:border-amber-300 hover:shadow-md transition-all group">
+          <div class="flex items-center justify-between text-slate-500 mb-1">
+            <span class="text-[11px] font-bold text-slate-600 flex items-center gap-1.5">
+              <i data-lucide="calendar-plus" class="w-3.5 h-3.5 text-amber-600"></i>
+              Deadline Changed
+            </span>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span class="text-2xl font-black text-amber-700">184</span>
+            <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">+12d avg</span>
+          </div>
+          <p class="text-[10px] text-slate-400 mt-1">Submission window extended</p>
+        </div>
+
+      </div>
+
+      <!-- ========================================================================= -->
+      <!-- FILTER PILLS & ACTION BUTTONS -->
+      <!-- ========================================================================= -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          
+          <!-- Filter Tabs for the 5 categories -->
+          <div class="flex flex-wrap items-center gap-1.5 text-xs font-bold">
+            <button id="pill-all" onclick="setFilterCategory('ALL')"
+              class="px-3.5 py-1.5 rounded-xl bg-blue-600 text-white shadow-xs transition-all flex items-center gap-1.5">
+              <span>All Tenders</span>
+              <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-white/20">1,248</span>
+            </button>
+
+            <button id="pill-zero" onclick="setFilterCategory('ZERO')"
+              class="px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all flex items-center gap-1.5">
+              <i data-lucide="check" class="w-3 h-3 text-emerald-600"></i>
+              <span>No Amendments</span>
+              <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200 text-slate-700">922</span>
+            </button>
+
+            <button id="pill-multiple" onclick="setFilterCategory('MULTIPLE')"
+              class="px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all flex items-center gap-1.5">
+              <i data-lucide="git-merge" class="w-3 h-3 text-purple-600"></i>
+              <span>Multiple Amendments</span>
+              <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-purple-100 text-purple-800">142</span>
+            </button>
+
+            <button id="pill-recent" onclick="setFilterCategory('RECENT')"
+              class="px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all flex items-center gap-1.5">
+              <i data-lucide="clock" class="w-3 h-3 text-blue-600"></i>
+              <span>Recently Amended</span>
+              <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-blue-100 text-blue-800">48</span>
+            </button>
+
+            <button id="pill-deadline" onclick="setFilterCategory('DEADLINE')"
+              class="px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all flex items-center gap-1.5">
+              <i data-lucide="calendar" class="w-3 h-3 text-amber-600"></i>
+              <span>Deadline Changed</span>
+              <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-100 text-amber-800">184</span>
+            </button>
+          </div>
+
+          <!-- Export Actions -->
+          <div class="flex items-center gap-2.5 shrink-0">
+            <button onclick="downloadAmendmentSummaryCSV()"
+              class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-2">
+              <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+              <span>Export CSV</span>
+            </button>
+            <button onclick="showToast('Exporting Tender Amendment Intelligence Dossier (PDF)...', 'info')"
+              class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-2">
+              <i data-lucide="download" class="w-4 h-4"></i>
+              <span>Download PDF</span>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Secondary Department & Status Filters -->
+        <div class="flex flex-wrap items-center gap-3 pt-3 border-t border-slate-100 text-xs">
+          <span class="font-bold text-slate-400 text-[11px] uppercase tracking-wider">Refine By:</span>
+
+          <select id="filter-dept" onchange="filterAmendmentSummaryTable()"
+            class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl font-semibold text-slate-700 outline-none">
+            <option value="ALL">All Departments</option>
+            <option value="Health Dept.">Health Dept.</option>
+            <option value="Education Dept.">Education Dept.</option>
+            <option value="IT Dept.">IT Dept.</option>
+            <option value="PWD">Public Works Dept (PWD)</option>
+            <option value="Water Dept.">Water Resources Dept.</option>
+          </select>
+
+          <select id="filter-status" onchange="filterAmendmentSummaryTable()"
+            class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl font-semibold text-slate-700 outline-none">
+            <option value="ALL">All Statuses</option>
+            <option value="Live">Live / Active</option>
+            <option value="Corrigendum">Corrigendum Issued</option>
+            <option value="Amended">Amended</option>
+            <option value="Published">Original Published</option>
+          </select>
+
+          <span id="filtered-records-count" class="text-xs font-bold text-slate-500 ml-auto">
+            Showing 10 of 1,248 records
+          </span>
+        </div>
+      </div>
+
+      <!-- ========================================================================= -->
+      <!-- MAIN TENDER AMENDMENT SUMMARY TABLE -->
+      <!-- ========================================================================= -->
+      <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-50/80 border-b border-slate-200 text-slate-500 text-[11px] font-bold">
+                <th class="py-3.5 px-4">#</th>
+                <th class="py-3.5 px-4">Tender Number</th>
+                <th class="py-3.5 px-4">Title &amp; Department</th>
+                <th class="py-3.5 px-4">Corrigendum Count</th>
+                <th class="py-3.5 px-4">Original Deadline</th>
+                <th class="py-3.5 px-4">Current Deadline</th>
+                <th class="py-3.5 px-4">Deadline Status</th>
+                <th class="py-3.5 px-4">Latest Amendment</th>
+                <th class="py-3.5 px-4 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="amendment-summary-tbody" class="divide-y divide-slate-100 font-medium text-slate-700">
+
+              <!-- ROW 1: T-2026-1049 (Multi-amended, Deadline Changed, Recent) -->
+              <tr class="hover:bg-slate-50/80 transition-colors summary-row"
+                data-corr-count="2" data-has-deadline-change="true" data-is-recent="true"
+                data-dept="IT Dept." data-status="Amended"
+                data-search="t-2026-1049 it infrastructure services multi 2 corrigenda">
+                <td class="py-3.5 px-4 text-slate-400 font-semibold">1</td>
+                <td class="py-3.5 px-4 font-mono font-bold text-blue-600">T-2026-1049</td>
+                <td class="py-3.5 px-4">
+                  <span class="font-bold text-slate-900 block">IT Infrastructure Services</span>
+                  <span class="text-[11px] text-slate-500 font-medium">IT Dept. &bull; Ref: ITD/2026/089</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                    2 Corrigenda
+                  </span>
+                </td>
+                <td class="py-3.5 px-4 text-slate-500 font-medium line-through">29 Nov 2026</td>
+                <td class="py-3.5 px-4 font-bold text-slate-900">13 Dec 2026</td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1 w-fit">
+                    <i data-lucide="arrow-up-right" class="w-3 h-3"></i> +14 Days Extended
+                  </span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="font-bold text-slate-900 block">Corrigendum 02</span>
+                  <span class="text-[10px] text-emerald-600 font-semibold">Today, 10:30 AM (Recent)</span>
+                </td>
+                <td class="py-3.5 px-4 text-center">
+                  <button onclick="openSummaryModal('T-2026-1049', 'IT Infrastructure Services', 'IT Dept.', 2, '29 Nov 2026', '13 Dec 2026', '+14 Days Extended', 'Corrigendum 02: Structural payment milestones revised and final submission extended by 14 days following vendor queries.')"
+                    class="px-2.5 py-1 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-xs font-bold transition-colors">
+                    View Summary
+                  </button>
+                </td>
+              </tr>
+
+              <!-- ROW 2: T-2026-1050 (Single Corrigendum, Deadline Changed, Recent) -->
+              <tr class="hover:bg-slate-50/80 transition-colors summary-row"
+                data-corr-count="1" data-has-deadline-change="true" data-is-recent="true"
+                data-dept="Education Dept." data-status="Corrigendum"
+                data-search="t-2026-1050 school construction education single 1 corrigendum">
+                <td class="py-3.5 px-4 text-slate-400 font-semibold">2</td>
+                <td class="py-3.5 px-4 font-mono font-bold text-blue-600">T-2026-1050</td>
+                <td class="py-3.5 px-4">
+                  <span class="font-bold text-slate-900 block">Construction of School Building</span>
+                  <span class="text-[11px] text-slate-500 font-medium">Education Dept. &bull; Ref: EDU/2026/102</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                    1 Corrigendum
+                  </span>
+                </td>
+                <td class="py-3.5 px-4 text-slate-500 font-medium line-through">07 Dec 2026</td>
+                <td class="py-3.5 px-4 font-bold text-slate-900">14 Dec 2026</td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1 w-fit">
+                    <i data-lucide="arrow-up-right" class="w-3 h-3"></i> +7 Days Extended
+                  </span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="font-bold text-slate-900 block">Corrigendum 01</span>
+                  <span class="text-[10px] text-emerald-600 font-semibold">Yesterday (Recent)</span>
+                </td>
+                <td class="py-3.5 px-4 text-center">
+                  <button onclick="openSummaryModal('T-2026-1050', 'Construction of School Building', 'Education Dept.', 1, '07 Dec 2026', '14 Dec 2026', '+7 Days Extended', 'Corrigendum 01 issued extending submission by 7 days to accommodate additional pre-bid drawings.')"
+                    class="px-2.5 py-1 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-xs font-bold transition-colors">
+                    View Summary
+                  </button>
+                </td>
+              </tr>
+
+              <!-- ROW 3: T-2026-1051 (Zero Amendments - Stable) -->
+              <tr class="hover:bg-slate-50/80 transition-colors summary-row"
+                data-corr-count="0" data-has-deadline-change="false" data-is-recent="false"
+                data-dept="Health Dept." data-status="Published"
+                data-search="t-2026-1051 medical equipment health 0 zero none stable">
+                <td class="py-3.5 px-4 text-slate-400 font-semibold">3</td>
+                <td class="py-3.5 px-4 font-mono font-bold text-slate-900">T-2026-1051</td>
+                <td class="py-3.5 px-4">
+                  <span class="font-bold text-slate-900 block">Supply of Medical Equipment</span>
+                  <span class="text-[11px] text-slate-500 font-medium">Health Dept. &bull; Ref: HLT/2026/410</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    0 (No Amendments)
+                  </span>
+                </td>
+                <td class="py-3.5 px-4 text-slate-700 font-medium">15 Dec 2026</td>
+                <td class="py-3.5 px-4 font-bold text-slate-900">15 Dec 2026</td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                    Unchanged
+                  </span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="text-slate-400 font-semibold text-xs">None (Original)</span>
+                </td>
+                <td class="py-3.5 px-4 text-center">
+                  <button onclick="openSummaryModal('T-2026-1051', 'Supply of Medical Equipment', 'Health Dept.', 0, '15 Dec 2026', '15 Dec 2026', 'Unchanged', 'Initial tender remains completely intact with zero amendments. Terms and deadlines fully stable.')"
+                    class="px-2.5 py-1 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-bold transition-colors">
+                    View Summary
+                  </button>
+                </td>
+              </tr>
+
+              <!-- ROW 4: T-2026-1048 (Multi-amended 3+, Deadline Changed, Recent) -->
+              <tr class="hover:bg-slate-50/80 transition-colors summary-row"
+                data-corr-count="3" data-has-deadline-change="true" data-is-recent="true"
+                data-dept="PWD" data-status="Live"
+                data-search="t-2026-1048 road development project pwd multi 3 high volatility">
+                <td class="py-3.5 px-4 text-slate-400 font-semibold">4</td>
+                <td class="py-3.5 px-4 font-mono font-bold text-purple-600">T-2026-1048</td>
+                <td class="py-3.5 px-4">
+                  <span class="font-bold text-slate-900 block">Road Development Project</span>
+                  <span class="text-[11px] text-slate-500 font-medium">PWD &bull; Ref: PWD/2026/902</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-800 border border-purple-300">
+                    3 Corrigenda (High)
+                  </span>
+                </td>
+                <td class="py-3.5 px-4 text-slate-500 font-medium line-through">22 Nov 2026</td>
+                <td class="py-3.5 px-4 font-bold text-slate-900">12 Dec 2026</td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1 w-fit">
+                    <i data-lucide="arrow-up-right" class="w-3 h-3"></i> +20 Days Extended
+                  </span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="font-bold text-slate-900 block">Corrigendum 03</span>
+                  <span class="text-[10px] text-blue-600 font-semibold">3 days ago (Recent)</span>
+                </td>
+                <td class="py-3.5 px-4 text-center">
+                  <button onclick="openSummaryModal('T-2026-1048', 'Road Development Project', 'PWD', 3, '22 Nov 2026', '12 Dec 2026', '+20 Days Extended', 'High volatility tender: 3 revisions covering environmental clearances, asphalt grading, and 20 cumulative extension days.')"
+                    class="px-2.5 py-1 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-xs font-bold transition-colors">
+                    View Summary
+                  </button>
+                </td>
+              </tr>
+
+              <!-- ROW 5: T-2026-1047 (Zero Amendments - Stable) -->
+              <tr class="hover:bg-slate-50/80 transition-colors summary-row"
+                data-corr-count="0" data-has-deadline-change="false" data-is-recent="false"
+                data-dept="Water Dept." data-status="Published"
+                data-search="t-2026-1047 water supply scheme 0 zero none stable">
+                <td class="py-3.5 px-4 text-slate-400 font-semibold">5</td>
+                <td class="py-3.5 px-4 font-mono font-bold text-slate-900">T-2026-1047</td>
+                <td class="py-3.5 px-4">
+                  <span class="font-bold text-slate-900 block">Water Supply Scheme</span>
+                  <span class="text-[11px] text-slate-500 font-medium">Water Dept. &bull; Ref: WTR/2026/044</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    0 (No Amendments)
+                  </span>
+                </td>
+                <td class="py-3.5 px-4 text-slate-700 font-medium">11 Dec 2026</td>
+                <td class="py-3.5 px-4 font-bold text-slate-900">11 Dec 2026</td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                    Unchanged
+                  </span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="text-slate-400 font-semibold text-xs">None (Original)</span>
+                </td>
+                <td class="py-3.5 px-4 text-center">
+                  <button onclick="openSummaryModal('T-2026-1047', 'Water Supply Scheme', 'Water Dept.', 0, '11 Dec 2026', '11 Dec 2026', 'Unchanged', 'Standard municipal tender running without any post-publishing changes.')"
+                    class="px-2.5 py-1 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-bold transition-colors">
+                    View Summary
+                  </button>
+                </td>
+              </tr>
+
+              <!-- ROW 6: T-2026-1040 (Multi-amended 2, Deadline Changed) -->
+              <tr class="hover:bg-slate-50/80 transition-colors summary-row"
+                data-corr-count="2" data-has-deadline-change="true" data-is-recent="false"
+                data-dept="Health Dept." data-status="Amended"
+                data-search="t-2026-1040 hospital laboratory supplies health 2 multi">
+                <td class="py-3.5 px-4 text-slate-400 font-semibold">6</td>
+                <td class="py-3.5 px-4 font-mono font-bold text-blue-600">T-2026-1040</td>
+                <td class="py-3.5 px-4">
+                  <span class="font-bold text-slate-900 block">Hospital Laboratory Diagnostics</span>
+                  <span class="text-[11px] text-slate-500 font-medium">Health Dept. &bull; Ref: HLT/2026/390</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                    2 Corrigenda
+                  </span>
+                </td>
+                <td class="py-3.5 px-4 text-slate-500 font-medium line-through">18 Nov 2026</td>
+                <td class="py-3.5 px-4 font-bold text-slate-900">02 Dec 2026</td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1 w-fit">
+                    <i data-lucide="arrow-up-right" class="w-3 h-3"></i> +14 Days Extended
+                  </span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="font-bold text-slate-900 block">Corrigendum 02</span>
+                  <span class="text-[10px] text-slate-500">12 Nov 2026</span>
+                </td>
+                <td class="py-3.5 px-4 text-center">
+                  <button onclick="openSummaryModal('T-2026-1040', 'Hospital Laboratory Diagnostics', 'Health Dept.', 2, '18 Nov 2026', '02 Dec 2026', '+14 Days Extended', 'Reagent specification clarified and lab certifications relaxed per pre-bid minutes.')"
+                    class="px-2.5 py-1 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-xs font-bold transition-colors">
+                    View Summary
+                  </button>
+                </td>
+              </tr>
+
+              <!-- ROW 7: T-2026-1033 (Multi-amended 3+, Deadline Changed, Recent) -->
+              <tr class="hover:bg-slate-50/80 transition-colors summary-row"
+                data-corr-count="3" data-has-deadline-change="true" data-is-recent="true"
+                data-dept="PWD" data-status="Corrigendum"
+                data-search="t-2026-1033 bridge construction flyover pwd 3 multi">
+                <td class="py-3.5 px-4 text-slate-400 font-semibold">7</td>
+                <td class="py-3.5 px-4 font-mono font-bold text-purple-600">T-2026-1033</td>
+                <td class="py-3.5 px-4">
+                  <span class="font-bold text-slate-900 block">Metro Flyover &amp; Bridge Works</span>
+                  <span class="text-[11px] text-slate-500 font-medium">PWD &bull; Ref: PWD/2026/750</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-800 border border-purple-300">
+                    3 Corrigenda
+                  </span>
+                </td>
+                <td class="py-3.5 px-4 text-slate-500 font-medium line-through">10 Nov 2026</td>
+                <td class="py-3.5 px-4 font-bold text-slate-900">28 Nov 2026</td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1 w-fit">
+                    <i data-lucide="arrow-up-right" class="w-3 h-3"></i> +18 Days Extended
+                  </span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="font-bold text-slate-900 block">Corrigendum 03</span>
+                  <span class="text-[10px] text-emerald-600 font-semibold">Today, 09:15 AM (Recent)</span>
+                </td>
+                <td class="py-3.5 px-4 text-center">
+                  <button onclick="openSummaryModal('T-2026-1033', 'Metro Flyover & Bridge Works', 'PWD', 3, '10 Nov 2026', '28 Nov 2026', '+18 Days Extended', 'Tender deadline shifted 3 times due to geotechnical revisions on pier foundation.')"
+                    class="px-2.5 py-1 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-xs font-bold transition-colors">
+                    View Summary
+                  </button>
+                </td>
+              </tr>
+
+              <!-- ROW 8: T-2026-1025 (Zero Amendments - Stable) -->
+              <tr class="hover:bg-slate-50/80 transition-colors summary-row"
+                data-corr-count="0" data-has-deadline-change="false" data-is-recent="false"
+                data-dept="Education Dept." data-status="Published"
+                data-search="t-2026-1025 textbook printing education 0 zero none stable">
+                <td class="py-3.5 px-4 text-slate-400 font-semibold">8</td>
+                <td class="py-3.5 px-4 font-mono font-bold text-slate-900">T-2026-1025</td>
+                <td class="py-3.5 px-4">
+                  <span class="font-bold text-slate-900 block">Textbook Printing &amp; Distribution</span>
+                  <span class="text-[11px] text-slate-500 font-medium">Education Dept. &bull; Ref: EDU/2026/050</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    0 (No Amendments)
+                  </span>
+                </td>
+                <td class="py-3.5 px-4 text-slate-700 font-medium">05 Dec 2026</td>
+                <td class="py-3.5 px-4 font-bold text-slate-900">05 Dec 2026</td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                    Unchanged
+                  </span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="text-slate-400 font-semibold text-xs">None (Original)</span>
+                </td>
+                <td class="py-3.5 px-4 text-center">
+                  <button onclick="openSummaryModal('T-2026-1025', 'Textbook Printing & Distribution', 'Education Dept.', 0, '05 Dec 2026', '05 Dec 2026', 'Unchanged', 'Direct paper supply contract running under original terms without any addenda.')"
+                    class="px-2.5 py-1 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-bold transition-colors">
+                    View Summary
+                  </button>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: DETAILED TENDER AMENDMENT SUMMARY -->
+  <!-- ========================================================================= -->
+  <div id="summary-detail-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-start justify-between">
+        <div>
+          <span id="modal-sum-no" class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-blue-100 text-blue-700">T-2026-1049</span>
+          <h3 id="modal-sum-title" class="text-base font-extrabold text-slate-900 mt-1">IT Infrastructure Services</h3>
+          <p id="modal-sum-dept" class="text-xs text-slate-500 font-semibold">IT Dept.</p>
+        </div>
+        <button onclick="closeSummaryModal()" class="p-2 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- 4 Quick Stats inside Modal -->
+      <div class="grid grid-cols-3 gap-3 p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 text-xs">
+        <div>
+          <span class="text-slate-400 font-medium block">Total Corrigenda</span>
+          <span id="modal-sum-corr" class="font-extrabold text-slate-900 text-sm">2 Issued</span>
+        </div>
+        <div>
+          <span class="text-slate-400 font-medium block">Original Deadline</span>
+          <span id="modal-sum-orig" class="font-bold text-slate-700">29 Nov 2026</span>
+        </div>
+        <div>
+          <span class="text-slate-400 font-medium block">Revised Deadline</span>
+          <span id="modal-sum-rev" class="font-extrabold text-rose-600 text-sm">13 Dec 2026</span>
+        </div>
+      </div>
+
+      <div class="space-y-1.5 text-xs">
+        <span class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Amendment Scope &amp; Evidence</span>
+        <div id="modal-sum-notes" class="p-3.5 bg-white rounded-xl border border-slate-200 text-slate-700 leading-relaxed">
+          Corrigendum notes here.
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+        <a id="modal-sum-history-link" href="versions.html"
+          class="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1">
+          <i data-lucide="git-branch" class="w-4 h-4"></i>
+          <span>Inspect Version Differential</span>
+        </a>
+        <button onclick="closeSummaryModal()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-colors">
+          Close Summary
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    lucide.createIcons();
+    initSharedNav('amendment-summary');
+
+    let currentCategory = 'ALL';
+
+    function setFilterCategory(cat) {
+      currentCategory = cat;
+
+      // Update button pill active states
+      const pills = {
+        'ALL': document.getElementById('pill-all'),
+        'ZERO': document.getElementById('pill-zero'),
+        'MULTIPLE': document.getElementById('pill-multiple'),
+        'RECENT': document.getElementById('pill-recent'),
+        'DEADLINE': document.getElementById('pill-deadline')
+      };
+
+      Object.keys(pills).forEach(k => {
+        if (!pills[k]) return;
+        if (k === cat) {
+          pills[k].className = "px-3.5 py-1.5 rounded-xl bg-blue-600 text-white shadow-xs transition-all flex items-center gap-1.5 font-bold";
+        } else {
+          pills[k].className = "px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all flex items-center gap-1.5 font-bold";
+        }
+      });
+
+      filterAmendmentSummaryTable();
+    }
+
+    function filterAmendmentSummaryTable() {
+      const q = (document.getElementById('summary-search-input').value || '').toLowerCase().trim();
+      const dept = document.getElementById('filter-dept').value;
+      const status = document.getElementById('filter-status').value;
+      const rows = document.querySelectorAll('.summary-row');
+
+      let visible = 0;
+      rows.forEach(row => {
+        const corrCount = parseInt(row.getAttribute('data-corr-count') || '0', 10);
+        const hasDeadlineChange = row.getAttribute('data-has-deadline-change') === 'true';
+        const isRecent = row.getAttribute('data-is-recent') === 'true';
+        const rowDept = row.getAttribute('data-dept');
+        const rowStatus = row.getAttribute('data-status');
+        const rowSearch = (row.innerText + ' ' + (row.getAttribute('data-search') || '')).toLowerCase();
+
+        // 1. Check Category Filter
+        let matchCat = true;
+        if (currentCategory === 'ZERO') matchCat = (corrCount === 0);
+        else if (currentCategory === 'MULTIPLE') matchCat = (corrCount >= 2);
+        else if (currentCategory === 'RECENT') matchCat = isRecent;
+        else if (currentCategory === 'DEADLINE') matchCat = hasDeadlineChange;
+
+        // 2. Check Dept & Status
+        const matchDept = (dept === 'ALL' || rowDept === dept);
+        const matchStatus = (status === 'ALL' || rowStatus === status);
+
+        // 3. Check Query
+        const matchQ = (!q || rowSearch.includes(q));
+
+        if (matchCat && matchDept && matchStatus && matchQ) {
+          row.style.display = '';
+          visible++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      const countEl = document.getElementById('filtered-records-count');
+      if (countEl) countEl.innerText = `Showing ${visible} matching tenders`;
+    }
+
+    function openSummaryModal(no, title, dept, corr, orig, rev, delta, notes) {
+      document.getElementById('modal-sum-no').innerText = no;
+      document.getElementById('modal-sum-title').innerText = title;
+      document.getElementById('modal-sum-dept').innerText = dept;
+      document.getElementById('modal-sum-corr').innerText = `${corr} Corrigenda`;
+      document.getElementById('modal-sum-orig').innerText = orig;
+      document.getElementById('modal-sum-rev').innerText = rev;
+      document.getElementById('modal-sum-notes').innerText = notes;
+      document.getElementById('modal-sum-history-link').href = `versions.html?tender=${no}`;
+
+      document.getElementById('summary-detail-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeSummaryModal() {
+      document.getElementById('summary-detail-modal').classList.add('hidden');
+    }
+
+    function downloadAmendmentSummaryCSV() {
+      const csv = "data:text/csv;charset=utf-8,"
+        + "Tender No,Title,Department,Corrigendum Count,Original Deadline,Revised Deadline,Deadline Extended,Status\n"
+        + "T-2026-1049,IT Infrastructure Services,IT Dept.,2,29 Nov 2026,13 Dec 2026,+14 Days,Amended\n"
+        + "T-2026-1050,Construction of School Building,Education Dept.,1,07 Dec 2026,14 Dec 2026,+7 Days,Corrigendum\n"
+        + "T-2026-1051,Supply of Medical Equipment,Health Dept.,0,15 Dec 2026,15 Dec 2026,Unchanged,Published\n"
+        + "T-2026-1048,Road Development Project,PWD,3,22 Nov 2026,12 Dec 2026,+20 Days,Live\n"
+        + "T-2026-1047,Water Supply Scheme,Water Dept.,0,11 Dec 2026,11 Dec 2026,Unchanged,Published\n"
+        + "T-2026-1040,Hospital Laboratory Diagnostics,Health Dept.,2,18 Nov 2026,02 Dec 2026,+14 Days,Amended\n"
+        + "T-2026-1033,Metro Flyover & Bridge Works,PWD,3,10 Nov 2026,28 Nov 2026,+18 Days,Corrigendum\n"
+        + "T-2026-1025,Textbook Printing,Education Dept.,0,05 Dec 2026,05 Dec 2026,Unchanged,Published\n";
+
+      const uri = encodeURI(csv);
+      const a = document.createElement("a");
+      a.href = uri;
+      a.download = "Tender_Amendment_Summary_Report.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      if (window.showToast) showToast('Tender Amendment Summary CSV exported!', 'success');
+    }
+  </script>
+</body>
+
+</html>
