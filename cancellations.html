@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script>
+    // Prevent ALL browser alert/confirm popups immediately
+    window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
+    window.confirm = function(msg) { return true; };
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tender Cancellation &amp; Re-Tendering Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap"
+    rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .bg-sidebar { background-color: #0b192c; }
+    aside.fixed-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 16rem;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 50;
+    }
+    .main-with-sidebar {
+      margin-left: 16rem;
+      width: calc(100% - 16rem);
+      min-width: 0;
+      min-height: 100vh;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 min-h-screen flex antialiased">
+
+  <!-- ========================================================================= -->
+  <!-- SIDEBAR -->
+  <!-- ========================================================================= -->
+  <aside class="w-64 bg-sidebar fixed-sidebar text-white flex flex-col justify-between shrink-0 min-h-screen border-r border-slate-800 select-none">
+    <div>
+      <!-- Brand Logo -->
+      <a href="dashboard.html" class="p-5 flex items-center gap-3 border-b border-slate-800/80 hover:bg-slate-800/40 transition-colors block">
+        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-600/30 shrink-0">
+          <i data-lucide="scale" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="text-sm font-bold tracking-tight text-white leading-tight">Tender Corrigendum &<br>Amendment Tracker</h1>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="p-3 space-y-1 text-xs font-semibold">
+        <a href="dashboard.html" data-page="dashboard"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="tenders.html" data-page="tenders"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="file-text" class="w-4 h-4"></i>
+          <span>Tenders</span>
+        </a>
+
+        <a href="versions.html" data-page="versions"
+          class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="git-branch" class="w-4 h-4"></i>
+            <span>Version History</span>
+          </div>
+        </a>
+
+        <!-- Cancellation & Re-Tendering (Active) -->
+        <a href="cancellations.html" data-page="cancellations"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-blue-600 text-white font-bold transition-all shadow-md shadow-blue-600/30">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          <span>Cancellation &amp; Re-Tender</span>
+        </a>
+
+        <a href="notifications.html" data-page="notifications"
+          class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="bell" class="w-4 h-4"></i>
+            <span>Notifications</span>
+          </div>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">4</span>
+        </a>
+
+        <a href="deadlines.html" data-page="deadlines"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="calendar-clock" class="w-4 h-4"></i>
+          <span>Upcoming Deadlines</span>
+        </a>
+
+        <a href="review.html" data-page="review"
+          class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="check-square" class="w-4 h-4"></i>
+            <span>Review Queue</span>
+          </div>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">18</span>
+        </a>
+
+        <a href="amendment-summary.html" data-page="amendment-summary"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+          <span>Amendment Summary</span>
+        </a>
+
+        <a href="analytics.html" data-page="analytics"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+          <span>Reports &amp; Analytics</span>
+        </a>
+
+        <div class="pt-4 pb-1 px-3.5 text-[10px] uppercase font-bold tracking-wider text-slate-400">
+          ADMINISTRATION
+        </div>
+
+        <a href="users.html" data-page="users"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="users" class="w-4 h-4"></i>
+          <span>Users & Roles</span>
+        </a>
+
+        <a href="audit-logs.html" data-page="audit"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="shield-alert" class="w-4 h-4"></i>
+          <span>Audit Logs</span>
+        </a>
+
+        <a href="settings.html" data-page="settings"
+          class="sidebar-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Bottom Status -->
+    <div class="p-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="font-medium">Lifecycle Tracker Online</span>
+      </div>
+      <span class="font-mono text-slate-500">v1.0.0</span>
+    </div>
+  </aside>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN CONTENT AREA -->
+  <!-- ========================================================================= -->
+  <div class="flex-1 flex flex-col main-with-sidebar min-h-screen overflow-x-hidden min-w-0">
+
+    <!-- TOP HEADER -->
+    <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+      <div class="flex items-center gap-4 flex-1 max-w-xl">
+        <div class="relative w-full">
+          <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <i data-lucide="search" class="w-4 h-4"></i>
+          </span>
+          <input type="text" id="cancel-search-input" onkeyup="filterCancellationTable()"
+            placeholder="Search cancelled tender no, reason, re-tender ID, or department..."
+            class="w-full pl-10 pr-4 py-2 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-blue-500 text-xs font-semibold text-slate-800 outline-none transition-all">
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <!-- Notification Bell -->
+        <div class="relative">
+          <button id="notification-bell-btn" onclick="toggleDropdown('notification-dropdown-menu')"
+            class="relative p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span id="notification-badge" class="absolute top-1.5 right-1.5 w-4 h-4 bg-rose-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center">4</span>
+          </button>
+        </div>
+
+        <!-- User Menu -->
+        <div class="relative">
+          <button id="user-menu-btn" onclick="toggleDropdown('user-dropdown-menu')"
+            class="flex items-center gap-2.5 p-1.5 pr-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all">
+            <div class="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center text-xs shadow-xs" id="nav-user-avatar">A</div>
+            <div class="text-left hidden sm:block">
+              <span class="text-xs font-bold text-slate-800 block leading-tight" id="nav-user-name">Admin Officer</span>
+              <span class="text-[10px] font-semibold text-blue-600 block uppercase" id="nav-user-role">ADMIN</span>
+            </div>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN BODY -->
+    <main class="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto">
+
+      <!-- PAGE TITLE & ACTIONS -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/90 pb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-rose-100 text-rose-700">Procurement Governance</span>
+          </div>
+          <h1 class="text-2xl font-black text-slate-900 tracking-tight mt-1">Tender Cancellation &amp; Re-Tendering Tracker</h1>
+          <p class="text-xs text-slate-500 mt-0.5">Record cancellations, maintain reason audits, track re-publish decisions, and establish bidirectional re-tender linkage</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap items-center gap-2.5">
+          <button onclick="openRecordCancellationModal()"
+            class="px-4 py-2 bg-rose-600 hover:bg-rose-700 active:scale-[0.99] text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-rose-600/20 flex items-center gap-2">
+            <i data-lucide="ban" class="w-4 h-4"></i>
+            <span>+ Record Cancellation</span>
+          </button>
+
+          <button onclick="openLinkRetenderModal()"
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-600/20 flex items-center gap-2">
+            <i data-lucide="link-2" class="w-4 h-4"></i>
+            <span>Link Re-Published Tender</span>
+          </button>
+
+          <button onclick="exportCancellationReportCSV()"
+            class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>Export CSV</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ========================================================================= -->
+      <!-- TOP KPIS (4 Metrics) -->
+      <!-- ========================================================================= -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+        <!-- 1. Total Cancelled -->
+        <div onclick="setCancelFilter('ALL')"
+          class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs cursor-pointer hover:border-slate-300 hover:shadow-md transition-all">
+          <div class="flex items-center justify-between text-slate-500 mb-1">
+            <span class="text-xs font-bold text-slate-600 flex items-center gap-1.5">
+              <i data-lucide="ban" class="w-4 h-4 text-rose-600"></i>
+              Total Cancelled
+            </span>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span class="text-3xl font-black text-slate-900" id="metric-total-cancelled">38</span>
+            <span class="text-xs font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">3.04% of all tenders</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1">Official cancellation orders</p>
+        </div>
+
+        <!-- 2. Re-published & Linked -->
+        <div onclick="setCancelFilter('LINKED')"
+          class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs cursor-pointer hover:border-emerald-300 hover:shadow-md transition-all">
+          <div class="flex items-center justify-between text-slate-500 mb-1">
+            <span class="text-xs font-bold text-slate-600 flex items-center gap-1.5">
+              <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+              Re-published &amp; Linked
+            </span>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span class="text-3xl font-black text-emerald-700" id="metric-linked-count">18</span>
+            <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">47.4% recovered</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1">Cross-linked to new tender opportunities</p>
+        </div>
+
+        <!-- 3. In Re-tender Pipeline -->
+        <div onclick="setCancelFilter('PIPELINE')"
+          class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs cursor-pointer hover:border-amber-300 hover:shadow-md transition-all">
+          <div class="flex items-center justify-between text-slate-500 mb-1">
+            <span class="text-xs font-bold text-slate-600 flex items-center gap-1.5">
+              <i data-lucide="clock" class="w-4 h-4 text-amber-600"></i>
+              Re-Tender in Pipeline
+            </span>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span class="text-3xl font-black text-amber-600" id="metric-pipeline-count">6</span>
+            <span class="text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">Awaiting NIT</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1">Re-publishing approved by authority</p>
+        </div>
+
+        <!-- 4. Permanently Dropped / Shelved -->
+        <div onclick="setCancelFilter('DROPPED')"
+          class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs cursor-pointer hover:border-slate-300 hover:shadow-md transition-all">
+          <div class="flex items-center justify-between text-slate-500 mb-1">
+            <span class="text-xs font-bold text-slate-600 flex items-center gap-1.5">
+              <i data-lucide="x-circle" class="w-4 h-4 text-slate-500"></i>
+              Permanently Shelved
+            </span>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span class="text-3xl font-black text-slate-700" id="metric-dropped-count">14</span>
+            <span class="text-xs font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">No Re-tender</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1">Budget withdrawn or project dropped</p>
+        </div>
+
+      </div>
+
+      <!-- ========================================================================= -->
+      <!-- FILTER TABS & SECONDARY FILTERS -->
+      <!-- ========================================================================= -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          
+          <!-- Category Tabs -->
+          <div class="flex flex-wrap items-center gap-1.5 text-xs font-bold">
+            <button id="pill-cancel-all" onclick="setCancelFilter('ALL')"
+              class="px-3.5 py-1.5 rounded-xl bg-slate-900 text-white shadow-xs transition-all flex items-center gap-1.5">
+              <span>All Cancelled Tenders</span>
+              <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-white/20">38</span>
+            </button>
+
+            <button id="pill-cancel-linked" onclick="setCancelFilter('LINKED')"
+              class="px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all flex items-center gap-1.5">
+              <i data-lucide="link" class="w-3 h-3 text-emerald-600"></i>
+              <span>Re-published &amp; Linked</span>
+              <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-100 text-emerald-800">18</span>
+            </button>
+
+            <button id="pill-cancel-pipeline" onclick="setCancelFilter('PIPELINE')"
+              class="px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all flex items-center gap-1.5">
+              <i data-lucide="clock" class="w-3 h-3 text-amber-600"></i>
+              <span>In Re-tender Pipeline</span>
+              <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-100 text-amber-800">6</span>
+            </button>
+
+            <button id="pill-cancel-dropped" onclick="setCancelFilter('DROPPED')"
+              class="px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all flex items-center gap-1.5">
+              <i data-lucide="x" class="w-3 h-3 text-slate-500"></i>
+              <span>Permanently Dropped</span>
+              <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200 text-slate-700">14</span>
+            </button>
+          </div>
+
+          <!-- Reason Filter Dropdown -->
+          <div class="flex items-center gap-2 text-xs">
+            <span class="font-bold text-slate-400 text-[11px] uppercase">Reason:</span>
+            <select id="reason-filter" onchange="filterCancellationTable()"
+              class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl font-semibold text-slate-700 outline-none">
+              <option value="ALL">All Reasons</option>
+              <option value="Technical Flaws">Technical Spec Flaws / High Disparity</option>
+              <option value="Low Turnout">Zero / Insufficient Bidders (&lt;3 Bids)</option>
+              <option value="Administrative">Administrative Reorganization</option>
+              <option value="Budget">Budget Withdrawn / Diverted</option>
+              <option value="Legal">Court / Regulatory Order</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================================= -->
+      <!-- DATA TABLE: CANCELLATIONS & RE-TENDERING LINKAGE -->
+      <!-- ========================================================================= -->
+      <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-50/80 border-b border-slate-200 text-slate-500 text-[11px] font-bold">
+                <th class="py-3.5 px-4">#</th>
+                <th class="py-3.5 px-4">Cancelled Tender</th>
+                <th class="py-3.5 px-4">Title &amp; Department</th>
+                <th class="py-3.5 px-4">Cancellation Date</th>
+                <th class="py-3.5 px-4">Cancellation Reason</th>
+                <th class="py-3.5 px-4">Re-publish Decision</th>
+                <th class="py-3.5 px-4">Linked Re-Tender</th>
+                <th class="py-3.5 px-4 text-center">Lifecycle &amp; Actions</th>
+              </tr>
+            </thead>
+            <tbody id="cancellations-tbody" class="divide-y divide-slate-100 font-medium text-slate-700">
+
+              <!-- ROW 1: T-2026-1038 (Linked to Re-Tender T-2026-1055-RT) -->
+              <tr class="hover:bg-slate-50/80 transition-colors cancel-row"
+                data-type="LINKED" data-reason="Technical Flaws"
+                data-search="t-2026-1038 wastewater treatment pwd t-2026-1055-rt technical flaws">
+                <td class="py-3.5 px-4 text-slate-400 font-semibold">1</td>
+                <td class="py-3.5 px-4">
+                  <span class="font-mono font-bold text-rose-600 block">T-2026-1038</span>
+                  <span class="text-[10px] text-slate-400 font-medium">NIT: 02 Oct 2026</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="font-bold text-slate-900 block">Wastewater Treatment Plant (Phase-2)</span>
+                  <span class="text-[11px] text-slate-500 font-medium">PWD &bull; Est. ₹ 42.50 Cr</span>
+                </td>
+                <td class="py-3.5 px-4 font-bold text-slate-800">
+                  <span>14 Nov 2026</span>
+                  <span class="text-[10px] text-slate-400 font-medium block">Order #PWD/2026/884</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-purple-50 text-purple-700 border border-purple-200 block w-fit mb-1">
+                    Technical Spec Flaws
+                  </span>
+                  <span class="text-[11px] text-slate-500 line-clamp-1">Major disparity in membrane filtration specs; bidder queries raised critical ambiguities.</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1 w-fit">
+                    <i data-lucide="check" class="w-3 h-3"></i> Yes &bull; Re-published
+                  </span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <div class="flex items-center gap-1.5">
+                    <a href="tender-details.html?id=T-2026-1055-RT"
+                      class="font-mono font-bold text-blue-600 hover:underline px-2 py-0.5 rounded bg-blue-50 border border-blue-200 text-xs flex items-center gap-1">
+                      <i data-lucide="external-link" class="w-3 h-3"></i>
+                      <span>T-2026-1055-RT</span>
+                    </a>
+                  </div>
+                  <span class="text-[10px] text-slate-400 font-medium block mt-0.5">Published: 22 Nov 2026</span>
+                </td>
+                <td class="py-3.5 px-4 text-center">
+                  <button onclick="viewLifecycleHistory('T-2026-1038', 'Wastewater Treatment Plant (Phase-2)', 'PWD', '14 Nov 2026', 'Technical Spec Flaws', 'Membrane filtration parameters restructured per consultant report', 'T-2026-1055-RT', '22 Nov 2026', 'Re-published and Active')"
+                    class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1 mx-auto">
+                    <i data-lucide="history" class="w-3 h-3"></i>
+                    <span>Lifecycle History</span>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- ROW 2: T-2026-1022 (Awaiting in Pipeline) -->
+              <tr class="hover:bg-slate-50/80 transition-colors cancel-row"
+                data-type="PIPELINE" data-reason="Low Turnout"
+                data-search="t-2026-1022 solar power plant energy low turnout insufficient bids pipeline">
+                <td class="py-3.5 px-4 text-slate-400 font-semibold">2</td>
+                <td class="py-3.5 px-4">
+                  <span class="font-mono font-bold text-rose-600 block">T-2026-1022</span>
+                  <span class="text-[10px] text-slate-400 font-medium">NIT: 15 Sep 2026</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="font-bold text-slate-900 block">Rooftop Solar PV Installation (Govt Buildings)</span>
+                  <span class="text-[11px] text-slate-500 font-medium">Energy Dept. &bull; Est. ₹ 18.20 Cr</span>
+                </td>
+                <td class="py-3.5 px-4 font-bold text-slate-800">
+                  <span>08 Nov 2026</span>
+                  <span class="text-[10px] text-slate-400 font-medium block">Order #ENG/2026/301</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-amber-50 text-amber-700 border border-amber-200 block w-fit mb-1">
+                    Insufficient Bidders (&lt;3 Bids)
+                  </span>
+                  <span class="text-[11px] text-slate-500 line-clamp-1">Only single qualifying vendor bid received upon second extension; failed minimum threshold.</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1 w-fit">
+                    <i data-lucide="clock" class="w-3 h-3"></i> Yes &bull; In Pipeline
+                  </span>
+                  <span class="text-[10px] text-slate-400 block mt-0.5">Target: 05 Dec 2026</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <button onclick="openLinkRetenderModal('T-2026-1022', 'Rooftop Solar PV Installation')"
+                    class="px-2.5 py-1 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-xs font-bold border border-blue-200 flex items-center gap-1">
+                    <i data-lucide="plus" class="w-3 h-3"></i>
+                    <span>Link New Re-tender</span>
+                  </button>
+                </td>
+                <td class="py-3.5 px-4 text-center">
+                  <button onclick="viewLifecycleHistory('T-2026-1022', 'Rooftop Solar PV Installation', 'Energy Dept.', '08 Nov 2026', 'Insufficient Bidders (<3 Bids)', 'Relaxing turnover from 20 Cr to 10 Cr to encourage wider MSME participation.', 'In Pipeline (Target: Dec 2026)', 'Pending NIT', 'Authority Approval Granted')"
+                    class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1 mx-auto">
+                    <i data-lucide="history" class="w-3 h-3"></i>
+                    <span>Lifecycle History</span>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- ROW 3: T-2026-1015 (Permanently Dropped) -->
+              <tr class="hover:bg-slate-50/80 transition-colors cancel-row"
+                data-type="DROPPED" data-reason="Budget"
+                data-search="t-2026-1015 sports complex udhd budget dropped permanently cancelled">
+                <td class="py-3.5 px-4 text-slate-400 font-semibold">3</td>
+                <td class="py-3.5 px-4">
+                  <span class="font-mono font-bold text-rose-600 block">T-2026-1015</span>
+                  <span class="text-[10px] text-slate-400 font-medium">NIT: 20 Aug 2026</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="font-bold text-slate-900 block">Multi-Purpose Indoor Sports Complex</span>
+                  <span class="text-[11px] text-slate-500 font-medium">UDHD &bull; Est. ₹ 55.00 Cr</span>
+                </td>
+                <td class="py-3.5 px-4 font-bold text-slate-800">
+                  <span>28 Oct 2026</span>
+                  <span class="text-[10px] text-slate-400 font-medium block">Order #UDHD/2026/112</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-slate-100 text-slate-700 border border-slate-200 block w-fit mb-1">
+                    Budget Withdrawn / Diverted
+                  </span>
+                  <span class="text-[11px] text-slate-500 line-clamp-1">Capital grant diverted to priority urban drainage works; project shelved for FY 2026-27.</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200 flex items-center gap-1 w-fit">
+                    <i data-lucide="x" class="w-3 h-3"></i> No &bull; Dropped
+                  </span>
+                </td>
+                <td class="py-3.5 px-4 text-slate-400 font-medium text-xs">
+                  <span>None (Shelved)</span>
+                </td>
+                <td class="py-3.5 px-4 text-center">
+                  <button onclick="viewLifecycleHistory('T-2026-1015', 'Multi-Purpose Indoor Sports Complex', 'UDHD', '28 Oct 2026', 'Budget Withdrawn / Diverted', 'Competent authority confirmed cancellation without re-tender due to fund reallocation.', 'None', 'None', 'Permanently Archived')"
+                    class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1 mx-auto">
+                    <i data-lucide="history" class="w-3 h-3"></i>
+                    <span>Lifecycle History</span>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- ROW 4: T-2026-1008 (Linked to Re-Tender T-2026-1052-RT) -->
+              <tr class="hover:bg-slate-50/80 transition-colors cancel-row"
+                data-type="LINKED" data-reason="Administrative"
+                data-search="t-2026-1008 smart city surveillance police t-2026-1052-rt administrative">
+                <td class="py-3.5 px-4 text-slate-400 font-semibold">4</td>
+                <td class="py-3.5 px-4">
+                  <span class="font-mono font-bold text-rose-600 block">T-2026-1008</span>
+                  <span class="text-[10px] text-slate-400 font-medium">NIT: 10 Jul 2026</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="font-bold text-slate-900 block">Smart City CCTV &amp; Traffic Surveillance</span>
+                  <span class="text-[11px] text-slate-500 font-medium">Home / Police Dept. &bull; Est. ₹ 26.80 Cr</span>
+                </td>
+                <td class="py-3.5 px-4 font-bold text-slate-800">
+                  <span>15 Oct 2026</span>
+                  <span class="text-[10px] text-slate-400 font-medium block">Order #HOM/2026/550</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-blue-50 text-blue-700 border border-blue-200 block w-fit mb-1">
+                    Administrative Reorganization
+                  </span>
+                  <span class="text-[11px] text-slate-500 line-clamp-1">Merged with State Command Center project; restructured with expanded AI video analytics scope.</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1 w-fit">
+                    <i data-lucide="check" class="w-3 h-3"></i> Yes &bull; Re-published
+                  </span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <div class="flex items-center gap-1.5">
+                    <a href="tender-details.html?id=T-2026-1052-RT"
+                      class="font-mono font-bold text-blue-600 hover:underline px-2 py-0.5 rounded bg-blue-50 border border-blue-200 text-xs flex items-center gap-1">
+                      <i data-lucide="external-link" class="w-3 h-3"></i>
+                      <span>T-2026-1052-RT</span>
+                    </a>
+                  </div>
+                  <span class="text-[10px] text-slate-400 font-medium block mt-0.5">Published: 18 Nov 2026</span>
+                </td>
+                <td class="py-3.5 px-4 text-center">
+                  <button onclick="viewLifecycleHistory('T-2026-1008', 'Smart City CCTV & Traffic Surveillance', 'Home / Police Dept.', '15 Oct 2026', 'Administrative Reorganization', 'Merged with statewide network and published with enhanced camera and server specifications under T-2026-1052-RT.', 'T-2026-1052-RT', '18 Nov 2026', 'Re-published and Active')"
+                    class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1 mx-auto">
+                    <i data-lucide="history" class="w-3 h-3"></i>
+                    <span>Lifecycle History</span>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- ROW 5: T-2026-0995 (Legal / Injunction - Dropped) -->
+              <tr class="hover:bg-slate-50/80 transition-colors cancel-row"
+                data-type="DROPPED" data-reason="Legal"
+                data-search="t-2026-0995 coastal sand reclamation environment legal dropped court order">
+                <td class="py-3.5 px-4 text-slate-400 font-semibold">5</td>
+                <td class="py-3.5 px-4">
+                  <span class="font-mono font-bold text-rose-600 block">T-2026-0995</span>
+                  <span class="text-[10px] text-slate-400 font-medium">NIT: 01 Jun 2026</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="font-bold text-slate-900 block">Coastal Sand Dredging &amp; Bunding</span>
+                  <span class="text-[11px] text-slate-500 font-medium">Ports &amp; Maritime &bull; Est. ₹ 31.00 Cr</span>
+                </td>
+                <td class="py-3.5 px-4 font-bold text-slate-800">
+                  <span>02 Oct 2026</span>
+                  <span class="text-[10px] text-slate-400 font-medium block">Order #NGT/2026/04</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-rose-50 text-rose-700 border border-rose-200 block w-fit mb-1">
+                    Court / Regulatory Order
+                  </span>
+                  <span class="text-[11px] text-slate-500 line-clamp-1">Stay order issued by Green Tribunal pending Coastal Regulation Zone (CRZ) clearance.</span>
+                </td>
+                <td class="py-3.5 px-4">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200 flex items-center gap-1 w-fit">
+                    <i data-lucide="x" class="w-3 h-3"></i> No &bull; Dropped
+                  </span>
+                </td>
+                <td class="py-3.5 px-4 text-slate-400 font-medium text-xs">
+                  <span>None (Sub-judice)</span>
+                </td>
+                <td class="py-3.5 px-4 text-center">
+                  <button onclick="viewLifecycleHistory('T-2026-0995', 'Coastal Sand Dredging & Bunding', 'Ports & Maritime', '02 Oct 2026', 'Court / Regulatory Order', 'National Green Tribunal order requires fresh comprehensive environment impact study before any tender is floated.', 'None', 'None', 'Cancelled by Judicial Direction')"
+                    class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1 mx-auto">
+                    <i data-lucide="history" class="w-3 h-3"></i>
+                    <span>Lifecycle History</span>
+                  </button>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 1: RECORD TENDER CANCELLATION (100% Working) -->
+  <!-- ========================================================================= -->
+  <div id="modal-record-cancellation" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-start justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shadow-xs">
+            <i data-lucide="ban" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-extrabold text-slate-900">Record Tender Cancellation</h3>
+            <p class="text-[11px] text-slate-500 font-medium">Officially register cancellation of an active tender</p>
+          </div>
+        </div>
+        <button onclick="closeRecordCancellationModal()" class="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleCancellationSubmit(event)" class="space-y-4 text-xs font-semibold">
+        <!-- 1. Select Tender -->
+        <div>
+          <label class="block text-slate-700 mb-1">Select Tender to Cancel *</label>
+          <select id="form-cancel-tender-id" required class="w-full px-3 py-2 bg-slate-50 rounded-xl border border-slate-300 text-slate-800 outline-none focus:ring-2 focus:ring-rose-500">
+            <option value="T-2026-1051|Supply of Medical Equipment|Health Dept.">T-2026-1051 - Supply of Medical Equipment (Health Dept.)</option>
+            <option value="T-2026-1050|Construction of School Building|Education Dept.">T-2026-1050 - Construction of School Building (Education Dept.)</option>
+            <option value="T-2026-1049|IT Infrastructure Services|IT Dept.">T-2026-1049 - IT Infrastructure Services (IT Dept.)</option>
+            <option value="T-2026-1048|Road Development Project|PWD">T-2026-1048 - Road Development Project (PWD)</option>
+            <option value="T-2026-1047|Water Supply Scheme|Water Dept.">T-2026-1047 - Water Supply Scheme (Water Dept.)</option>
+          </select>
+        </div>
+
+        <!-- 2. Date & Order Reference -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-700 mb-1">Cancellation Date *</label>
+            <input type="date" id="form-cancel-date" required value="2026-11-25"
+              class="w-full px-3 py-2 bg-slate-50 rounded-xl border border-slate-300 text-slate-800 outline-none focus:ring-2 focus:ring-rose-500">
+          </div>
+          <div>
+            <label class="block text-slate-700 mb-1">Govt Order / Memo No. *</label>
+            <input type="text" id="form-cancel-order-no" required placeholder="e.g. GO/PWD/2026/910"
+              class="w-full px-3 py-2 bg-slate-50 rounded-xl border border-slate-300 text-slate-800 outline-none focus:ring-2 focus:ring-rose-500">
+          </div>
+        </div>
+
+        <!-- 3. Cancellation Reason Category -->
+        <div>
+          <label class="block text-slate-700 mb-1">Cancellation Reason Category *</label>
+          <select id="form-cancel-reason-category" required class="w-full px-3 py-2 bg-slate-50 rounded-xl border border-slate-300 text-slate-800 outline-none focus:ring-2 focus:ring-rose-500">
+            <option value="Technical Spec Flaws">Technical Specification Flaws / High Disparity</option>
+            <option value="Insufficient Bidders (<3 Bids)">Zero / Insufficient Bidders (&lt;3 Bids Received)</option>
+            <option value="Administrative Reorganization">Administrative Reorganization / Department Merger</option>
+            <option value="Budget Withdrawn / Diverted">Budget Withdrawn / Re-allocated to Priority Sector</option>
+            <option value="Court / Regulatory Order">Court / Judicial Injunction / Environmental Directive</option>
+          </select>
+        </div>
+
+        <!-- 4. Detailed Reason Explanation -->
+        <div>
+          <label class="block text-slate-700 mb-1">Detailed Explanation &amp; Remarks *</label>
+          <textarea id="form-cancel-remarks" required rows="3" placeholder="Provide full context for why the tender is being cancelled..."
+            class="w-full px-3 py-2 bg-slate-50 rounded-xl border border-slate-300 text-slate-800 outline-none focus:ring-2 focus:ring-rose-500"></textarea>
+        </div>
+
+        <!-- 5. Decision on Re-tendering -->
+        <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+          <label class="block text-slate-900 font-bold">Decision on Re-Tendering *</label>
+          <div class="flex items-center gap-6">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="retender_decision" value="YES" checked onchange="toggleRetenderPlanInputs(true)" class="text-rose-600 focus:ring-rose-500">
+              <span class="text-slate-800 font-bold">Yes - To be Re-Tendered</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="retender_decision" value="NO" onchange="toggleRetenderPlanInputs(false)" class="text-rose-600 focus:ring-rose-500">
+              <span class="text-slate-600 font-medium">No - Permanently Shelved</span>
+            </label>
+          </div>
+
+          <div id="retender-plan-fields" class="pt-2 border-t border-slate-200/60 mt-2">
+            <label class="block text-slate-700 text-[11px] mb-1">Tentative Re-publishing Date / Target Timeline</label>
+            <input type="date" id="form-tentative-date" value="2026-12-15"
+              class="w-full px-3 py-1.5 bg-white rounded-xl border border-slate-300 text-slate-800 outline-none">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeRecordCancellationModal()" class="px-4 py-2 border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl font-bold">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold shadow-md shadow-rose-600/20">
+            Confirm &amp; Record Cancellation
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 2: LINK RE-PUBLISHED TENDER (100% Working) -->
+  <!-- ========================================================================= -->
+  <div id="modal-link-retender" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-start justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shadow-xs">
+            <i data-lucide="link" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-extrabold text-slate-900">Link Re-Published Tender</h3>
+            <p class="text-[11px] text-slate-500 font-medium">Connect a new tender back to its cancelled ancestor</p>
+          </div>
+        </div>
+        <button onclick="closeLinkRetenderModal()" class="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleLinkRetenderSubmit(event)" class="space-y-4 text-xs font-semibold">
+        <!-- 1. Cancelled Tender to link -->
+        <div>
+          <label class="block text-slate-700 mb-1">Cancelled Tender *</label>
+          <select id="link-cancelled-tender-id" required class="w-full px-3 py-2 bg-slate-50 rounded-xl border border-slate-300 text-slate-800 outline-none">
+            <option value="T-2026-1022">T-2026-1022: Rooftop Solar PV Installation (Energy Dept.)</option>
+            <option value="T-2026-1038">T-2026-1038: Wastewater Treatment Plant (PWD)</option>
+            <option value="T-2026-1008">T-2026-1008: Smart City CCTV & Traffic Surveillance</option>
+          </select>
+        </div>
+
+        <!-- 2. Re-published Tender ID & Date -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-700 mb-1">New Re-tender ID *</label>
+            <input type="text" id="link-retender-id" required placeholder="e.g. T-2026-1056-RT"
+              class="w-full px-3 py-2 bg-slate-50 rounded-xl border border-slate-300 text-slate-800 outline-none focus:ring-2 focus:ring-blue-500 font-mono font-bold">
+          </div>
+          <div>
+            <label class="block text-slate-700 mb-1">Re-publishing Date *</label>
+            <input type="date" id="link-retender-date" required value="2026-11-25"
+              class="w-full px-3 py-2 bg-slate-50 rounded-xl border border-slate-300 text-slate-800 outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+        </div>
+
+        <!-- 3. Key Scope Changes in Re-tender -->
+        <div>
+          <label class="block text-slate-700 mb-1">Key Modifications &amp; Scope Adjustments in Re-tender *</label>
+          <textarea id="link-retender-changes" required rows="3" placeholder="Detail how specifications, budgets, or eligibility were relaxed to solve the previous cancellation cause..."
+            class="w-full px-3 py-2 bg-slate-50 rounded-xl border border-slate-300 text-slate-800 outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeLinkRetenderModal()" class="px-4 py-2 border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl font-bold">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-md shadow-blue-600/20">
+            Establish Bidirectional Link
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 3: LIFECYCLE HISTORY & RE-TENDER AUDIT TRAIL (Dual History) -->
+  <!-- ========================================================================= -->
+  <div id="modal-lifecycle-history" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-start justify-between border-b border-slate-100 pb-3">
+        <div>
+          <span id="hist-tender-no" class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-rose-100 text-rose-700">T-2026-1038</span>
+          <h3 id="hist-tender-title" class="text-base font-extrabold text-slate-900 mt-1">Wastewater Treatment Plant (Phase-2)</h3>
+          <p id="hist-tender-dept" class="text-xs text-slate-500 font-semibold">PWD</p>
+        </div>
+        <button onclick="closeLifecycleHistoryModal()" class="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- DUAL ACTIVITY TIMELINE GRAPH -->
+      <div class="space-y-1">
+        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Complete Dual Lifecycle &amp; Re-Tender Audit Trail</h4>
+        
+        <div class="relative pl-6 space-y-5 pt-3 pb-2 border-l-2 border-slate-200 ml-3 text-xs">
+          
+          <!-- Event 1: Original Publishing -->
+          <div class="relative">
+            <span class="absolute -left-[31px] top-0.5 w-3.5 h-3.5 rounded-full bg-blue-600 border-2 border-white shadow-xs"></span>
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-slate-900">Original Tender Notice Published</span>
+              <span class="text-[10px] text-slate-400 font-medium">Phase 1</span>
+            </div>
+            <p class="text-slate-600 mt-0.5">Initial NIT floated under standard competitive bidding.</p>
+          </div>
+
+          <!-- Event 2: Official Cancellation -->
+          <div class="relative">
+            <span class="absolute -left-[31px] top-0.5 w-3.5 h-3.5 rounded-full bg-rose-600 border-2 border-white shadow-xs"></span>
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-rose-700">Tender Officially Cancelled</span>
+              <span id="hist-cancel-date" class="text-[10px] text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded-full">14 Nov 2026</span>
+            </div>
+            <div class="p-3 bg-rose-50/70 rounded-xl border border-rose-200 mt-1 space-y-1">
+              <span class="font-bold text-slate-800 block text-[11px]" id="hist-cancel-reason">Reason: Technical Spec Flaws</span>
+              <p id="hist-cancel-remarks" class="text-slate-600 text-[11px] leading-relaxed">
+                Membrane filtration parameters restructured per consultant report.
+              </p>
+            </div>
+          </div>
+
+          <!-- Event 3: Re-Tender Decision & Linkage -->
+          <div class="relative">
+            <span class="absolute -left-[31px] top-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white shadow-xs"></span>
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-emerald-800">Re-Publishing &amp; Bidirectional Linkage</span>
+              <span id="hist-status-badge" class="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full">Active</span>
+            </div>
+            <div class="p-3 bg-emerald-50/70 rounded-xl border border-emerald-200 mt-1 space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-slate-900 text-[11px]">Linked Re-Tender ID:</span>
+                <span id="hist-retender-id" class="font-mono font-bold text-blue-700">T-2026-1055-RT</span>
+              </div>
+              <div class="flex items-center justify-between text-[11px] text-slate-600">
+                <span>Re-Publish Date:</span>
+                <span id="hist-retender-date" class="font-bold text-slate-800">22 Nov 2026</span>
+              </div>
+              <p class="text-[11px] text-emerald-900 pt-1 border-t border-emerald-200/60">
+                Specifications revised to allow wider vendor participation; contract terms linked backward to ancestor tender.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+        <a id="hist-view-tender-link" href="tender-details.html"
+          class="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1">
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          <span>Open Full Tender Record</span>
+        </a>
+        <button onclick="closeLifecycleHistoryModal()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold">
+          Close History
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    lucide.createIcons();
+    initSharedNav('cancellations');
+
+    let currentCancelFilter = 'ALL';
+
+    function setCancelFilter(type) {
+      currentCancelFilter = type;
+
+      const pills = {
+        'ALL': document.getElementById('pill-cancel-all'),
+        'LINKED': document.getElementById('pill-cancel-linked'),
+        'PIPELINE': document.getElementById('pill-cancel-pipeline'),
+        'DROPPED': document.getElementById('pill-cancel-dropped')
+      };
+
+      Object.keys(pills).forEach(k => {
+        if (!pills[k]) return;
+        if (k === type) {
+          pills[k].className = "px-3.5 py-1.5 rounded-xl bg-slate-900 text-white shadow-xs transition-all flex items-center gap-1.5 font-bold";
+        } else {
+          pills[k].className = "px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all flex items-center gap-1.5 font-bold";
+        }
+      });
+
+      filterCancellationTable();
+    }
+
+    function filterCancellationTable() {
+      const q = (document.getElementById('cancel-search-input').value || '').toLowerCase().trim();
+      const reason = document.getElementById('reason-filter').value;
+      const rows = document.querySelectorAll('.cancel-row');
+
+      let visible = 0;
+      rows.forEach(row => {
+        const rowType = row.getAttribute('data-type');
+        const rowReason = row.getAttribute('data-reason');
+        const rowSearch = (row.innerText + ' ' + (row.getAttribute('data-search') || '')).toLowerCase();
+
+        const matchType = (currentCancelFilter === 'ALL' || rowType === currentCancelFilter);
+        const matchReason = (reason === 'ALL' || rowReason === reason);
+        const matchQ = (!q || rowSearch.includes(q));
+
+        if (matchType && matchReason && matchQ) {
+          row.style.display = '';
+          visible++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+
+    // Modal 1: Record Cancellation
+    function openRecordCancellationModal() {
+      document.getElementById('modal-record-cancellation').classList.remove('hidden');
+      lucide.createIcons();
+    }
+    function closeRecordCancellationModal() {
+      document.getElementById('modal-record-cancellation').classList.add('hidden');
+    }
+    function toggleRetenderPlanInputs(willRetender) {
+      const el = document.getElementById('retender-plan-fields');
+      if (willRetender) el.classList.remove('hidden');
+      else el.classList.add('hidden');
+    }
+
+    function handleCancellationSubmit(e) {
+      e.preventDefault();
+      const tenderInfo = document.getElementById('form-cancel-tender-id').value.split('|');
+      const tenderId = tenderInfo[0];
+      const tenderTitle = tenderInfo[1];
+      const tenderDept = tenderInfo[2];
+      const date = document.getElementById('form-cancel-date').value;
+      const orderNo = document.getElementById('form-cancel-order-no').value;
+      const category = document.getElementById('form-cancel-reason-category').value;
+      const remarks = document.getElementById('form-cancel-remarks').value;
+      const decision = document.querySelector('input[name="retender_decision"]:checked').value;
+
+      // Add to table dynamically
+      const tbody = document.getElementById('cancellations-tbody');
+      const tr = document.createElement('tr');
+      tr.className = "hover:bg-slate-50/80 transition-colors cancel-row bg-rose-50/20";
+      tr.setAttribute('data-type', decision === 'YES' ? 'PIPELINE' : 'DROPPED');
+      tr.setAttribute('data-reason', category.includes('Flaws') ? 'Technical Flaws' : category.includes('Insufficient') ? 'Low Turnout' : 'Administrative');
+      tr.setAttribute('data-search', `${tenderId} ${tenderTitle} ${tenderDept} ${category}`.toLowerCase());
+
+      tr.innerHTML = `
+        <td class="py-3.5 px-4 text-slate-400 font-semibold">&bull;</td>
+        <td class="py-3.5 px-4">
+          <span class="font-mono font-bold text-rose-600 block">${tenderId}</span>
+          <span class="text-[10px] text-slate-400 font-medium">Order #${orderNo}</span>
+        </td>
+        <td class="py-3.5 px-4">
+          <span class="font-bold text-slate-900 block">${tenderTitle}</span>
+          <span class="text-[11px] text-slate-500 font-medium">${tenderDept}</span>
+        </td>
+        <td class="py-3.5 px-4 font-bold text-slate-800">${date}</td>
+        <td class="py-3.5 px-4">
+          <span class="px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-rose-50 text-rose-700 border border-rose-200 block w-fit mb-1">
+            ${category}
+          </span>
+          <span class="text-[11px] text-slate-500 line-clamp-1">${remarks}</span>
+        </td>
+        <td class="py-3.5 px-4">
+          <span class="px-2.5 py-1 rounded-full text-xs font-bold ${decision === 'YES' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-slate-100 text-slate-600 border border-slate-200'} flex items-center gap-1 w-fit">
+            ${decision === 'YES' ? 'Yes &bull; In Pipeline' : 'No &bull; Dropped'}
+          </span>
+        </td>
+        <td class="py-3.5 px-4 text-xs font-medium text-slate-400">
+          ${decision === 'YES' ? '<span class="text-amber-600 font-semibold">Awaiting Link</span>' : 'None (Shelved)'}
+        </td>
+        <td class="py-3.5 px-4 text-center">
+          <button onclick="viewLifecycleHistory('${tenderId}', '${tenderTitle}', '${tenderDept}', '${date}', '${category}', '${remarks}', '${decision === 'YES' ? 'In Pipeline' : 'None'}', 'Pending', 'Recently Cancelled')"
+            class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1 mx-auto">
+            <i data-lucide="history" class="w-3 h-3"></i>
+            <span>Lifecycle History</span>
+          </button>
+        </td>
+      `;
+
+      tbody.insertBefore(tr, tbody.firstChild);
+      closeRecordCancellationModal();
+      lucide.createIcons();
+
+      // Update metrics
+      const countEl = document.getElementById('metric-total-cancelled');
+      if (countEl) countEl.innerText = parseInt(countEl.innerText) + 1;
+
+      if (window.showToast) {
+        showToast(`Tender ${tenderId} cancelled successfully. Order registered.`, 'success');
+      }
+    }
+
+    // Modal 2: Link Re-tender
+    function openLinkRetenderModal(tenderId, title) {
+      if (tenderId) {
+        const select = document.getElementById('link-cancelled-tender-id');
+        if (select) select.value = tenderId;
+      }
+      document.getElementById('modal-link-retender').classList.remove('hidden');
+      lucide.createIcons();
+    }
+    function closeLinkRetenderModal() {
+      document.getElementById('modal-link-retender').classList.add('hidden');
+    }
+
+    function handleLinkRetenderSubmit(e) {
+      e.preventDefault();
+      const cancelledId = document.getElementById('link-cancelled-tender-id').value;
+      const retenderId = document.getElementById('link-retender-id').value;
+      const date = document.getElementById('link-retender-date').value;
+      const changes = document.getElementById('link-retender-changes').value;
+
+      closeLinkRetenderModal();
+      if (window.showToast) {
+        showToast(`Linked ${retenderId} to cancelled tender ${cancelledId}! Bidirectional history established.`, 'success');
+      }
+    }
+
+    // Modal 3: Lifecycle History
+    function viewLifecycleHistory(no, title, dept, cancelDate, reason, remarks, retenderId, retenderDate, status) {
+      document.getElementById('hist-tender-no').innerText = no;
+      document.getElementById('hist-tender-title').innerText = title;
+      document.getElementById('hist-tender-dept').innerText = dept;
+      document.getElementById('hist-cancel-date').innerText = cancelDate;
+      document.getElementById('hist-cancel-reason').innerText = `Reason: ${reason}`;
+      document.getElementById('hist-cancel-remarks').innerText = remarks;
+      document.getElementById('hist-retender-id').innerText = retenderId;
+      document.getElementById('hist-retender-date').innerText = retenderDate;
+      document.getElementById('hist-status-badge').innerText = status;
+      document.getElementById('hist-view-tender-link').href = `tender-details.html?id=${no}`;
+
+      document.getElementById('modal-lifecycle-history').classList.remove('hidden');
+      lucide.createIcons();
+    }
+    function closeLifecycleHistoryModal() {
+      document.getElementById('modal-lifecycle-history').classList.add('hidden');
+    }
+
+    // Export CSV
+    function exportCancellationReportCSV() {
+      const csv = "data:text/csv;charset=utf-8,"
+        + "Cancelled Tender No,Title,Department,Cancellation Date,Reason,Re-Publish Decision,Linked Re-Tender,Status\n"
+        + "T-2026-1038,Wastewater Treatment Plant (Phase-2),PWD,14 Nov 2026,Technical Spec Flaws,Yes - Re-published,T-2026-1055-RT,Active\n"
+        + "T-2026-1022,Rooftop Solar PV Installation,Energy Dept.,08 Nov 2026,Insufficient Bidders (<3 Bids),Yes - In Pipeline,Pending,Pipeline\n"
+        + "T-2026-1015,Multi-Purpose Indoor Sports Complex,UDHD,28 Oct 2026,Budget Withdrawn / Diverted,No - Dropped,None,Shelved\n"
+        + "T-2026-1008,Smart City CCTV Surveillance,Home Dept.,15 Oct 2026,Administrative Reorganization,Yes - Re-published,T-2026-1052-RT,Active\n"
+        + "T-2026-0995,Coastal Sand Dredging,Ports & Maritime,02 Oct 2026,Court / Regulatory Order,No - Dropped,None,Sub-judice\n";
+
+      const uri = encodeURI(csv);
+      const a = document.createElement("a");
+      a.href = uri;
+      a.download = "Tender_Cancellation_And_Retendering_Report.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      if (window.showToast) showToast('Cancellation & Re-Tender Report exported!', 'success');
+    }
+  </script>
+</body>
+</html>
