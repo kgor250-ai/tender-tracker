@@ -96,7 +96,7 @@
             <i data-lucide="bell" class="w-4 h-4"></i>
             <span>Notifications</span>
           </div>
-          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">4</span>
+          <span id="nav-badge-notif-sidebar" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white notif-badge-pill">4</span>
         </a>
 
         <a href="deadlines.html" data-page="deadlines"
@@ -171,11 +171,6 @@
     <!-- TOP HEADER -->
     <header
       class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
-  <script>
-    // Prevent ALL browser alert/confirm popups immediately
-    window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
-    window.confirm = function(msg) { return true; };
-  </script>
       <div class="flex items-center gap-4 flex-1 max-w-xl">
         <div class="relative w-full">
           <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -305,7 +300,7 @@
 
       <!-- TABS (Exact match to screenshot: Overview, Amendments (2), Documents, Timeline) -->
       <div class="flex items-center gap-1 border-b border-slate-200 text-xs font-bold text-slate-500">
-        <button class="px-4 py-2.5 border-b-2 border-blue-600 text-blue-600 flex items-center gap-1.5">
+        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="px-4 py-2.5 border-b-2 border-blue-600 text-blue-600 flex items-center gap-1.5 cursor-pointer">
           <span>Overview</span>
         </button>
         <button onclick="window.location.href='versions.html?tender=GJ-2026-105'"

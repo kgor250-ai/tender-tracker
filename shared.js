@@ -46,7 +46,87 @@ function switchRole(roleKey) {
     };
   }
   setActiveUser(user);
+  if (typeof addAuditLog === 'function') {
+    addAuditLog('User Role Switched', `Switched active role to ${user.role} (${user.name})`);
+  }
   location.reload();
+}
+
+function logout() {
+  localStorage.removeItem('activeUser');
+  sessionStorage.removeItem('activeUser');
+  if (typeof addAuditLog === 'function') {
+    addAuditLog('User Sign Out', 'Active session terminated');
+  }
+  window.location.href = 'login.html';
+}
+
+// Centralized Audit Logging System
+const DEFAULT_AUDIT_LOGS = [
+  {
+    timestamp: "26-Nov-2026 19:15:20",
+    user: "Admin Officer (ADMIN)",
+    action: "Catalog Master Update",
+    details: "Tender catalog and amendment index synchronized",
+    ip: "127.0.0.1",
+    status: "SUCCESS"
+  },
+  {
+    timestamp: "25-Nov-2026 15:58:24",
+    user: "Admin Officer (ADMIN)",
+    action: "Cancellation Module Initialized",
+    details: "Tender Cancellation & Re-Tendering Tracker loaded",
+    ip: "127.0.0.1",
+    status: "SUCCESS"
+  },
+  {
+    timestamp: "20-Nov-2026 15:40:12",
+    user: "Admin Officer (ADMIN)",
+    action: "Analytics Dashboard Refreshed",
+    details: "Variance KPIs and charts calculated across 1,248 tenders",
+    ip: "127.0.0.1",
+    status: "SUCCESS"
+  },
+  {
+    timestamp: "16-Nov-2026 19:42:01",
+    user: "Crawler Worker #2 (SYSTEM)",
+    action: "Scraper Auto-Ingest",
+    details: "tender.nprocure.com / 12 items ingested",
+    ip: "127.0.0.1",
+    status: "SUCCESS"
+  },
+  {
+    timestamp: "16-Nov-2026 18:30:15",
+    user: "Admin Officer (ADMIN)",
+    action: "User Role Matrix Updated",
+    details: "RBAC Policy V2 Committed",
+    ip: "192.168.1.104",
+    status: "SUCCESS"
+  }
+];
+
+function getAuditLogs() {
+  const stored = localStorage.getItem('appAuditLogs');
+  if (stored) {
+    try { return JSON.parse(stored); } catch (e) {}
+  }
+  return DEFAULT_AUDIT_LOGS;
+}
+
+function addAuditLog(action, details, status = "SUCCESS") {
+  const logs = getAuditLogs();
+  const user = getActiveUser();
+  const now = new Date();
+  const timeStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toTimeString().split(' ')[0];
+  logs.unshift({
+    timestamp: timeStr,
+    user: `${user.name} (${user.role})`,
+    action: action,
+    details: details,
+    ip: "127.0.0.1",
+    status: status
+  });
+  localStorage.setItem('appAuditLogs', JSON.stringify(logs.slice(0, 100)));
 }
 
 function initSharedNav(activePage) {
@@ -62,6 +142,16 @@ function initSharedNav(activePage) {
   if (userNameEl) userNameEl.innerText = user.name;
   if (userRoleEl) userRoleEl.innerText = user.role.replace('_', ' ');
   if (userAvatarEl) userAvatarEl.innerText = user.initial;
+
+  // Wire Sign Out buttons
+  document.querySelectorAll('a[href="login.html"]').forEach(link => {
+    if (link.textContent.includes('Sign Out')) {
+      link.onclick = (e) => {
+        e.preventDefault();
+        logout();
+      };
+    }
+  });
 
   // Highlight active link in sidebar
   const navLinks = document.querySelectorAll('.sidebar-link');

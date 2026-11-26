@@ -1,0 +1,24 @@
+{
+  "name": "tender-corrigendum-amendment-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Government Tender Corrigendum & Amendment Tracker - Multi-portal Scraping, Revision Differencing & Real-Time Monitoring Platform",
+  "scripts": {
+    "dev:web": "pnpm --filter @tender-tracker/web dev",
+    "dev:api": "pnpm --filter @tender-tracker/api start:dev",
+    "build:web": "pnpm --filter @tender-tracker/web build",
+    "build:api": "pnpm --filter @tender-tracker/api build",
+    "lint": "pnpm --filter @tender-tracker/api lint",
+    "start": "powershell -ExecutionPolicy Bypass -File server.ps1"
+  },
+  "keywords": [
+    "tender",
+    "corrigendum",
+    "amendment",
+    "procurement",
+    "tracker",
+    "diff-viewer"
+  ],
+  "author": "Government Procurement Technology Operations",
+  "license": "MIT"
+}

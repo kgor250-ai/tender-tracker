@@ -85,7 +85,7 @@
             <i data-lucide="bell" class="w-4 h-4"></i>
             <span>Notifications</span>
           </div>
-          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">4</span>
+          <span id="nav-badge-notif-sidebar" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white notif-badge-pill">4</span>
         </a>
 
         <a href="deadlines.html" data-page="deadlines"
@@ -159,11 +159,6 @@
 
     <!-- TOP HEADER -->
     <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
-  <script>
-    // Prevent ALL browser alert/confirm popups immediately
-    window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
-    window.confirm = function(msg) { return true; };
-  </script>
       <div class="flex items-center gap-4 flex-1 max-w-xl">
         <div class="relative w-full">
           <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -272,48 +267,7 @@
                 <th class="py-3 px-4 text-right">Status</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-100 font-medium text-slate-700 font-mono">
-              <tr class="hover:bg-slate-50">
-                <td class="py-3.5 px-4 text-slate-500">16-Nov-2026 20:25:12</td>
-                <td class="py-3.5 px-4 font-sans font-bold text-slate-900">Admin Officer (ADMIN)</td>
-                <td class="py-3.5 px-4 font-sans text-emerald-700 font-semibold">Corrigendum Approved</td>
-                <td class="py-3.5 px-4 text-blue-600 font-bold">GJ/2026/105 - Amend 02</td>
-                <td class="py-3.5 px-4 text-slate-400">192.168.1.104</td>
-                <td class="py-3.5 px-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">SUCCESS</span></td>
-              </tr>
-              <tr class="hover:bg-slate-50">
-                <td class="py-3.5 px-4 text-slate-500">16-Nov-2026 20:18:40</td>
-                <td class="py-3.5 px-4 font-sans font-bold text-slate-900">Rajesh Kumar (OPERATOR)</td>
-                <td class="py-3.5 px-4 font-sans text-blue-700 font-semibold">Tender Registered (Module 2)</td>
-                <td class="py-3.5 px-4 text-blue-600 font-bold">GJ/2026/106 - Bridge Package</td>
-                <td class="py-3.5 px-4 text-slate-400">10.0.4.15</td>
-                <td class="py-3.5 px-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">SUCCESS</span></td>
-              </tr>
-              <tr class="hover:bg-slate-50">
-                <td class="py-3.5 px-4 text-slate-500">16-Nov-2026 19:50:22</td>
-                <td class="py-3.5 px-4 font-sans font-bold text-slate-900">Pooja Sharma (VIEWER)</td>
-                <td class="py-3.5 px-4 font-sans text-amber-700 font-semibold">Access Blocked: Tender Create</td>
-                <td class="py-3.5 px-4 text-slate-500">Module 2 / Permission Denied</td>
-                <td class="py-3.5 px-4 text-slate-400">172.16.8.99</td>
-                <td class="py-3.5 px-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">FORBIDDEN</span></td>
-              </tr>
-              <tr class="hover:bg-slate-50">
-                <td class="py-3.5 px-4 text-slate-500">16-Nov-2026 19:42:01</td>
-                <td class="py-3.5 px-4 font-sans font-bold text-slate-900">Crawler Worker #2 (SYSTEM)</td>
-                <td class="py-3.5 px-4 font-sans text-purple-700 font-semibold">Scraper Auto-Ingest</td>
-                <td class="py-3.5 px-4 text-blue-600 font-bold">tender.nprocure.com / 12 items</td>
-                <td class="py-3.5 px-4 text-slate-400">127.0.0.1</td>
-                <td class="py-3.5 px-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">SUCCESS</span></td>
-              </tr>
-              <tr class="hover:bg-slate-50">
-                <td class="py-3.5 px-4 text-slate-500">16-Nov-2026 18:30:15</td>
-                <td class="py-3.5 px-4 font-sans font-bold text-slate-900">Admin Officer (ADMIN)</td>
-                <td class="py-3.5 px-4 font-sans text-indigo-700 font-semibold">User Role Matrix Updated</td>
-                <td class="py-3.5 px-4 text-slate-600">RBAC Policy V2 Committed</td>
-                <td class="py-3.5 px-4 text-slate-400">192.168.1.104</td>
-                <td class="py-3.5 px-4 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">SUCCESS</span></td>
-              </tr>
-            </tbody>
+            <tbody id="audit-table-body" class="divide-y divide-slate-100 font-medium text-slate-700 font-mono"></tbody>
           </table>
         </div>
       </div>
@@ -323,8 +277,91 @@
 
   <script src="shared.js"></script>
   <script>
-    lucide.createIcons();
-    initSharedNav('audit');
+    function renderAuditLogs(filterQuery = '') {
+      const tbody = document.getElementById('audit-table-body');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const logs = (typeof getAuditLogs === 'function') ? getAuditLogs() : [];
+      const q = filterQuery.toLowerCase().trim();
+
+      const filtered = logs.filter(l => {
+        if (!q) return true;
+        return l.timestamp.toLowerCase().includes(q) ||
+               l.user.toLowerCase().includes(q) ||
+               l.action.toLowerCase().includes(q) ||
+               l.details.toLowerCase().includes(q) ||
+               l.status.toLowerCase().includes(q);
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="py-12 text-center text-slate-400">
+              <i data-lucide="shield-alert" class="w-8 h-8 mx-auto mb-2 opacity-40"></i>
+              <p class="font-bold text-slate-700">No audit logs matching query</p>
+            </td>
+          </tr>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      filtered.forEach(log => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition-colors";
+        
+        let statusBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">SUCCESS</span>';
+        if (log.status === 'FORBIDDEN') {
+          statusBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">FORBIDDEN</span>';
+        } else if (log.status === 'FAILED' || log.status === 'ERROR') {
+          statusBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800">FAILED</span>';
+        }
+
+        tr.innerHTML = `
+          <td class="py-3.5 px-4 text-slate-500 font-mono">${log.timestamp}</td>
+          <td class="py-3.5 px-4 font-sans font-bold text-slate-900">${log.user}</td>
+          <td class="py-3.5 px-4 font-sans text-blue-700 font-semibold">${log.action}</td>
+          <td class="py-3.5 px-4 text-slate-700 max-w-xs truncate">${log.details}</td>
+          <td class="py-3.5 px-4 text-slate-400 font-mono">${log.ip || '127.0.0.1'}</td>
+          <td class="py-3.5 px-4 text-right">${statusBadge}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+      lucide.createIcons();
+    }
+
+    function exportAuditLogsCSV() {
+      const logs = (typeof getAuditLogs === 'function') ? getAuditLogs() : [];
+      let csv = "Timestamp,User,Action,Details,IP_Address,Status\n";
+      logs.forEach(l => {
+        csv += `"${l.timestamp}","${l.user}","${l.action}","${(l.details || '').replace(/"/g, '""')}","${l.ip || '127.0.0.1'}","${l.status}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `Audit_Log_Export_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Audit log export downloaded successfully!', 'success');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      initSharedNav('audit');
+      renderAuditLogs();
+
+      // Connect search if input exists
+      const searchInput = document.querySelector('input[placeholder*="Search"]');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          renderAuditLogs(e.target.value);
+        });
+      }
+    });
   </script>
 </body>
 </html>

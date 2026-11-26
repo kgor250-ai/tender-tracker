@@ -106,7 +106,7 @@
             <i data-lucide="bell" class="w-4 h-4"></i>
             <span>Notifications</span>
           </div>
-          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">4</span>
+          <span id="nav-badge-notif-sidebar" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white notif-badge-pill">4</span>
         </a>
 
         <a href="deadlines.html" data-page="deadlines"
@@ -183,11 +183,6 @@
     <!-- TOP HEADER -->
     <header
       class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
-  <script>
-    // Prevent ALL browser alert/confirm popups immediately
-    window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
-    window.confirm = function(msg) { return true; };
-  </script>
       <div class="flex items-center gap-4 flex-1 max-w-xl">
         <div class="relative w-full">
           <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -364,30 +359,14 @@
           </table>
         </div>
 
-        <!-- PAGINATION STRIP (Exact match to screenshot) -->
+        <!-- PAGINATION STRIP -->
         <div
           class="p-4 bg-white border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
-          <div>
-            Showing <span class="font-bold text-slate-800">1-5</span> of <span
-              class="font-bold text-slate-800">1,248</span> results
+          <div id="pagination-info">
+            Showing <span class="font-bold text-slate-800" id="page-range">1-5</span> of <span
+              class="font-bold text-slate-800" id="total-count">5</span> results
           </div>
-          <div class="flex items-center gap-1">
-            <button
-              class="w-7 h-7 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-100 flex items-center justify-center font-bold">
-              <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
-            </button>
-            <button
-              class="w-7 h-7 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center shadow-xs">1</button>
-            <button
-              class="w-7 h-7 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 font-bold flex items-center justify-center">2</button>
-            <button
-              class="w-7 h-7 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 font-bold flex items-center justify-center">3</button>
-            <span class="px-1 text-slate-400">...</span>
-            <button
-              class="w-7 h-7 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-100 flex items-center justify-center font-bold">
-              <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-            </button>
-          </div>
+          <div class="flex items-center gap-1" id="pagination-controls"></div>
         </div>
       </div>
 
@@ -474,30 +453,87 @@
 
   <script src="shared.js"></script>
   <script>
-    // Initial Tender Data matching screenshot
-    let tenderData = [
+    // Initial Tender Data with persistence
+    const DEFAULT_TENDERS = [
       { id: "GJ/2026/105", title: "Road Construction Works", dept: "PWD", pubDate: "01 Nov 2026", deadline: "20 Nov 2026", status: "Published", cat: "Infrastructure" },
       { id: "GJ/2026/104", title: "Supply of Medical Equipment", dept: "Health Dept.", pubDate: "31 Oct 2026", deadline: "18 Nov 2026", status: "Published", cat: "Medical" },
       { id: "GJ/2026/103", title: "IT Infrastructure Upgrade", dept: "NIC", pubDate: "30 Oct 2026", deadline: "15 Nov 2026", status: "Amended", cat: "IT" },
       { id: "GJ/2026/102", title: "Urban Development Project", dept: "UDHD", pubDate: "28 Oct 2026", deadline: "14 Nov 2026", status: "Published", cat: "Urban" },
-      { id: "GJ/2026/101", title: "Medical Supplies", dept: "Health Dept.", pubDate: "26 Oct 2026", deadline: "12 Nov 2026", status: "Published", cat: "Medical" }
+      { id: "GJ/2026/101", title: "Medical Supplies", dept: "Health Dept.", pubDate: "26 Oct 2026", deadline: "12 Nov 2026", status: "Published", cat: "Medical" },
+      { id: "GJ/2026/099", title: "High Court Annex Air Conditioning System", dept: "Judiciary", pubDate: "24 Oct 2026", deadline: "10 Nov 2026", status: "Published", cat: "Civil Works" },
+      { id: "GJ/2026/098", title: "Solar Rooftop Panel Installation", dept: "Energy Dept", pubDate: "22 Oct 2026", deadline: "08 Nov 2026", status: "Amended", cat: "Infrastructure" },
+      { id: "GJ/2026/095", title: "Digital Land Records Scanning", dept: "Revenue Dept", pubDate: "20 Oct 2026", deadline: "05 Nov 2026", status: "Published", cat: "IT" },
+      { id: "GJ/2026/092", title: "Rural Water Filtration Plants", dept: "Water Supply", pubDate: "18 Oct 2026", deadline: "02 Nov 2026", status: "Published", cat: "Urban" },
+      { id: "GJ/2026/090", title: "Ambulance Fleet GPS Tracking", dept: "Health Dept.", pubDate: "15 Oct 2026", deadline: "30 Oct 2026", status: "Amended", cat: "Medical" }
     ];
 
+    function getTenders() {
+      const stored = localStorage.getItem('appTendersCatalog');
+      if (stored) {
+        try { return JSON.parse(stored); } catch (e) {}
+      }
+      return DEFAULT_TENDERS;
+    }
+
+    function saveTenders(items) {
+      localStorage.setItem('appTendersCatalog', JSON.stringify(items));
+    }
+
+    let tenderData = getTenders();
+    let currentFilteredList = [...tenderData];
+    let currentPage = 1;
+    const pageSize = 5;
+
     function renderTenderRows(list) {
+      currentFilteredList = list;
       const tbody = document.getElementById('tender-table-body');
       tbody.innerHTML = '';
 
-      list.forEach((t, index) => {
+      const totalItems = list.length;
+      const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+      if (currentPage > totalPages) currentPage = totalPages;
+      if (currentPage < 1) currentPage = 1;
+
+      const startIndex = (currentPage - 1) * pageSize;
+      const endIndex = Math.min(startIndex + pageSize, totalItems);
+      const pageItems = list.slice(startIndex, endIndex);
+
+      // Update pagination info
+      const pageRangeEl = document.getElementById('page-range');
+      const totalCountEl = document.getElementById('total-count');
+      if (pageRangeEl) pageRangeEl.innerText = totalItems > 0 ? `${startIndex + 1}-${endIndex}` : '0-0';
+      if (totalCountEl) totalCountEl.innerText = totalItems;
+
+      renderPaginationControls(totalPages);
+
+      if (pageItems.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="py-12 text-center text-slate-400">
+              <i data-lucide="search-x" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+              <p class="font-bold text-slate-700">No matching tenders found</p>
+              <p class="text-xs text-slate-400">Try adjusting your filters or search keywords.</p>
+            </td>
+          </tr>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      pageItems.forEach((t, idx) => {
+        const globalIndex = startIndex + idx + 1;
         const tr = document.createElement('tr');
         tr.className = "hover:bg-slate-50 transition-colors";
         const statusBadge = t.status === 'Amended'
           ? `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-50 text-amber-700 border border-amber-200">Amended</span>`
           : `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">Published</span>`;
 
+        const normalizedTenderKey = (t.id === 'GJ/2026/104' || t.id === 'GJ-2026-104') ? 'GJ-2026-104' : 'GJ-2026-105';
+
         tr.innerHTML = `
-          <td class="py-3 px-4 text-slate-400 font-bold">${index + 1}</td>
+          <td class="py-3 px-4 text-slate-400 font-bold">${globalIndex}</td>
           <td class="py-3 px-4 font-mono font-bold text-blue-600">
-            <a href="tender-details.html?id=${t.id}" class="hover:underline">${t.id}</a>
+            <a href="tender-details.html?id=${encodeURIComponent(t.id)}" class="hover:underline">${t.id}</a>
           </td>
           <td class="py-3 px-4 font-semibold text-slate-900 max-w-xs truncate">${t.title}</td>
           <td class="py-3 px-4">${t.dept}</td>
@@ -506,13 +542,13 @@
           <td class="py-3 px-4">${statusBadge}</td>
           <td class="py-3 px-4 text-center">
             <div class="inline-flex items-center gap-1.5">
-              <a href="tender-details.html?id=${t.id}" class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="View Details">
+              <a href="tender-details.html?id=${encodeURIComponent(t.id)}" class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="View Details">
                 <i data-lucide="eye" class="w-4 h-4"></i>
               </a>
-              <a href="versions.html?tender=${t.id === 'GJ/2026/104' ? 'GJ-2026-104' : 'GJ-2026-105'}" class="p-1.5 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="Module 4: Version History & Revisions">
+              <a href="versions.html?tender=${normalizedTenderKey}" class="p-1.5 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="Version History & Revisions">
                 <i data-lucide="git-branch" class="w-4 h-4"></i>
               </a>
-              <a href="latest-tender.html?tender=${t.id === 'GJ/2026/104' ? 'GJ-2026-104' : 'GJ-2026-105'}" class="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Latest Master Specification">
+              <a href="latest-tender.html?tender=${normalizedTenderKey}" class="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Latest Master Specification">
                 <i data-lucide="check-circle-2" class="w-4 h-4"></i>
               </a>
             </div>
@@ -523,7 +559,46 @@
       lucide.createIcons();
     }
 
+    function renderPaginationControls(totalPages) {
+      const container = document.getElementById('pagination-controls');
+      if (!container) return;
+      container.innerHTML = '';
+
+      // Prev Button
+      const prevBtn = document.createElement('button');
+      prevBtn.className = `w-7 h-7 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-100 flex items-center justify-center font-bold ${currentPage === 1 ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''}`;
+      prevBtn.innerHTML = '<i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>';
+      prevBtn.onclick = () => changePage(currentPage - 1);
+      container.appendChild(prevBtn);
+
+      // Page numbers
+      for (let p = 1; p <= totalPages; p++) {
+        const pBtn = document.createElement('button');
+        if (p === currentPage) {
+          pBtn.className = "w-7 h-7 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center shadow-xs text-xs";
+        } else {
+          pBtn.className = "w-7 h-7 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 font-bold flex items-center justify-center text-xs";
+        }
+        pBtn.innerText = p;
+        pBtn.onclick = () => changePage(p);
+        container.appendChild(pBtn);
+      }
+
+      // Next Button
+      const nextBtn = document.createElement('button');
+      nextBtn.className = `w-7 h-7 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-100 flex items-center justify-center font-bold ${currentPage === totalPages ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''}`;
+      nextBtn.innerHTML = '<i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>';
+      nextBtn.onclick = () => changePage(currentPage + 1);
+      container.appendChild(nextBtn);
+    }
+
+    function changePage(page) {
+      currentPage = page;
+      renderTenderRows(currentFilteredList);
+    }
+
     function filterTenders() {
+      currentPage = 1;
       const q = (document.getElementById('table-search').value || '').toLowerCase().trim();
       const dept = document.getElementById('filter-dept').value;
       const cat = document.getElementById('filter-cat').value;
@@ -566,9 +641,15 @@
       };
 
       tenderData.unshift(newT);
+      saveTenders(tenderData);
+      if (typeof addAuditLog === 'function') {
+        addAuditLog('Tender Registration', `Registered new tender ${newT.id}: ${newT.title}`);
+      }
+      currentPage = 1;
       renderTenderRows(tenderData);
       closeModal('modal-add-tender');
       showToast(`Tender ${newT.id} registered successfully into catalog!`, 'success');
+      e.target.reset();
     }
 
     document.addEventListener('DOMContentLoaded', () => {

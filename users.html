@@ -87,7 +87,7 @@
             <i data-lucide="bell" class="w-4 h-4"></i>
             <span>Notifications</span>
           </div>
-          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">4</span>
+          <span id="nav-badge-notif-sidebar" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white notif-badge-pill">4</span>
         </a>
 
         <a href="deadlines.html" data-page="deadlines"
@@ -161,11 +161,6 @@
 
     <!-- TOP HEADER -->
     <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
-  <script>
-    // Prevent ALL browser alert/confirm popups immediately
-    window.alert = function(msg) { if(window.showToast) showToast(msg,'info'); else console.info('[alert]', msg); };
-    window.confirm = function(msg) { return true; };
-  </script>
       <div class="flex items-center gap-4 flex-1 max-w-xl">
         <div class="relative w-full">
           <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -431,6 +426,101 @@
 
   <script src="shared.js"></script>
   <script>
+    const DEFAULT_USERS = [
+      {
+        id: "usr-1",
+        name: "Admin Officer",
+        email: "admin@tender-tracker.local",
+        role: "ADMIN",
+        status: "ACTIVE",
+        lastActive: "Just now",
+        initial: "A"
+      },
+      {
+        id: "usr-2",
+        name: "Rajesh Kumar (Operator)",
+        email: "operator@tender-tracker.local",
+        role: "TENDER_OPERATOR",
+        status: "ACTIVE",
+        lastActive: "10 mins ago",
+        initial: "O"
+      },
+      {
+        id: "usr-3",
+        name: "Pooja Sharma (Viewer)",
+        email: "viewer@contractor.com",
+        role: "VIEWER",
+        status: "ACTIVE",
+        lastActive: "1 hour ago",
+        initial: "V"
+      }
+    ];
+
+    function getUsers() {
+      const stored = localStorage.getItem('appUsersStore');
+      if (stored) {
+        try { return JSON.parse(stored); } catch (e) {}
+      }
+      return DEFAULT_USERS;
+    }
+
+    function saveUsers(items) {
+      localStorage.setItem('appUsersStore', JSON.stringify(items));
+    }
+
+    let usersList = getUsers();
+
+    function renderUsersTable() {
+      const tbody = document.getElementById('users-table-body');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      usersList.forEach(u => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition-colors";
+
+        let roleBadge = '';
+        if (u.role === 'ADMIN') {
+          roleBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-purple-100 text-purple-800 border border-purple-200">SUPER_ADMIN</span>';
+        } else if (u.role === 'TENDER_OPERATOR' || u.role === 'OPERATOR') {
+          roleBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-200">TENDER_OPERATOR</span>';
+        } else {
+          roleBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-blue-100 text-blue-800 border border-blue-200">VIEWER</span>';
+        }
+
+        const roleKey = (u.role === 'ADMIN') ? 'ADMIN' : (u.role === 'TENDER_OPERATOR' || u.role === 'OPERATOR') ? 'OPERATOR' : 'VIEWER';
+
+        tr.innerHTML = `
+          <td class="py-3.5 px-4">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-800 font-bold flex items-center justify-center">${u.initial || u.name.charAt(0)}</div>
+              <div>
+                <p class="font-bold text-slate-900">${u.name}</p>
+                <p class="text-[11px] text-slate-500 font-mono">${u.email}</p>
+              </div>
+            </div>
+          </td>
+          <td class="py-3.5 px-4">${roleBadge}</td>
+          <td class="py-3.5 px-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">${u.status}</span></td>
+          <td class="py-3.5 px-4 text-slate-500">${u.lastActive || 'Recently'}</td>
+          <td class="py-3.5 px-4 text-right">
+            <div class="inline-flex items-center gap-2">
+              <button onclick="switchRole('${roleKey}')" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-lg text-xs transition-colors">
+                Switch to ${roleKey}
+              </button>
+              ${u.id.startsWith('custom-') ? `
+                <button onclick="deleteUser('${u.id}')" class="p-1 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors" title="Delete User">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              ` : ''}
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      lucide.createIcons();
+    }
+
     function openAddUserModal() {
       const user = getActiveUser();
       if (user.role !== 'ADMIN') {
@@ -450,13 +540,52 @@
       const email = document.getElementById('new-u-email').value.trim();
       const role = document.getElementById('new-u-role').value;
 
-      showToast(`User account '${name}' (${role}) created successfully!`, 'success');
+      if (!name || !email) {
+        showToast("Please enter a valid name and email address.", "error");
+        return;
+      }
+
+      // Check for duplicate email
+      if (usersList.some(u => u.email.toLowerCase() === email.toLowerCase())) {
+        showToast("A user with this email address already exists.", "error");
+        return;
+      }
+
+      const newUser = {
+        id: "custom-" + Date.now(),
+        name: name,
+        email: email,
+        role: role,
+        status: "ACTIVE",
+        lastActive: "Just now",
+        initial: name.charAt(0).toUpperCase()
+      };
+
+      usersList.push(newUser);
+      saveUsers(usersList);
+      if (typeof addAuditLog === 'function') {
+        addAuditLog('User Account Created', `Provisioned user ${name} (${email}) with role ${role}`);
+      }
+      renderUsersTable();
       closeModal('modal-add-user');
+      showToast(`User account '${name}' (${role}) created successfully!`, 'success');
+      e.target.reset();
+    }
+
+    function deleteUser(userId) {
+      usersList = usersList.filter(u => u.id !== userId);
+      saveUsers(usersList);
+      if (typeof addAuditLog === 'function') {
+        addAuditLog('User Account Deleted', `Removed user account ID: ${userId}`);
+      }
+      renderUsersTable();
+      showToast('User account removed successfully.', 'info');
     }
 
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       initSharedNav('users');
+      renderUsersTable();
     });
   </script>
 </body>

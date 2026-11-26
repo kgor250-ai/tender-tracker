@@ -84,7 +84,7 @@
             <i data-lucide="bell" class="w-4 h-4"></i>
             <span>Notifications</span>
           </div>
-          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">4</span>
+          <span id="nav-badge-notif-sidebar" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white notif-badge-pill">4</span>
         </a>
 
         <a href="deadlines.html" data-page="deadlines"
@@ -506,15 +506,15 @@
                   <p class="font-bold text-slate-900">Deadline Extension Variance Audit</p>
                   <p class="text-[11px] text-slate-500">184 tenders with altered submission dates &bull; PDF</p>
                 </div>
-                <button onclick="showToast('Exporting Deadline Extension Variance Audit PDF...', 'info');" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-xs">PDF</button>
+                <button onclick="exportDeadlineAudit()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-xs shadow-xs">Export CSV</button>
               </div>
 
               <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
                 <div>
                   <p class="font-bold text-slate-900">High Volatility Tenders Dossier</p>
-                  <p class="text-[11px] text-slate-500">142 tenders with multiple revisions &bull; XLSX</p>
+                  <p class="text-[11px] text-slate-500">142 tenders with multiple revisions &bull; CSV</p>
                 </div>
-                <button onclick="showToast('Exporting High Volatility Dataset (XLSX)...', 'info');" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg text-xs">XLSX</button>
+                <button onclick="exportVolatilityReport()" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg text-xs shadow-xs">Export CSV</button>
               </div>
             </div>
           </div>
@@ -534,6 +534,50 @@
   <script>
     lucide.createIcons();
     initSharedNav('analytics');
+
+    function exportDeadlineAudit() {
+      const csv = `Tender_ID,Title,Department,Original_Deadline,Extended_Deadline,Days_Shifted,Reason
+GJ/2026/105,Road Construction Works Package 4,PWD,20 Nov 2026,30 Nov 2026,+10 Days,Public holiday extension approved by Chief Engineer
+GJ/2026/104,Supply of Advanced ICU Ventilators,Health Dept,18 Nov 2026,25 Nov 2026,+7 Days,OEM compliance documentation verification
+GJ/2026/089,Turnkey Rooftop Solar PV System,Energy Dept,10 Nov 2026,20 Nov 2026,+10 Days,Pre-bid meeting queries clarification
+T-2026-1049,IT Infrastructure Services,NIC,12 Nov 2026,26 Nov 2026,+14 Days,Payment schedule revision
+T-2026-1050,Construction of School Building,Education Dept,23 Nov 2026,30 Nov 2026,+7 Days,Technical drawings revision`;
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Deadline_Extension_Variance_Audit_${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      if (typeof addAuditLog === 'function') {
+        addAuditLog('Report Export', 'Downloaded Deadline Extension Variance Audit CSV');
+      }
+      showToast('Deadline Extension Variance Audit CSV downloaded successfully!', 'success');
+    }
+
+    function exportVolatilityReport() {
+      const csv = `Tender_ID,Title,Department,Total_Amendments,Stability_Index,Primary_Drivers
+GJ/2026/105,Road Construction Works Package 4,PWD,3,High Volatility,Schedule & Technical Specification shifts
+GJ/2026/104,Supply of Advanced ICU Ventilators,Health Dept,2,Moderate,Warranty and Make-in-India BIS standard relaxation
+T-2026-1033,Metro Flyover & Bridge Works,PWD,3,High Volatility,Geotechnical test criteria update
+T-2026-1049,IT Infrastructure Services,NIC,2,Moderate,Payment milestones and SLA re-alignments
+T-2026-1040,Hospital Laboratory Diagnostics,Health Dept,2,Moderate,Reagent compliance clarification`;
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `High_Volatility_Tenders_Dossier_${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      if (typeof addAuditLog === 'function') {
+        addAuditLog('Report Export', 'Downloaded High Volatility Tenders Dossier CSV');
+      }
+      showToast('High Volatility Tenders Dossier CSV downloaded successfully!', 'success');
+    }
   </script>
 </body>
 </html>
