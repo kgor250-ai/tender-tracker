@@ -100,7 +100,7 @@
             <i data-lucide="check-square" class="w-4 h-4"></i>
             <span>Review Queue</span>
           </div>
-          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">18</span>
+          <span id="nav-badge-review-sidebar" class="review-badge-pill px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">0</span>
         </a>
 
         <a href="sources.html" data-page="sources"
@@ -265,12 +265,12 @@
         </div>
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
           <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Tenders Ingested</span>
-          <p class="text-2xl font-black text-slate-900">1,248 Records</p>
+          <p id="sources-stat-records" class="text-2xl font-black text-slate-900">10 Records</p>
           <span class="text-[11px] text-blue-600 font-semibold">Across all connected feeds</span>
         </div>
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
           <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Corrigendums Detected</span>
-          <p class="text-2xl font-black text-amber-600">326 Amendments</p>
+          <p id="sources-stat-amendments" class="text-2xl font-black text-amber-600">11 Amendments</p>
           <span class="text-[11px] text-slate-500 font-semibold">Parsed with PDF extraction</span>
         </div>
       </div>
@@ -405,9 +405,21 @@
       }, 800);
     }
 
+    
+    function syncSourcesCounts() {
+      if (typeof getSystemCounts === 'function') {
+        const counts = getSystemCounts();
+        const recEl = document.getElementById('sources-stat-records');
+        if (recEl) recEl.innerText = `${counts.totalTenders} Records`;
+        const amdEl = document.getElementById('sources-stat-amendments');
+        if (amdEl) amdEl.innerText = `${counts.totalAmendments} Amendments`;
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       initSharedNav('sources');
+      syncSourcesCounts();
     });
   </script>
 </body>

@@ -135,7 +135,7 @@
             <i data-lucide="check-square" class="w-4 h-4"></i>
             <span>Review Queue</span>
           </div>
-          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">18</span>
+          <span id="nav-badge-review-sidebar" class="review-badge-pill px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">0</span>
         </a>
 
         <!-- Sources -->
@@ -1061,6 +1061,8 @@
   <script>
     lucide.createIcons();
     initSharedNav('dashboard');
+    renderDashboardTable();
+    updateAllBadgesAndCounters();
 
     // Ctrl + K shortcut to focus search
     document.addEventListener('keydown', (e) => {
@@ -1076,44 +1078,82 @@
 
     // Global Search across table
     function handleGlobalSearch(e) {
-      const q = e.target.value.toLowerCase().trim();
-      const rows = document.querySelectorAll('.tender-row');
-      rows.forEach(row => {
-        const text = (row.innerText + ' ' + (row.getAttribute('data-search') || '')).toLowerCase();
-        if (!q || text.includes(q)) {
-          row.style.display = '';
-        } else {
-          row.style.display = 'none';
-        }
-      });
+      renderDashboardTable();
     }
 
-    // Filter Latest Tenders by Department & Status
-    function filterLatestTenders() {
-      const dept = document.getElementById('table-dept-filter').value;
-      const status = document.getElementById('table-status-filter').value;
-      const rows = document.querySelectorAll('.tender-row');
+    
+    // Render Latest Tenders dynamically from centralized store
+    function renderDashboardTable() {
+      const tbody = document.getElementById('latest-tenders-tbody');
+      if (!tbody) return;
 
-      let visibleCount = 0;
-      rows.forEach(row => {
-        const rowDept = row.getAttribute('data-dept');
-        const rowStatus = row.getAttribute('data-status');
+      const deptFilter = (document.getElementById('table-dept-filter') ? document.getElementById('table-dept-filter').value : 'ALL');
+      const statusFilter = (document.getElementById('table-status-filter') ? document.getElementById('table-status-filter').value : 'ALL');
+      const q = (document.getElementById('global-dashboard-search') ? document.getElementById('global-dashboard-search').value.toLowerCase().trim() : '');
 
-        const matchDept = (dept === 'ALL' || rowDept === dept);
-        const matchStatus = (status === 'ALL' || rowStatus === status);
+      const user = getActiveUser();
+      let tenders = getTenders();
 
-        if (matchDept && matchStatus) {
-          row.style.display = '';
-          visibleCount++;
-        } else {
-          row.style.display = 'none';
-        }
-      });
-
-      if (window.showToast) {
-        showToast(`Showing ${visibleCount} tenders for ${dept} (${status})`, 'info');
+      // Role filtering (Store Owner / Department Officer scope)
+      if (user && user.role !== 'ADMIN' && user.department) {
+        tenders = tenders.filter(t => t.dept === user.department);
       }
+
+      // Filter by department & status
+      let filtered = tenders.filter(t => {
+        const matchDept = (deptFilter === 'ALL' || t.dept === deptFilter);
+        const matchStatus = (statusFilter === 'ALL' || t.status.toLowerCase() === statusFilter.toLowerCase());
+        const matchQ = (!q || (t.id + ' ' + t.title + ' ' + t.dept + ' ' + t.status).toLowerCase().includes(q));
+        return matchDept && matchStatus && matchQ;
+      });
+
+      tbody.innerHTML = '';
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-slate-400 font-semibold">No matching tenders found in catalog.</td></tr>';
+        return;
+      }
+
+      filtered.slice(0, 5).forEach((t, idx) => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50/80 transition-colors tender-row";
+        tr.setAttribute('data-dept', t.dept);
+        tr.setAttribute('data-status', t.status);
+        tr.setAttribute('data-search', (t.id + ' ' + t.title + ' ' + t.dept).toLowerCase());
+
+        let badgeClass = 'bg-blue-50 text-blue-700 border-blue-200/80';
+        if (t.status === 'Published') badgeClass = 'bg-emerald-50 text-emerald-700 border-emerald-200/80';
+        else if (t.status === 'Corrigendum') badgeClass = 'bg-amber-50 text-amber-700 border-amber-200/80';
+        else if (t.status === 'Amended') badgeClass = 'bg-purple-50 text-purple-700 border-purple-200/80';
+        else if (t.status === 'Live') badgeClass = 'bg-cyan-50 text-cyan-700 border-cyan-200/80';
+
+        tr.innerHTML = `
+          <td class="py-3.5 px-3 text-slate-400 font-semibold">${idx + 1}</td>
+          <td class="py-3.5 px-3 font-mono font-bold text-slate-900">${t.id}</td>
+          <td class="py-3.5 px-3 font-semibold text-slate-900">${t.title}</td>
+          <td class="py-3.5 px-3 text-slate-600">${t.dept}</td>
+          <td class="py-3.5 px-3 text-slate-500">${t.pubDate || 'Recently'}</td>
+          <td class="py-3.5 px-3 text-slate-500">${t.deadline || 'TBD'}</td>
+          <td class="py-3.5 px-3">
+            <span class="px-2.5 py-0.5 rounded-full text-[10.5px] font-bold border ${badgeClass}">${t.status}</span>
+          </td>
+          <td class="py-3.5 px-3 text-center">
+            <button onclick="viewTenderDetailsModal('${t.id}', '${t.title.replace(/'/g, "\\'")}', '${t.dept}', '${t.pubDate || 'Recently'}', '${t.deadline || 'TBD'}', '${t.status}', 'Official tender verified in catalog.')"
+              class="p-1.5 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors" title="View Quick Details">
+              <i data-lucide="eye" class="w-4 h-4"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
     }
+
+    // Connect filters to renderDashboardTable
+    function filterLatestTenders() {
+      renderDashboardTable();
+    }
+
 
     // Quick Tender Details Modal
     function viewTenderDetailsModal(no, title, dept, pub, close, status, notes) {
@@ -1194,33 +1234,7 @@
       }
     }
 
-    // Date range selection
-    function selectDateRange(rangeKey) {
-      const rangeMap = {
-        'today': { label: 'Today (24 Hours)', tenders: '42', amendments: '11', reviews: '3', errors: '0' },
-        '7d': { label: 'Last 7 Days', tenders: '315', amendments: '84', reviews: '7', errors: '1' },
-        '30d': { label: 'Last 30 Days', tenders: '1,248', amendments: '326', reviews: '18', errors: '3' },
-        '90d': { label: 'Last 90 Days', tenders: '3,890', amendments: '980', reviews: '45', errors: '8' },
-        'ytd': { label: 'FY 2026-27 (YTD)', tenders: '8,420', amendments: '2,140', reviews: '92', errors: '14' }
-      };
-
-      const selected = rangeMap[rangeKey] || rangeMap['30d'];
-      document.getElementById('selected-date-range-label').innerText = selected.label;
-      document.getElementById('stat-total-tenders').innerText = selected.tenders;
-      document.getElementById('stat-total-amendments').innerText = selected.amendments;
-      document.getElementById('stat-pending-reviews').innerText = selected.reviews;
-      document.getElementById('stat-collection-errors').innerText = selected.errors;
-
-      document.querySelectorAll('.date-range-check').forEach(el => {
-        if (el.getAttribute('data-range') === rangeKey) el.classList.remove('hidden');
-        else el.classList.add('hidden');
-      });
-
-      toggleDropdown('date-range-dropdown');
-      if (window.showToast) {
-        showToast(`Timeframe updated to ${selected.label}`, 'info');
-      }
-    }
+    // Using centralized selectDateRange from shared.js
   </script>
 </body>
 

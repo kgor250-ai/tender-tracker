@@ -111,7 +111,7 @@
             <i data-lucide="check-square" class="w-4 h-4"></i>
             <span>Review Queue</span>
           </div>
-          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">18</span>
+          <span id="nav-badge-review-sidebar" class="review-badge-pill px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">0</span>
         </a>
 
         <a href="sources.html" data-page="sources"
@@ -442,6 +442,7 @@
       }
       showToast('Amendment approved: Verified & committed to master records!', 'success');
       loadReviewState();
+      if (typeof updateAllBadgesAndCounters === "function") updateAllBadgesAndCounters();
     }
 
     function rejectReview() {
@@ -456,6 +457,7 @@
       }
       showToast('Amendment rejected: Marked as invalid revision.', 'error');
       loadReviewState();
+      if (typeof updateAllBadgesAndCounters === "function") updateAllBadgesAndCounters();
     }
 
     function requestCorrection() {
@@ -470,6 +472,7 @@
       }
       showToast('Correction requested: Notification dispatched to Tender Publisher.', 'info');
       loadReviewState();
+      if (typeof updateAllBadgesAndCounters === "function") updateAllBadgesAndCounters();
     }
 
     function resetReviewState() {
@@ -481,6 +484,7 @@
       lucide.createIcons();
       initSharedNav('review');
       loadReviewState();
+      if (typeof updateAllBadgesAndCounters === "function") updateAllBadgesAndCounters();
     });
   </script>
 </body>

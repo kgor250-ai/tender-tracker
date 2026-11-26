@@ -1,3 +1,210 @@
+
+// ==========================================
+// CENTRALIZED DATA STORES & CANONICAL COUNTS PROVIDER
+// ==========================================
+
+const DEFAULT_TENDERS = [
+  { id: "GJ/2026/105", title: "Road Construction Works - State Highway Package 4", dept: "PWD", pubDate: "01 Nov 2026", deadline: "30 Nov 2026", status: "Amended", cat: "Infrastructure", estimatedCost: "₹ 5,00,00,000", amendmentsCount: 2 },
+  { id: "GJ/2026/104", title: "Supply of Advanced ICU Ventilators & Telemetry Systems", dept: "Health Dept.", pubDate: "31 Oct 2026", deadline: "25 Nov 2026", status: "Corrigendum", cat: "Medical", estimatedCost: "₹ 3,20,00,000", amendmentsCount: 1 },
+  { id: "GJ/2026/103", title: "IT Infrastructure Upgrade & Data Center Cloud Setup", dept: "IT Dept.", pubDate: "30 Oct 2026", deadline: "15 Nov 2026", status: "Amended", cat: "IT", estimatedCost: "₹ 2,40,00,000", amendmentsCount: 2 },
+  { id: "GJ/2026/102", title: "Turnkey Rooftop Solar PV System (250 kWp)", dept: "Energy Dept", pubDate: "28 Oct 2026", deadline: "20 Nov 2026", status: "Corrigendum", cat: "Infrastructure", estimatedCost: "₹ 1,00,00,000", amendmentsCount: 1 },
+  { id: "GJ/2026/101", title: "Water Supply Pipeline Network & Distribution", dept: "Water Dept.", pubDate: "26 Oct 2026", deadline: "12 Nov 2026", status: "Published", cat: "Urban", estimatedCost: "₹ 4,10,00,000", amendmentsCount: 0 },
+  { id: "GJ/2026/100", title: "Smart Classroom Digital Board Infrastructure", dept: "Education Dept.", pubDate: "25 Oct 2026", deadline: "14 Dec 2026", status: "Published", cat: "Education", estimatedCost: "₹ 1,75,00,000", amendmentsCount: 0 },
+  { id: "GJ/2026/099", title: "Bridge Repair & Structural Rehabilitation", dept: "PWD", pubDate: "24 Oct 2026", deadline: "10 Nov 2026", status: "Live", cat: "Infrastructure", estimatedCost: "₹ 6,50,00,000", amendmentsCount: 3 },
+  { id: "GJ/2026/098", title: "Hospital Biomedical Waste Management Solution", dept: "Health Dept.", pubDate: "22 Oct 2026", deadline: "08 Nov 2026", status: "Published", cat: "Medical", estimatedCost: "₹ 85,00,000", amendmentsCount: 0 },
+  { id: "GJ/2026/097", title: "City-wide Smart CCTV Surveillance Network", dept: "Home Dept.", pubDate: "20 Oct 2026", deadline: "05 Nov 2026", status: "Amended", cat: "IT", estimatedCost: "₹ 8,75,00,000", amendmentsCount: 2 },
+  { id: "GJ/2026/096", title: "Street Light LED Conversion & Smart Monitoring", dept: "Urban Dev", pubDate: "18 Oct 2026", deadline: "02 Nov 2026", status: "Published", cat: "Urban", estimatedCost: "₹ 2,10,00,000", amendmentsCount: 0 }
+];
+
+function getTenders() {
+  const stored = localStorage.getItem('appTendersCatalog');
+  if (stored) {
+    try { 
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    } catch (e) {}
+  }
+  return DEFAULT_TENDERS;
+}
+
+function saveTenders(items) {
+  localStorage.setItem('appTendersCatalog', JSON.stringify(items));
+  updateAllBadgesAndCounters();
+}
+
+// Review Queue Master Store
+const DEFAULT_REVIEW_QUEUE = [
+  {
+    id: "GJ-2026-105",
+    tenderId: "GJ/2026/105",
+    title: "Road Construction Works - State Highway Package 4",
+    corrigendumNo: "Corrigendum No. 02/2026",
+    department: "PWD",
+    submittedBy: "Rajesh Kumar (Tender Operator)",
+    submittedDate: "07 Nov 2026",
+    changesCount: 2,
+    status: "PENDING"
+  }
+];
+
+function getReviewQueue() {
+  const stored = localStorage.getItem('appReviewQueue');
+  let queue = DEFAULT_REVIEW_QUEUE;
+  if (stored) {
+    try { queue = JSON.parse(stored); } catch (e) {}
+  }
+  // Sync individual review statuses if stored
+  return queue.map(item => {
+    const individualStatus = localStorage.getItem('review_status_' + item.id);
+    if (individualStatus) {
+      return { ...item, status: individualStatus };
+    }
+    return item;
+  });
+}
+
+function saveReviewQueue(items) {
+  localStorage.setItem('appReviewQueue', JSON.stringify(items));
+  updateAllBadgesAndCounters();
+}
+
+function getPendingReviewCount() {
+  const queue = getReviewQueue();
+  return queue.filter(r => r.status === 'PENDING').length;
+}
+
+// Collection Errors Master Store
+const DEFAULT_COLLECTION_ERRORS = [
+  { id: "err-1", portal: "tender.nprocure.com", error: "Connection Timeout (504 Gateway)", tenderId: "GJ/2026/088", resolved: false },
+  { id: "err-2", portal: "eproc.gujarat.gov.in", error: "PDF OCR Parse Failure", tenderId: "GJ/2026/074", resolved: false },
+  { id: "err-3", portal: "gem.gov.in", error: "Rate Limit 429 / CAPTCHA", tenderId: "GJ/2026/061", resolved: false }
+];
+
+function getCollectionErrors() {
+  const stored = localStorage.getItem('appCollectionErrors');
+  if (stored) {
+    try { return JSON.parse(stored); } catch (e) {}
+  }
+  return DEFAULT_COLLECTION_ERRORS;
+}
+
+function saveCollectionErrors(items) {
+  localStorage.setItem('appCollectionErrors', JSON.stringify(items));
+  updateAllBadgesAndCounters();
+}
+
+function getCollectionErrorCount() {
+  return getCollectionErrors().filter(e => !e.resolved).length;
+}
+
+// Helper to calculate total amendments from version store + tenders
+function getTotalAmendmentsCount() {
+  const versions = getAllTendersStore();
+  let count = 0;
+  Object.values(versions).forEach(t => {
+    if (t.versions && Array.isArray(t.versions)) {
+      count += t.versions.filter(v => v.type !== 'Original Tender').length;
+    }
+  });
+  // Also count any additional tenders with status Corrigendum/Amended
+  const tenders = getTenders();
+  tenders.forEach(t => {
+    const key = t.id ? t.id.replace(/\//g, '-') : '';
+    if (!versions[key] && !versions[t.id]) {
+      if (t.amendmentsCount) count += t.amendmentsCount;
+      else if (t.status === 'Corrigendum') count += 1;
+      else if (t.status === 'Amended') count += 2;
+    }
+  });
+  return count;
+}
+
+// Comprehensive System Counts Provider
+function getSystemCounts(rangeKey = null) {
+  const user = getActiveUser();
+  let tenders = getTenders();
+
+  // Role / Department filtering (Store owner / Dept officer principle)
+  if (user && user.role !== 'ADMIN' && user.department) {
+    tenders = tenders.filter(t => t.dept === user.department);
+  }
+
+  // Date range filtering
+  if (rangeKey && rangeKey !== '30d' && rangeKey !== 'ytd') {
+    if (rangeKey === 'today') {
+      tenders = tenders.filter(t => (t.pubDate || '').includes('Today') || (t.pubDate || '').includes('Nov 2026'));
+    } else if (rangeKey === '7d') {
+      tenders = tenders.slice(0, Math.ceil(tenders.length * 0.7));
+    }
+  }
+
+  const totalTenders = tenders.length;
+  const totalAmendments = getTotalAmendmentsCount();
+  const pendingReviews = getPendingReviewCount();
+  const collectionErrors = getCollectionErrorCount();
+  const notifications = getNotifications();
+  const unreadNotifications = notifications.filter(n => !n.read).length;
+
+  return {
+    totalTenders,
+    totalAmendments,
+    pendingReviews,
+    collectionErrors,
+    unreadNotifications,
+    totalNotifications: notifications.length
+  };
+}
+
+// Update all sidebar badges, top bar badges, and dashboard stats across entire app
+function updateAllBadgesAndCounters() {
+  const counts = getSystemCounts();
+
+  // 1. Sidebar Review Queue Badge
+  document.querySelectorAll('#nav-badge-review-sidebar, .review-badge-pill').forEach(el => {
+    el.innerText = counts.pendingReviews;
+    if (counts.pendingReviews === 0) {
+      el.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-700 text-slate-300 review-badge-pill";
+    } else {
+      el.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white review-badge-pill";
+    }
+  });
+
+  // 2. Notification Badges (Sidebar & Topbar)
+  document.querySelectorAll('#nav-badge-notif-sidebar, .notif-badge-pill').forEach(el => {
+    el.innerText = counts.unreadNotifications;
+    if (counts.unreadNotifications === 0) {
+      el.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-700 text-slate-300 notif-badge-pill";
+    } else {
+      el.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white notif-badge-pill";
+    }
+  });
+
+  const topNotifBadge = document.getElementById('notification-badge');
+  if (topNotifBadge) {
+    topNotifBadge.innerText = counts.unreadNotifications;
+    if (counts.unreadNotifications === 0) topNotifBadge.style.display = 'none';
+    else topNotifBadge.style.display = 'flex';
+  }
+
+  const unreadPill = document.getElementById('unread-count-pill');
+  if (unreadPill) {
+    unreadPill.innerText = `${counts.unreadNotifications} New`;
+  }
+
+  // 3. Dashboard Stat Cards (if on dashboard)
+  const statTenders = document.getElementById('stat-total-tenders');
+  if (statTenders) statTenders.innerText = counts.totalTenders.toLocaleString();
+
+  const statAmendments = document.getElementById('stat-total-amendments');
+  if (statAmendments) statAmendments.innerText = counts.totalAmendments.toLocaleString();
+
+  const statReviews = document.getElementById('stat-pending-reviews');
+  if (statReviews) statReviews.innerText = counts.pendingReviews.toLocaleString();
+
+  const statErrors = document.getElementById('stat-collection-errors');
+  if (statErrors) statErrors.innerText = counts.collectionErrors.toLocaleString();
+}
+
 // shared.js - Centralized state and shared navigation logic
 
 const DEFAULT_USER = {
@@ -167,12 +374,13 @@ function initSharedNav(activePage) {
 
   // Initialize Notifications
   renderNotificationUI();
+  updateAllBadgesAndCounters();
 
   // Restore active date range if element exists
   const savedRange = localStorage.getItem('selectedDateRange') || '30d';
-  if (DATE_RANGE_DATA[savedRange]) {
+  if (DATE_RANGE_LABELS[savedRange]) {
     const labelEl = document.getElementById('selected-date-range-label');
-    if (labelEl) labelEl.innerText = DATE_RANGE_DATA[savedRange].label;
+    if (labelEl) labelEl.innerText = DATE_RANGE_LABELS[savedRange];
     document.querySelectorAll('.date-range-check').forEach(check => {
       if (check.getAttribute('data-range') === savedRange) {
         check.classList.remove('hidden');
@@ -316,6 +524,7 @@ function getNotifications() {
 function saveNotifications(items) {
   localStorage.setItem('appNotifications', JSON.stringify(items));
   renderNotificationUI();
+  updateAllBadgesAndCounters();
 }
 
 function renderNotificationUI() {
@@ -561,53 +770,22 @@ function handleNotificationClick(id, link) {
 }
 
 // Date Range Filter logic
-const DATE_RANGE_DATA = {
-  'today': {
-    label: 'Today',
-    tenders: '42',
-    amendments: '12',
-    reviews: '2',
-    errors: '0'
-  },
-  '7d': {
-    label: 'Last 7 Days',
-    tenders: '318',
-    amendments: '89',
-    reviews: '6',
-    errors: '1'
-  },
-  '30d': {
-    label: 'Last 30 Days',
-    tenders: '1,248',
-    amendments: '326',
-    reviews: '18',
-    errors: '3'
-  },
-  '90d': {
-    label: 'Last 90 Days',
-    tenders: '3,420',
-    amendments: '874',
-    reviews: '41',
-    errors: '7'
-  },
-  'ytd': {
-    label: 'FY 2026-27',
-    tenders: '5,120',
-    amendments: '1,340',
-    reviews: '68',
-    errors: '12'
-  }
+
+const DATE_RANGE_LABELS = {
+  'today': 'Today',
+  '7d': 'Last 7 Days',
+  '30d': 'Last 30 Days',
+  '90d': 'Last 90 Days',
+  'ytd': 'FY 2026-27'
 };
 
 function selectDateRange(key) {
-  const data = DATE_RANGE_DATA[key];
-  if (!data) return;
-  
+  const label = DATE_RANGE_LABELS[key] || 'Last 30 Days';
   localStorage.setItem('selectedDateRange', key);
   
   // Update button label
   const labelEl = document.getElementById('selected-date-range-label');
-  if (labelEl) labelEl.innerText = data.label;
+  if (labelEl) labelEl.innerText = label;
   
   // Close dropdown
   const dropdown = document.getElementById('date-range-dropdown');
@@ -622,19 +800,22 @@ function selectDateRange(key) {
     }
   });
 
-  // Animate stat cards if present
+  // Calculate actual counts for this range
+  const counts = getSystemCounts(key);
+
   const statTenders = document.getElementById('stat-total-tenders');
   const statAmendments = document.getElementById('stat-total-amendments');
   const statReviews = document.getElementById('stat-pending-reviews');
   const statErrors = document.getElementById('stat-collection-errors');
 
-  if (statTenders) statTenders.innerText = data.tenders;
-  if (statAmendments) statAmendments.innerText = data.amendments;
-  if (statReviews) statReviews.innerText = data.reviews;
-  if (statErrors) statErrors.innerText = data.errors;
+  if (statTenders) statTenders.innerText = counts.totalTenders.toLocaleString();
+  if (statAmendments) statAmendments.innerText = counts.totalAmendments.toLocaleString();
+  if (statReviews) statReviews.innerText = counts.pendingReviews.toLocaleString();
+  if (statErrors) statErrors.innerText = counts.collectionErrors.toLocaleString();
 
-  showToast(`Dashboard updated for: ${data.label}`, 'info');
+  showToast(`Dashboard updated for: ${label}`, 'info');
 }
+
 
 // ==========================================
 // MODULE 4: TENDER REVISION & VERSION MANAGEMENT

@@ -100,7 +100,7 @@
             <i data-lucide="check-square" class="w-4 h-4"></i>
             <span>Review Queue</span>
           </div>
-          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">18</span>
+          <span id="nav-badge-review-sidebar" class="review-badge-pill px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">0</span>
         </a>
 
         <a href="sources.html" data-page="sources"
@@ -363,29 +363,28 @@
 
   <script src="shared.js"></script>
   <script>
-    let remainingErrors = 3;
-
-    function getTimeStamp() {
-      const now = new Date();
-      return now.toTimeString().split(' ')[0];
+    
+    function getMonitorErrors() {
+      if (typeof getCollectionErrors === 'function') {
+        return getCollectionErrors();
+      }
+      return [
+        { id: "err-1", portal: "tender.nprocure.com", error: "Connection Timeout (504 Gateway)", tenderId: "GJ/2026/088", resolved: false },
+        { id: "err-2", portal: "eproc.gujarat.gov.in", error: "PDF OCR Parse Failure", tenderId: "GJ/2026/074", resolved: false },
+        { id: "err-3", portal: "gem.gov.in", error: "Rate Limit 429 / CAPTCHA", tenderId: "GJ/2026/061", resolved: false }
+      ];
     }
 
-    function appendTerminalLog(type, color, msg) {
-      const term = document.getElementById('terminal-logs');
-      if (!term) return;
-      const p = document.createElement('p');
-      p.innerHTML = `<span class="text-slate-500">[${getTimeStamp()}]</span> <span class="${color}">[${type}]</span> ${msg}`;
-      term.appendChild(p);
-      term.scrollTop = term.scrollHeight;
-    }
+    function syncMonitorCounters() {
+      const errors = getMonitorErrors();
+      const unresolved = errors.filter(e => !e.resolved);
+      const remainingCount = unresolved.length;
 
-    function updateCounters() {
-      remainingErrors = Math.max(0, remainingErrors - 1);
       const statFailed = document.getElementById('stat-failed-count');
       const headerFailed = document.getElementById('failed-queue-header');
       const subFailed = document.getElementById('stat-failed-sub');
 
-      if (remainingErrors === 0) {
+      if (remainingCount === 0) {
         if (statFailed) {
           statFailed.innerText = "0 Errors";
           statFailed.className = "text-2xl font-black text-emerald-600";
@@ -402,10 +401,17 @@
         const btnRetryAll = document.getElementById('btn-retry-all');
         if (btnRetryAll) btnRetryAll.classList.add('hidden');
       } else {
-        if (statFailed) statFailed.innerText = `${remainingErrors} Errors`;
-        if (headerFailed) headerFailed.innerText = `Collection Exceptions Queue (${remainingErrors} Items)`;
+        if (statFailed) statFailed.innerText = `${remainingCount} Errors`;
+        if (headerFailed) headerFailed.innerText = `Collection Exceptions Queue (${remainingCount} Items)`;
+      }
+
+      if (typeof updateAllBadgesAndCounters === 'function') {
+        updateAllBadgesAndCounters();
       }
     }
+
+    function getTimeStamp() { const now = new Date(); return now.toTimeString().split(" ")[0]; }
+    function updateCounters() { syncMonitorCounters(); }
 
     function retrySingleJob(rowId, tenderId, portal, btn) {
       btn.disabled = true;
@@ -428,7 +434,11 @@
               row.style.opacity = '0';
               setTimeout(() => {
                 row.remove();
-                updateCounters();
+                const errors = getMonitorErrors();
+                const matched = errors.find(e => e.tenderId === tenderId || e.portal === portal);
+                if (matched) matched.resolved = true;
+                if (typeof saveCollectionErrors === 'function') saveCollectionErrors(errors);
+                syncMonitorCounters();
                 showToast(`Job for ${tenderId} successfully retried and resolved!`, 'success');
               }, 300);
             }, 800);
@@ -446,7 +456,11 @@
       setTimeout(() => {
         appendTerminalLog('RESOLVED', 'text-emerald-400', 'Batch complete: 3/3 jobs successfully resolved and ingested.');
         remainingErrors = 1;
-        updateCounters();
+        const errors = getMonitorErrors();
+                const matched = errors.find(e => e.tenderId === tenderId || e.portal === portal);
+                if (matched) matched.resolved = true;
+                if (typeof saveCollectionErrors === 'function') saveCollectionErrors(errors);
+                syncMonitorCounters();
         showToast('All 3 failed crawler jobs retried and resolved successfully!', 'success');
       }, 1200);
     }
@@ -470,6 +484,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       initSharedNav('collection');
+      syncMonitorCounters();
     });
   </script>
 </body></html>

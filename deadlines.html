@@ -102,7 +102,7 @@
             <i data-lucide="check-square" class="w-4 h-4"></i>
             <span>Review Queue</span>
           </div>
-          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">18</span>
+          <span id="nav-badge-review-sidebar" class="review-badge-pill px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">0</span>
         </a>
 
         <a href="sources.html" data-page="sources"
@@ -271,7 +271,7 @@
         <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
             <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Active Tenders Monitored</span>
-            <span class="text-2xl font-black text-slate-900 mt-1 block">5 Tenders</span>
+            <span id="deadline-stat-total" class="text-2xl font-black text-slate-900 mt-1 block">5 Tenders</span>
             <span class="text-[11px] text-emerald-600 font-bold mt-0.5 block">100% Tracking Active</span>
           </div>
           <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
@@ -282,7 +282,7 @@
         <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
             <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Critical (&lt; 48 Hours)</span>
-            <span class="text-2xl font-black text-rose-600 mt-1 block">2 Urgent</span>
+            <span id="deadline-stat-urgent" class="text-2xl font-black text-rose-600 mt-1 block">2 Urgent</span>
             <span class="text-[11px] text-rose-700 font-bold mt-0.5 block">Immediate action required</span>
           </div>
           <div class="w-11 h-11 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
@@ -293,7 +293,7 @@
         <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
             <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Corrigendum Extensions</span>
-            <span class="text-2xl font-black text-amber-600 mt-1 block">3 Extended</span>
+            <span id="deadline-stat-extended" class="text-2xl font-black text-amber-600 mt-1 block">3 Extended</span>
             <span class="text-[11px] text-amber-700 font-bold mt-0.5 block">+32 Days cumulative added</span>
           </div>
           <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
@@ -373,7 +373,39 @@
       renderDeadlinesCards();
     }
 
+    
+    function updateDeadlineStats() {
+      const items = getUpcomingDeadlines();
+      const totalCount = items.length;
+      const urgentCount = items.filter(d => d.status === 'URGENT' || d.urgencyLevel === 'CRITICAL').length;
+      const extendedCount = items.filter(d => d.status === 'EXTENDED').length;
+      const normalCount = items.filter(d => d.status === 'NORMAL').length;
+
+      const elTotal = document.getElementById('deadline-stat-total');
+      if (elTotal) elTotal.innerText = `${totalCount} Tenders`;
+
+      const elUrgent = document.getElementById('deadline-stat-urgent');
+      if (elUrgent) elUrgent.innerText = `${urgentCount} Urgent`;
+
+      const elExt = document.getElementById('deadline-stat-extended');
+      if (elExt) elExt.innerText = `${extendedCount} Extended`;
+
+      // Update button pill labels
+      const btnAll = document.getElementById('btn-filter-all');
+      if (btnAll) btnAll.innerHTML = `<i data-lucide="layers" class="w-3.5 h-3.5"></i> All Tenders (${totalCount})`;
+
+      const btnUrg = document.getElementById('btn-filter-urgent');
+      if (btnUrg) btnUrg.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span> Critical &lt; 48H (${urgentCount})`;
+
+      const btnExt = document.getElementById('btn-filter-extended');
+      if (btnExt) btnExt.innerHTML = `<i data-lucide="calendar-plus" class="w-3.5 h-3.5"></i> Extended (${extendedCount})`;
+
+      const btnNorm = document.getElementById('btn-filter-normal');
+      if (btnNorm) btnNorm.innerHTML = `Normal Window (${normalCount})`;
+    }
+
     function renderDeadlinesCards() {
+      updateDeadlineStats();
       const items = getUpcomingDeadlines();
       const filtered = items.filter(d => {
         if (currentFilter === 'URGENT') return d.status === 'URGENT';

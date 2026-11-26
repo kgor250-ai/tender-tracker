@@ -102,7 +102,7 @@
             <i data-lucide="check-square" class="w-4 h-4"></i>
             <span>Review Queue</span>
           </div>
-          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">18</span>
+          <span id="nav-badge-review-sidebar" class="review-badge-pill px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">0</span>
         </a>
 
         <a href="sources.html" data-page="sources"
@@ -306,7 +306,7 @@
       <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
         <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
           <h2 class="text-xs font-bold uppercase tracking-wider text-slate-700">User Management (Screen)</h2>
-          <span class="text-xs text-slate-500 font-bold">3 Active Accounts</span>
+          <span id="user-count-header" class="text-xs text-slate-500 font-bold">3 Active Accounts</span>
         </div>
 
         <div class="overflow-x-auto">
@@ -471,6 +471,8 @@
     let usersList = getUsers();
 
     function renderUsersTable() {
+      const countEl = document.getElementById('user-count-header');
+      if (countEl) countEl.innerText = `${usersList.length} Active Accounts`;
       const tbody = document.getElementById('users-table-body');
       if (!tbody) return;
       tbody.innerHTML = '';
