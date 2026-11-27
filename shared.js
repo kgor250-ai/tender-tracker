@@ -1154,3 +1154,283 @@ function showToast(message, type = 'success') {
 window.alert = function(msg) {
   showToast(msg, 'info');
 };
+
+
+// ==========================================
+// MODULE: TENDER DOCUMENT CHANGE COMPARISON & REPLACEMENT HISTORY
+// ==========================================
+
+const DEFAULT_DOCUMENT_CHANGES = [
+  {
+    id: "doc-chg-1",
+    tenderId: "GJ/2026/105",
+    tenderTitle: "Road Construction Works - State Highway Package 4",
+    corrigendumRef: "Corrigendum 02/2026",
+    documentType: "Bill of Quantities (BOQ)",
+    changeType: "REPLACED",
+    fileFormat: "EXCEL",
+    originalDoc: {
+      name: "Original_BOQ_Highway_Pkg4_v1.0.xlsx",
+      size: "1.45 MB",
+      sizeBytes: 1520435,
+      uploadDate: "01 Nov 2026, 11:30 AM",
+      version: "v1.0",
+      uploadedBy: "Admin Officer (PWD)",
+      hash: "e9b27a01f8d48f1a",
+      sampleType: "boq-original"
+    },
+    revisedDoc: {
+      name: "Revised_BOQ_Highway_Pkg4_v1.2.xlsx",
+      size: "1.82 MB",
+      sizeBytes: 1908408,
+      uploadDate: "07 Nov 2026, 14:15 PM",
+      version: "v1.2",
+      uploadedBy: "Rajesh Kumar (Tender Operator)",
+      hash: "3a8c449e21b090de",
+      sampleType: "boq-revised"
+    },
+    deltaDetails: {
+      sizeDelta: "+370 KB (+25.5%)",
+      daysDelta: "+6 Days later",
+      summary: "Item 4.2 Bituminous concrete quantity increased by 15%; Item 6.1 Drainage earthwork specification rates updated.",
+      replacedReason: "Pre-bid contractor feedback and revised site geotechnical survey required updated quantities."
+    },
+    versionHistory: [
+      { version: "v1.0", name: "Original_BOQ_Highway_Pkg4_v1.0.xlsx", date: "01 Nov 2026, 11:30 AM", author: "Admin Officer (PWD)", status: "Superseded", size: "1.45 MB", reason: "Initial NIT base release" },
+      { version: "v1.1", name: "Draft_BOQ_Highway_Pkg4_v1.1.xlsx", date: "03 Nov 2026, 16:00 PM", author: "Rajesh Kumar (Operator)", status: "Superseded", size: "1.60 MB", reason: "Preliminary quantity adjustments" },
+      { version: "v1.2", name: "Revised_BOQ_Highway_Pkg4_v1.2.xlsx", date: "07 Nov 2026, 14:15 PM", author: "Rajesh Kumar (Operator)", status: "Active (Master)", size: "1.82 MB", reason: "Official Corrigendum 02 approved schedule" }
+    ]
+  },
+  {
+    id: "doc-chg-2",
+    tenderId: "GJ/2026/105",
+    tenderTitle: "Road Construction Works - State Highway Package 4",
+    corrigendumRef: "Corrigendum 01/2026",
+    documentType: "Technical Specifications & Standards",
+    changeType: "REPLACED",
+    fileFormat: "WORD",
+    originalDoc: {
+      name: "Technical_Specifications_v1.0.docx",
+      size: "820 KB",
+      sizeBytes: 839680,
+      uploadDate: "01 Nov 2026, 11:30 AM",
+      version: "v1.0",
+      uploadedBy: "Admin Officer (PWD)",
+      hash: "7f4c19ae88931ab",
+      sampleType: "techspecs-original"
+    },
+    revisedDoc: {
+      name: "Revised_Technical_Specifications_v1.1.docx",
+      size: "940 KB",
+      sizeBytes: 962560,
+      uploadDate: "03 Nov 2026, 15:45 PM",
+      version: "v1.1",
+      uploadedBy: "Rajesh Kumar (Tender Operator)",
+      hash: "82de00ff34167f0",
+      sampleType: "techspecs-revised"
+    },
+    deltaDetails: {
+      sizeDelta: "+120 KB (+14.6%)",
+      daysDelta: "+2 Days later",
+      summary: "Clause 4.1 updated to allow IRC:111-2009 bituminous concrete standards; testing frequencies amended.",
+      replacedReason: "Relaxed grading requirements to facilitate MSME vendor participation."
+    },
+    versionHistory: [
+      { version: "v1.0", name: "Technical_Specifications_v1.0.docx", date: "01 Nov 2026, 11:30 AM", author: "Admin Officer (PWD)", status: "Superseded", size: "820 KB", reason: "NIT base publication" },
+      { version: "v1.1", name: "Revised_Technical_Specifications_v1.1.docx", date: "03 Nov 2026, 15:45 PM", author: "Rajesh Kumar (Operator)", status: "Active (Master)", size: "940 KB", reason: "Corrigendum 01 amendment" }
+    ]
+  },
+  {
+    id: "doc-chg-3",
+    tenderId: "GJ/2026/105",
+    tenderTitle: "Road Construction Works - State Highway Package 4",
+    corrigendumRef: "Corrigendum 02/2026",
+    documentType: "Corrigendum Notice & Schedule Extension",
+    changeType: "NEWLY_ADDED",
+    fileFormat: "PDF",
+    originalDoc: null,
+    revisedDoc: {
+      name: "Corrigendum_02_Deadline_Extension.pdf",
+      size: "450 KB",
+      sizeBytes: 460800,
+      uploadDate: "07 Nov 2026, 14:15 PM",
+      version: "v1.2",
+      uploadedBy: "Rajesh Kumar (Tender Operator)",
+      hash: "bc41e72093111a2",
+      sampleType: "notice-pdf"
+    },
+    deltaDetails: {
+      sizeDelta: "+450 KB (New File)",
+      daysDelta: "Published 07 Nov 2026",
+      summary: "Official Gazette notification extending bid submission deadline by 10 days to 30 Nov 2026, 17:00 IST.",
+      replacedReason: "New public gazette order published under Chief Engineer authorization."
+    },
+    versionHistory: [
+      { version: "v1.2", name: "Corrigendum_02_Deadline_Extension.pdf", date: "07 Nov 2026, 14:15 PM", author: "Rajesh Kumar (Operator)", status: "Active (Master)", size: "450 KB", reason: "Newly issued Corrigendum 02 notification" }
+    ]
+  },
+  {
+    id: "doc-chg-4",
+    tenderId: "GJ/2026/105",
+    tenderTitle: "Road Construction Works - State Highway Package 4",
+    corrigendumRef: "Base NIT / Corrigendum 02",
+    documentType: "General Conditions of Contract (GCC)",
+    changeType: "UNCHANGED",
+    fileFormat: "PDF",
+    originalDoc: {
+      name: "General_Conditions_of_Contract_GCC.pdf",
+      size: "2.10 MB",
+      sizeBytes: 2202009,
+      uploadDate: "01 Nov 2026, 11:30 AM",
+      version: "v1.0",
+      uploadedBy: "Admin Officer (PWD)",
+      hash: "45da9b32e855e8",
+      sampleType: "gcc-pdf"
+    },
+    revisedDoc: {
+      name: "General_Conditions_of_Contract_GCC.pdf",
+      size: "2.10 MB",
+      sizeBytes: 2202009,
+      uploadDate: "01 Nov 2026, 11:30 AM",
+      version: "v1.0",
+      uploadedBy: "Admin Officer (PWD)",
+      hash: "45da9b32e855e8",
+      sampleType: "gcc-pdf"
+    },
+    deltaDetails: {
+      sizeDelta: "0 KB (Identical)",
+      daysDelta: "Unchanged since 01 Nov 2026",
+      summary: "Standard state procurement contract clauses; no amendment issued.",
+      replacedReason: "Baseline legal terms remain valid and unmodified across all corrigenda."
+    },
+    versionHistory: [
+      { version: "v1.0", name: "General_Conditions_of_Contract_GCC.pdf", date: "01 Nov 2026, 11:30 AM", author: "Admin Officer (PWD)", status: "Active (Master)", size: "2.10 MB", reason: "Original tender legal conditions" }
+    ]
+  },
+  {
+    id: "doc-chg-5",
+    tenderId: "GJ/2026/104",
+    tenderTitle: "Supply of Advanced ICU Ventilators & Telemetry Systems",
+    corrigendumRef: "Corrigendum 01/2026/MED",
+    documentType: "Medical Equipment Technical Specifications",
+    changeType: "REPLACED",
+    fileFormat: "PDF",
+    originalDoc: {
+      name: "ICU_Ventilator_TechSpecs_v1.0.pdf",
+      size: "1.15 MB",
+      sizeBytes: 1205862,
+      uploadDate: "31 Oct 2026, 10:00 AM",
+      version: "v1.0",
+      uploadedBy: "Admin Officer (Health)",
+      hash: "12fa9103c877c9",
+      sampleType: "ventilator-original"
+    },
+    revisedDoc: {
+      name: "Revised_ICU_Ventilator_TechSpecs_v1.1.pdf",
+      size: "1.30 MB",
+      sizeBytes: 1363148,
+      uploadDate: "05 Nov 2026, 16:30 PM",
+      version: "v1.1",
+      uploadedBy: "Rajesh Kumar (Tender Operator)",
+      hash: "99de420ab34bc",
+      sampleType: "ventilator-revised"
+    },
+    deltaDetails: {
+      sizeDelta: "+150 KB (+13.0%)",
+      daysDelta: "+5 Days later",
+      summary: "Certification standards amended to permit BIS approved equivalent medical devices; warranty terms extended to 5 years.",
+      replacedReason: "Government Make In India directive and civil hospital medical director approval."
+    },
+    versionHistory: [
+      { version: "v1.0", name: "ICU_Ventilator_TechSpecs_v1.0.pdf", date: "31 Oct 2026, 10:00 AM", author: "Admin Officer (Health)", status: "Superseded", size: "1.15 MB", reason: "NIT base publication" },
+      { version: "v1.1", name: "Revised_ICU_Ventilator_TechSpecs_v1.1.pdf", date: "05 Nov 2026, 16:30 PM", author: "Rajesh Kumar (Operator)", status: "Active (Master)", size: "1.30 MB", reason: "Corrigendum 01 approved tech spec revision" }
+    ]
+  }
+];
+
+function getDocumentChanges(tenderFilter = null) {
+  const stored = localStorage.getItem('appDocumentChangesStore');
+  let items = DEFAULT_DOCUMENT_CHANGES;
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) items = parsed;
+    } catch (e) {}
+  }
+  if (tenderFilter && tenderFilter !== 'ALL') {
+    return items.filter(d => d.tenderId === tenderFilter);
+  }
+  return items;
+}
+
+function saveDocumentChanges(items) {
+  localStorage.setItem('appDocumentChangesStore', JSON.stringify(items));
+}
+
+// Helper to generate and download dummy files in Excel / PDF / Word format
+function downloadDummySampleFile(docName, fileFormat, sampleType = 'boq') {
+  let content = "";
+  let mimeType = "text/plain";
+  let extension = ".txt";
+
+  if (fileFormat === 'EXCEL' || docName.endsWith('.xlsx') || docName.endsWith('.xls')) {
+    // Generate Excel-compatible CSV with UTF-8 BOM
+    mimeType = "application/vnd.ms-excel;charset=utf-8;";
+    extension = ".xlsx";
+    content = "\uFEFFItem No,Description of Work,Unit,Original Quantity,Revised Quantity,Unit Rate (INR),Estimated Amount (INR),Amendment Remarks\n"
+      + "1.0,Earthwork excavation in road foundation,Cum,12500,12500,180.00,2250000.00,Unchanged baseline quantity\n"
+      + "2.1,Granular Sub-Base (GSB) Grade-I 200mm,Cum,4200,4200,850.00,3570000.00,Unchanged specification\n"
+      + "3.2,Wet Mix Macadam (WMM) 250mm,Cum,5600,5600,1250.00,7000000.00,Unchanged baseline\n"
+      + "4.1,Dense Bituminous Macadam (DBM) 50mm,Cum,1800,2100,6200.00,13020000.00,REVISED: +300 Cum added via Corrigendum 02\n"
+      + "4.2,Bituminous Concrete (BC) Grade-2 40mm,Cum,1450,1720,7400.00,12728000.00,REVISED: Quantity increased per geotechnical survey\n"
+      + "5.0,Reinforced Cement Concrete Box Culvert M25,Cum,450,450,5800.00,2610000.00,Unchanged structural design\n"
+      + "6.1,Side Drains with precast cover slabs,Meter,3200,3800,980.00,3724000.00,REVISED: +600M extended in village stretch\n"
+      + "7.0,Road Safety Furniture & Thermoplastic Marking,Km,18,18,85000.00,1530000.00,Unchanged road safety schedule\n"
+      + "TOTAL,,,,,₹ 4,64,32,000.00,REVISED SCHEDULE MASTER APPROVED\n";
+  } else if (fileFormat === 'WORD' || docName.endsWith('.docx') || docName.endsWith('.doc')) {
+    mimeType = "application/msword;charset=utf-8;";
+    extension = ".docx";
+    content = "========================================================================\n"
+      + "STATE HIGHWAY PACKAGE 4 - TECHNICAL SPECIFICATION AMENDMENT\n"
+      + "Document Version: " + docName + "\n"
+      + "Governing Corrigendum: Corrigendum No. 02/2026\n"
+      + "========================================================================\n\n"
+      + "1. CLAUSE 4.1 - BITUMINOUS ROAD PAVEMENT STANDARDS\n"
+      + "   [Original NIT Baseline]:\n"
+      + "   Bituminous concrete shall conform strictly to IRC:111-2009 Grade 1 with VG-30 paving bitumen.\n\n"
+      + "   [Revised Specification via Corrigendum 02]:\n"
+      + "   Bituminous concrete shall conform to IRC:111-2009 Grade 2 standards with either VG-30 or VG-40 paving bitumen.\n"
+      + "   Permitted indigenous testing certification from NABL accredited state laboratories.\n\n"
+      + "2. CLAUSE 8.4 - DEFECT LIABILITY PERIOD\n"
+      + "   Comprehensive defect liability period confirmed at 36 calendar months from completion certificate.\n\n"
+      + "Authorizing Authority: Chief Engineer, Public Works Department (PWD), Gujarat\n";
+  } else {
+    // PDF text format
+    mimeType = "application/pdf;charset=utf-8;";
+    extension = ".pdf";
+    content = "%PDF-1.4\n"
+      + "% NOTICE INVITING TENDER / CORRIGENDUM OFFICIAL GAZETTE ORDER\n"
+      + "Tender Ref: GJ/2026/105\n"
+      + "Document: " + docName + "\n"
+      + "Status: Verified & Signed by Procurement Authority\n\n"
+      + "Official Corrigendum Notification:\n"
+      + "1. The bid submission deadline for Tender No. GJ/2026/105 is extended by 10 calendar days.\n"
+      + "2. New Submission Cut-off: 30 November 2026, 17:00 IST.\n"
+      + "3. Technical Bid Opening: 01 December 2026, 11:00 IST.\n"
+      + "All other baseline NIT terms and conditions remain unaltered.\n";
+  }
+
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = docName || ("Tender_Document_" + Date.now() + extension);
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  if (window.showToast) {
+    showToast(`Downloaded ${docName} (${fileFormat})`, 'success');
+  }
+}
