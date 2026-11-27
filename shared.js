@@ -592,9 +592,7 @@ function renderNotificationUI() {
         </div>
       `;
     }
-    if (window.lucide && typeof lucide.createIcons === 'function') {
-      lucide.createIcons();
-    }
+    if (window.lucide && typeof window.lucide.createIcons === 'function') { window.lucide.createIcons(); }
   }
 }
 
@@ -1136,9 +1134,7 @@ function showToast(message, type = 'success') {
   `;
 
   container.appendChild(toast);
-  if (window.lucide && typeof lucide.createIcons === 'function') {
-    lucide.createIcons();
-  }
+  if (window.lucide && typeof window.lucide.createIcons === 'function') { window.lucide.createIcons(); }
 
   requestAnimationFrame(() => {
     toast.classList.remove('translate-y-4', 'opacity-0');
